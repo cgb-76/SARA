@@ -105,10 +105,16 @@ For each artifact in `{extraction_plan}`:
     - If `artifact.raised_by` is empty or the file cannot be read: use `{artifact.raised_by}`
       as the fallback attribution (the ID itself).
 
-    Quote format (standard markdown blockquote):
+    Quote format (standard markdown blockquote, stakeholder linked to their wiki page):
     ```
-    > "{artifact.source_quote}" — {stakeholder_name}
+    > "{artifact.source_quote}" — [[{artifact.raised_by}|{stakeholder_name}]]
     ```
+
+    **Wikilink rule:** Anywhere in body text that an entity ID appears (STK-NNN, REQ-NNN,
+    DEC-NNN, ACT-NNN, RISK-NNN, MTG-NNN, etc.), render it as a wikilink `[[ID]]`. This
+    includes IDs mentioned in synthesised summaries, cross-references, and the attribution
+    line. Frontmatter fields (raised-by, related, source, owner) remain plain IDs — wikilinks
+    are for body text only.
 
     For every section, synthesise content if the source document or discussion notes contain
     relevant material. If nothing relevant is available for a section, leave it empty (heading
@@ -221,7 +227,7 @@ Read `wiki/index.md` using the Read tool.
 
 For each artifact written in Step 2:
   - `action == "create"`: append a new row to the index table:
-    `| {assigned_id} | {artifact.title} | open | {artifact.type} | [] | {today YYYY-MM-DD} |`
+    `| [[{assigned_id}]] | {artifact.title} | open | {artifact.type} | [] | {today YYYY-MM-DD} |`
   - `action == "update"`: find the existing row matching `{artifact.existing_id}` in the table and update its `Last Updated` column to today's date.
 
 Write the updated `wiki/index.md` using the Write tool.
@@ -229,7 +235,7 @@ Write the updated `wiki/index.md` using the Write tool.
 Read `wiki/log.md` using the Read tool.
 
 Append the following entry as a new line after the last row (or after the header comment if the log is empty):
-`| {item.id} | {today YYYY-MM-DD} | {item.type} | {item.filename} | {comma-separated list of all artifact IDs written} |`
+`| [[{item.id}]] | {today YYYY-MM-DD} | {item.type} | {item.filename} | {comma-separated list of [[ID]] wikilinks for all artifact IDs written} |`
 
 Write the updated `wiki/log.md` using the Write tool.
 

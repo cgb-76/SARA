@@ -129,7 +129,7 @@ Read `wiki/index.md` using the Read tool.
 Append a new row to the table:
 
 ```
-| {new_id} | {name} | active | stakeholder | [] | {today YYYY-MM-DD} |
+| [[{new_id}]] | {name} | active | stakeholder | [] | {today YYYY-MM-DD} |
 ```
 
 Write the updated `wiki/index.md` back using the Write tool.
