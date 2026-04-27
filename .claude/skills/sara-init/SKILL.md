@@ -36,12 +36,11 @@ If the command succeeds (no wiki/ directory), continue to Step 2.
 
 **Step 2 — Collect project name**
 
-Use AskUserQuestion to ask for the project name:
-- header: "Project name"  (12 chars exactly — acceptable)
-- question: "What is the name of this project? (used in wiki/CLAUDE.md header)"
-- options: []
+Output the following question as plain text and wait for the user's reply:
 
-Capture whatever the user types as `{project_name}`.
+> What is the name of this project?
+
+Capture the user's reply as `{project_name}`.
 
 **Step 3 — Collect verticals**
 
@@ -49,7 +48,7 @@ Use AskUserQuestion to collect market verticals:
 - header: "Verticals"
 - question: "Select all market verticals that apply (or type your own)"
 - type: checkbox
-- options: ["Residential", "Enterprise", "Wholesale", "Government", "SMB", "Education", "Healthcare"]
+- options: ["Residential", "Business, Enterprise & Government", "Wholesale"]
 
 Collect all checked options into `{verticals_array}`. If the user types a custom value via "Type
 something", split on commas, trim whitespace, and merge with any checked options.
@@ -60,7 +59,7 @@ Use AskUserQuestion to collect functional departments:
 - header: "Departments"
 - question: "Select all departments that apply (or type your own)"
 - type: checkbox
-- options: ["Sales", "Operations", "Finance", "Engineering", "Marketing", "Legal", "HR", "Product", "Customer Success"]
+- options: ["Sales", "Operations", "Finance", "Technology", "Marketing", "Legal", "HR", "Product", "Executive"]
 
 Collect all checked options into `{departments_array}`. If the user types a custom value via "Type
 something", split on commas, trim whitespace, and merge with any checked options.
