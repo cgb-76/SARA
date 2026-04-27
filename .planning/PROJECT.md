@@ -16,7 +16,7 @@ Every meeting, email thread, Slack conversation, and document gets permanently i
 
 ### Active
 
-- [ ] `/sara-init` sets up a new SARA wiki (directory structure, schema, department/vertical config)
+- [ ] `/sara-init` sets up a new SARA wiki (directory structure, schema, vertical list and department list — separate axes)
 - [ ] `/sara-ingest <type> <filename>` registers a raw input item (meeting, email, slack, document) from `/raw/input/`, assigns ingest ID N
 - [ ] `/sara-discuss N` guides a human-in-the-loop discussion of source N, agreeing on extraction intent
 - [ ] `/sara-extract N` presents the extraction plan (artifacts to create/update) for user approval before any wiki changes
@@ -95,7 +95,7 @@ Meetings also include: **→ minutes**
 - **Runtime**: Claude Code — SARA is a set of skills/slash commands, not a standalone app
 - **Single-user per repo**: by design; multi-user via separate clones
 - **Git-backed**: all wiki changes are committed; full history, branching for free
-- **Project-scoped**: one SARA repo per project; department/vertical config defined at init time
+- **Project-scoped**: one SARA repo per project; vertical list and department list configured separately at init time
 
 ## Key Decisions
 

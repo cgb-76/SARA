@@ -24,20 +24,20 @@
 
 **Requirements:**
 - FOUND-01: `/sara-init` creates full directory structure, CLAUDE.md schema, `pipeline-state.json`, and entity page templates
-- FOUND-02: `/sara-init` prompts for and stores project-specific department/vertical list
+- FOUND-02: `/sara-init` prompts for and stores project-specific vertical list (e.g. Residential, Enterprise, Wholesale) and department list (e.g. Sales, Operations, Finance) as separate axes
 - FOUND-03: All wiki entity pages include a `schema_version` field in YAML frontmatter from creation
 - FOUND-04: `pipeline-state.json` persists all pipeline state (item registry, stage, ID counters, discussion notes, extraction plan) across Claude Code session boundaries
 - WIKI-01: Requirements pages have structured YAML frontmatter (ID, title, status, description, source, raised-by, owner, schema_version, tags, related)
 - WIKI-02: Decision pages have structured YAML frontmatter (ID, title, status, context, decision, rationale, alternatives-considered, date, deciders, supersedes, schema_version, tags, related)
 - WIKI-03: Action pages have structured YAML frontmatter (ID, title, status, description, owner, due-date, source, schema_version, tags, related)
 - WIKI-04: Risk pages have structured YAML frontmatter (ID, title, status, description, likelihood, impact, owner, mitigation, source, schema_version, tags, related)
-- WIKI-05: Stakeholder pages have structured YAML frontmatter (ID, name, department/vertical, email, role, schema_version, related)
+- WIKI-05: Stakeholder pages have structured YAML frontmatter (ID, name, vertical, department, email, role, schema_version, related) — vertical and department are separate fields from the project config lists
 - WIKI-06: `wiki/index.md` is an LLM-maintained catalog with one row per entity (ID, title, status, type, tags, last-updated)
 - WIKI-07: `wiki/log.md` is an append-only chronological record of all ingest events
 
 **Success Criteria:**
 1. User runs `/sara-init` in an empty directory and the complete `/raw/` and `/wiki/` tree is created with no manual steps
-2. User is prompted for department/vertical names during init and the values appear in the project config — a different project produces a different config
+2. User is prompted for vertical names (e.g. Residential, Enterprise) and department names (e.g. Sales, Finance) separately during init — both lists appear in the project config and a different project produces different lists
 3. A freshly created entity page template (for each of the five types) contains a `schema_version` field and all required YAML frontmatter fields with no omissions
 4. `pipeline-state.json` exists at repo root after init with correct structure — reopening a new Claude Code session against the repo allows pipeline commands to read existing state without error
 
