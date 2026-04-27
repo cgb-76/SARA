@@ -1,0 +1,129 @@
+# SARA — Solution Architecture Recall Assistant
+
+## What This Is
+
+SARA is a personal, git-backed LLM knowledgebase for solution design, operated entirely through Claude Code slash commands. It draws on Andrej Karpathy's llm-wiki pattern: instead of one-shot RAG (rediscovering knowledge each query), SARA maintains a persistent, compounding wiki — structured markdown files that get richer with every source ingested. One SARA repo per project; domain-agnostic (adapts to software architecture, enterprise architecture, or anything in between).
+
+## Core Value
+
+Every meeting, email thread, Slack conversation, and document gets permanently integrated into a structured wiki — knowledge compounds across sessions instead of disappearing into chat history.
+
+## Requirements
+
+### Validated
+
+(None yet — ship to validate)
+
+### Active
+
+- [ ] `/sara-init` sets up a new SARA wiki (directory structure, schema, department/vertical config)
+- [ ] `/sara-ingest <type> <filename>` registers a raw input item (meeting, email, slack, document) from `/raw/input/`, assigns ingest ID N
+- [ ] `/sara-discuss N` guides a human-in-the-loop discussion of source N, agreeing on extraction intent
+- [ ] `/sara-extract N` presents the extraction plan (artifacts to create/update) for user approval before any wiki changes
+- [ ] `/sara-update N` writes approved artifacts to the wiki, commits, moves source file to processed subfolder with numeric prefix
+- [ ] `/sara-minutes N` (meetings only) generates markdown minutes filed in wiki + email-ready draft
+- [ ] `/sara-meeting-agenda` generates an email-friendly agenda from user input (throw-away, not stored in wiki)
+- [ ] `/sara-query` answers questions synthesised from wiki content
+- [ ] `/sara-lint` health-checks the wiki (orphans, contradictions, stale content, missing cross-references)
+- [ ] Five wiki entity types with structured fields: Requirements, Decisions, Actions, Risks, Stakeholders
+- [ ] Stakeholders tracked with name, department/vertical, email; linked to all artifact types
+- [ ] SARA maintains pipeline state per input item (stage, discussion context) — resumable across sessions
+- [ ] Processed sources renamed with numeric prefix and archived to type subfolder (`/raw/meetings/`, `/raw/emails/`, etc.)
+
+### Out of Scope
+
+- Real-time multi-user collaboration — multi-user via separate repos, not shared state
+- Agenda linked to ingest item — throw-away in v1; natural v2 enhancement
+- Embedding-based search — `index.md` sufficient at v1 scale; `qmd` or similar is v2
+- External integrations (Jira, Linear, email send) — v2
+
+## Context
+
+**Inspiration:** Andrej Karpathy's llm-wiki pattern — the insight that LLMs maintaining a persistent wiki outperforms RAG because knowledge is compiled once and kept current, not re-derived on every query. Obsidian as the IDE, LLM as the programmer, wiki as the codebase.
+
+**GSD influence:** SARA's slash command structure mirrors Get Shit Done (GSD). The ingest pipeline phases (ingest → discuss → extract → update) map directly to GSD's phase lifecycle (discuss → plan → execute → verify). Each input item is stateful, human-gated, and resumable — not a one-shot orchestrator.
+
+**Target user:** George (personal use). Clone-able — others can run their own SARA instance per project. Not designed for concurrent multi-user access to the same repo (git conflicts).
+
+**Runtime:** Claude Code (skills/slash commands).
+
+## Directory Structure
+
+```
+/raw/
+  input/          ← staging bucket — drop files here before ingesting
+  meetings/       ← processed transcripts, prefixed by ingest ID (e.g. 003-standup-2026-04-27.md)
+  emails/
+  slack/
+  documents/
+/wiki/
+  index.md        ← catalog of all wiki pages (LLM updates on every ingest)
+  log.md          ← append-only chronological record of ingests, queries, lints
+  requirements/   ← requirement pages
+  decisions/      ← decision pages (ADR-style)
+  actions/        ← action item pages (tracked open/closed, assigned to stakeholder)
+  risks/          ← risk pages
+  stakeholders/   ← stakeholder pages (name, department, email)
+```
+
+## Command Taxonomy
+
+| Category | Commands | Description |
+|----------|----------|-------------|
+| **Generate** | `/sara-meeting-agenda` | Produce output from user input; throw-away |
+| **Initialize** | `/sara-init` | Set up wiki, config, directory structure |
+| **Process** | `/sara-ingest`, `/sara-discuss N`, `/sara-extract N`, `/sara-update N`, `/sara-minutes N` | Stateful ingest pipeline |
+| **Query** | `/sara-query` | Synthesise answers from wiki |
+| **Maintain** | `/sara-lint` | Wiki health checks |
+
+## Ingest Pipeline
+
+All input types follow: **ingest → discuss → extract → update**
+
+Meetings also include: **→ minutes**
+
+| Step | Command | Who acts | Output |
+|------|---------|----------|--------|
+| Register | `/sara-ingest meeting transcript.md` | Human drops file + runs command | Input item N created, pending |
+| Discuss | `/sara-discuss N` | Human + LLM together | Agreed extraction intent |
+| Extract | `/sara-extract N` | LLM proposes, human approves | Approved artifact list |
+| Update | `/sara-update N` | LLM writes, human confirms | Wiki updated, source archived |
+| Minutes | `/sara-minutes N` | LLM generates | Markdown + email draft |
+
+## Constraints
+
+- **Runtime**: Claude Code — SARA is a set of skills/slash commands, not a standalone app
+- **Single-user per repo**: by design; multi-user via separate clones
+- **Git-backed**: all wiki changes are committed; full history, branching for free
+- **Project-scoped**: one SARA repo per project; department/vertical config defined at init time
+
+## Key Decisions
+
+| Decision | Rationale | Outcome |
+|----------|-----------|---------|
+| One repo per project | Each project has its own stakeholder set, department config, and artifact space | — Pending |
+| Stateful, human-gated pipeline | User said "stay involved" — not a one-shot processor | — Pending |
+| `/sara-meeting-agenda` is throw-away in v1 | Can't cleanly fit pre-ingest state into ingest pipeline without complicating `/sara-ingest` | — Pending |
+| Five entity types (incl. Stakeholders) | Stakeholders are reference data that enable named entity linking and email automation | — Pending |
+| Processed files renamed + archived by type | Numeric prefix links archive to state; subfolder makes raw archive browsable | — Pending |
+| Departments are project-specific config | Domain-agnostic — the department list is defined at `/sara-init` time per project | — Pending |
+
+## Evolution
+
+This document evolves at phase transitions and milestone boundaries.
+
+**After each phase transition:**
+1. Requirements invalidated? → Move to Out of Scope with reason
+2. Requirements validated? → Move to Validated with phase reference
+3. New requirements emerged? → Add to Active
+4. Decisions to log? → Add to Key Decisions
+5. "What This Is" still accurate? → Update if drifted
+
+**After each milestone:**
+1. Full review of all sections
+2. Core Value check — still the right priority?
+3. Audit Out of Scope — reasons still valid?
+4. Update Context with current state
+
+---
+*Last updated: 2026-04-27 after initialization*
