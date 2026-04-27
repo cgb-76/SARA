@@ -21,11 +21,11 @@ Every meeting, email thread, Slack conversation, and document gets permanently i
 - [x] Stakeholders tracked with name, nickname, department, vertical, email; linked to all artifact types — Phase 2
 - [x] SARA maintains pipeline state per input item (stage, discussion context) — resumable across sessions — Phase 1
 - [x] Processed sources renamed with numeric prefix and archived to type subfolder (`/raw/meetings/`, `/raw/emails/`, etc.) — Phase 2
+- [x] `/sara-minutes N` generates plain-text meeting minutes output to terminal only — wiki is the data source, not the destination — Phase 3
+- [x] `/sara-agenda` generates a throw-away plain-text agenda draft from user input — not stored in the wiki — Phase 3
 
 ### Active
 
-- [ ] `/sara-minutes N` (meetings only) generates markdown minutes filed in wiki + email-ready draft — Phase 3
-- [ ] `/sara-agenda` generates an email-friendly agenda from user input (throw-away, not stored in wiki) — Phase 3
 - [ ] `/sara-query` answers questions synthesised from wiki content — v2
 - [ ] `/sara-lint` health-checks the wiki (orphans, contradictions, stale content, missing cross-references) — v2
 
@@ -128,4 +128,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-27 after Phase 2 completion*
+*Last updated: 2026-04-27 after Phase 3 completion — v1 milestone complete*

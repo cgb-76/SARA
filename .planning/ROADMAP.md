@@ -98,9 +98,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — /sara-minutes skill: type + stage guards, extraction_plan aggregation, dual-format terminal output (MEET-01)
-- [ ] 03-02-PLAN.md — /sara-agenda skill: freeform prompt, stateless plain-text agenda generation (MEET-02)
-- [ ] 03-03-PLAN.md — End-to-end verification checkpoint and planning doc updates
+- [x] 03-01-PLAN.md — /sara-minutes skill: type + stage guards, extraction_plan aggregation, plain-text terminal output (MEET-01)
+- [x] 03-02-PLAN.md — /sara-agenda skill: freeform prompt, stateless plain-text agenda generation (MEET-02)
+- [x] 03-03-PLAN.md — End-to-end verification checkpoint and planning doc updates
 
 **Success Criteria:**
 1. User runs `/sara-minutes N` on a meeting ingest item and receives a markdown minutes block and a plain-text email-ready block in the same terminal response — nothing is written to the wiki
@@ -117,4 +117,4 @@ Plans:
 |-------|--------|-----------|
 | 1. Foundation & Schema | Done | - |
 | 2. Ingest Pipeline | Done | - |
-| 3. Meeting Specialisation | In progress | - |
+| 3. Meeting Specialisation | Done | 2026-04-27 |
