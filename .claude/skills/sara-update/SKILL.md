@@ -98,10 +98,16 @@ For each artifact in `{extraction_plan}`:
     (Acceptance Criteria, Notes, Rationale, Alternatives Considered, Mitigation) empty — they will
     be filled in manually or by future pipeline runs.
 
-    Callout format:
+    Before writing the page, resolve the stakeholder name for the attribution line:
+    - If `artifact.raised_by` is a valid STK ID (e.g. `STK-001`): read
+      `wiki/stakeholders/{artifact.raised_by}.md` and extract the `name` field from frontmatter.
+      Use that as `{stakeholder_name}`.
+    - If `artifact.raised_by` is empty or the file cannot be read: use `{artifact.raised_by}`
+      as the fallback attribution (the ID itself).
+
+    Quote format (standard markdown blockquote):
     ```
-    > [!quote] Source: {item.id}
-    > {artifact.source_quote}
+    > "{artifact.source_quote}" — {stakeholder_name}
     ```
 
     **requirement:**
@@ -110,8 +116,7 @@ For each artifact in `{extraction_plan}`:
     {synthesised summary of what this requirement captures, why it matters, and any constraints
      resolved during /sara-discuss}
 
-    > [!quote] Source: {item.id}
-    > {artifact.source_quote}
+    > "{artifact.source_quote}" — {stakeholder_name}
 
     ## Acceptance Criteria
 
@@ -124,8 +129,7 @@ For each artifact in `{extraction_plan}`:
     {synthesised summary of the situation or problem that prompted this decision, drawn from
      the source document and discussion notes}
 
-    > [!quote] Source: {item.id}
-    > {artifact.source_quote}
+    > "{artifact.source_quote}" — {stakeholder_name}
 
     ## Decision
 
@@ -140,8 +144,7 @@ For each artifact in `{extraction_plan}`:
     {synthesised summary of what needs to be done, who is responsible, and any relevant
      deadlines or dependencies resolved during /sara-discuss}
 
-    > [!quote] Source: {item.id}
-    > {artifact.source_quote}
+    > "{artifact.source_quote}" — {stakeholder_name}
 
     ## Notes
     ```
@@ -152,8 +155,7 @@ For each artifact in `{extraction_plan}`:
     {synthesised summary of the risk, its likelihood/impact context, and any relevant
      triggers or conditions identified during /sara-discuss}
 
-    > [!quote] Source: {item.id}
-    > {artifact.source_quote}
+    > "{artifact.source_quote}" — {stakeholder_name}
 
     ## Mitigation
 
