@@ -108,6 +108,6 @@ Plans:
 
 | Phase | Status | Completed |
 |-------|--------|-----------|
-| 1. Foundation & Schema | In progress (2/3 plans) | - |
-| 2. Ingest Pipeline | Not started | - |
+| 1. Foundation & Schema | Done | - |
+| 2. Ingest Pipeline | Done | - |
 | 3. Meeting Specialisation | Not started | - |
