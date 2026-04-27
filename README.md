@@ -5,29 +5,29 @@ SARA is a personal, git-backed knowledge pipeline for solution design, operated 
 ## Requirements
 
 - [Claude Code](https://claude.ai/code) installed
-- A git-initialised project directory (the target project, not this repo)
+- A git-initialised project directory
 
 ## Installation
 
-Clone this repo (or download `install.sh`), then run the installer against your target project:
+From inside your project directory, run:
 
 ```bash
-bash /path/to/llm-wiki-gsd/install.sh --target /path/to/your-project
+curl -fsSL https://raw.githubusercontent.com/cgb-76/SARA/main/install.sh | bash
 ```
 
-If you are already inside the cloned repo and want to install into the current directory:
+Skills are downloaded from GitHub and written to `.claude/skills/` in the current directory. The installer checks for a `.git` directory and aborts if one is not found.
+
+**`--backup`:** To preserve any customised `SKILL.md` files as `SKILL.md.bak` before overwriting:
 
 ```bash
-./install.sh
+curl -fsSL https://raw.githubusercontent.com/cgb-76/SARA/main/install.sh | bash -s -- --backup
 ```
 
-**`--backup`:** If you have customised your local `SKILL.md`, pass `--backup` to preserve it as `SKILL.md.bak` before overwriting:
+**`--help`:** For the full flag reference:
 
 ```bash
-./install.sh --target /path/to/your-project --backup
+curl -fsSL https://raw.githubusercontent.com/cgb-76/SARA/main/install.sh | bash -s -- --help
 ```
-
-**`--help`:** Run `./install.sh --help` for the full flag reference.
 
 ## Setup
 
@@ -51,4 +51,10 @@ After installation:
 
 ## Updating
 
-Re-run `install.sh` to update. Downgrade protection is built in — if the source version is older than what you have installed, a warning is printed and that skill is skipped. Use `--force` to override.
+Re-run the install command to update:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/cgb-76/SARA/main/install.sh | bash
+```
+
+Downgrade protection is built in — if the source version is older than what you have installed, a warning is printed and that skill is skipped. Use `--force` to override.

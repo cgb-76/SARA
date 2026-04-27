@@ -1,119 +1,117 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# install.sh — Install SARA skills into a target git project
+# install.sh — Install SARA skills into the current git project
 #
-# Usage:
-#   ./install.sh [OPTIONS]
+# Run from inside your project directory:
+#   curl -fsSL https://raw.githubusercontent.com/cgb-76/SARA/main/install.sh | bash
+#
+# With flags:
+#   curl -fsSL https://raw.githubusercontent.com/cgb-76/SARA/main/install.sh | bash -s -- --backup
 #
 # Options:
-#   --target <dir>   Target project directory (default: current working directory)
-#   --backup         Preserve existing SKILL.md as SKILL.md.bak before overwriting
-#   --force          Override downgrade protection (allow installing older versions)
-#   --help           Show this help message and exit
+#   --backup   Preserve existing SKILL.md as SKILL.md.bak before overwriting
+#   --force    Override downgrade protection (allow installing older versions)
+#   --branch   Source branch or tag (default: main)
+#   --help     Show this help message and exit
 
 BACKUP=false
 FORCE=false
-TARGET_DIR="$PWD"
+BRANCH="main"
+REPO="cgb-76/SARA"
 
-# Parse arguments
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --backup)
-      BACKUP=true
-      shift
-      ;;
-    --force)
-      FORCE=true
-      shift
-      ;;
-    --target)
+    --backup) BACKUP=true; shift ;;
+    --force)  FORCE=true;  shift ;;
+    --branch)
       if [[ -z "${2:-}" ]]; then
-        echo "Error: --target requires a directory argument." >&2
-        exit 1
+        echo "Error: --branch requires a value." >&2; exit 1
       fi
-      TARGET_DIR="$2"
-      shift 2
-      ;;
+      BRANCH="$2"; shift 2 ;;
     --help)
-      echo "Usage: $(basename "$0") [--target <dir>] [--backup] [--force] [--help]"
+      echo "Usage: curl -fsSL https://raw.githubusercontent.com/${REPO}/main/install.sh | bash -s -- [OPTIONS]"
       echo ""
-      echo "Install SARA skills into a target git project."
+      echo "Install SARA skills into the current git project."
       echo ""
       echo "Options:"
-      echo "  --target <dir>   Target project directory (default: current working directory)"
       echo "  --backup         Preserve existing SKILL.md as SKILL.md.bak before overwriting"
       echo "  --force          Override downgrade protection (allow installing older versions)"
+      echo "  --branch <ref>   Source branch or tag (default: main)"
       echo "  --help           Show this help message and exit"
-      exit 0
-      ;;
+      exit 0 ;;
     *)
       echo "Error: Unknown option: $1" >&2
-      echo "Usage: $(basename "$0") [--target <dir>] [--backup] [--force] [--help]" >&2
-      exit 1
-      ;;
+      echo "Run with --help for usage." >&2
+      exit 1 ;;
   esac
 done
 
-# Guard: target directory must be a git repository (D-03)
+TARGET_DIR="$PWD"
+BASE_URL="https://raw.githubusercontent.com/${REPO}/${BRANCH}"
+
+# Guard: must be run inside a git repository (D-03)
 if [[ ! -d "$TARGET_DIR/.git" ]]; then
   echo "Error: install.sh must be run inside a git repository. SARA pipeline commands depend on git commits." >&2
   exit 1
 fi
 
-# Locate source skills (relative to this script's location)
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SOURCE_SKILLS_DIR="$SCRIPT_DIR/.claude/skills"
+# Known skills — fixed set for this release
+SKILLS=(
+  sara-init
+  sara-ingest
+  sara-discuss
+  sara-extract
+  sara-update
+  sara-add-stakeholder
+  sara-minutes
+  sara-agenda
+)
 
-# Collect sara-* directories dynamically (D-04)
-mapfile -t SKILL_DIRS < <(find "$SOURCE_SKILLS_DIR" -maxdepth 1 -type d -name 'sara-*' | sort)
-
-if [[ ${#SKILL_DIRS[@]} -eq 0 ]]; then
-  echo "Error: no sara-* skill directories found in $SOURCE_SKILLS_DIR" >&2
-  exit 1
-fi
-
-# Create target skills directory
 TARGET_SKILLS_DIR="$TARGET_DIR/.claude/skills"
 mkdir -p "$TARGET_SKILLS_DIR"
 
 INSTALLED=()
 
-# Per-skill install loop
-for src_skill_dir in "${SKILL_DIRS[@]}"; do
-  skill_name="$(basename "$src_skill_dir")"
-  dest_skill_dir="$TARGET_SKILLS_DIR/$skill_name"
+for skill_name in "${SKILLS[@]}"; do
+  src_url="${BASE_URL}/.claude/skills/${skill_name}/SKILL.md"
+  dest_skill_dir="${TARGET_SKILLS_DIR}/${skill_name}"
+  dest_file="${dest_skill_dir}/SKILL.md"
 
-  # Extract source version
-  src_ver="$(grep "^version:" "$src_skill_dir/SKILL.md" 2>/dev/null | awk '{print $2}' || true)"
-  if [[ -z "$src_ver" ]]; then
-    src_ver="0.0.0"
+  # Download to a temp file
+  tmp_file="$(mktemp)"
+  if ! curl -fsSL "${src_url}" -o "${tmp_file}" 2>/dev/null; then
+    echo "Warning: could not download ${skill_name} from ${src_url} — skipping." >&2
+    rm -f "${tmp_file}"
+    continue
   fi
 
-  # Downgrade check (D-09)
-  if [[ -f "$dest_skill_dir/SKILL.md" ]] && [[ "$FORCE" != "true" ]]; then
-    inst_ver="$(grep "^version:" "$dest_skill_dir/SKILL.md" 2>/dev/null | awk '{print $2}' || true)"
-    if [[ -z "$inst_ver" ]]; then
-      inst_ver="0.0.0"
-    fi
+  # Extract source version
+  src_ver="$(grep "^version:" "${tmp_file}" 2>/dev/null | awk '{print $2}' || true)"
+  [[ -z "$src_ver" ]] && src_ver="0.0.0"
 
-    older="$(printf '%s\n%s\n' "$src_ver" "$inst_ver" | sort -V | head -1)"
+  # Downgrade check (D-09)
+  if [[ -f "$dest_file" ]] && [[ "$FORCE" != "true" ]]; then
+    inst_ver="$(grep "^version:" "${dest_file}" 2>/dev/null | awk '{print $2}' || true)"
+    [[ -z "$inst_ver" ]] && inst_ver="0.0.0"
+
+    older="$(printf '%s\n%s\n' "${src_ver}" "${inst_ver}" | sort -V | head -1)"
     if [[ "$older" = "$src_ver" ]] && [[ "$src_ver" != "$inst_ver" ]]; then
-      echo "Warning: source version ($src_ver) is older than installed version ($inst_ver) for $skill_name — skipping. Use --force to override." >&2
+      echo "Warning: source version (${src_ver}) is older than installed version (${inst_ver}) for ${skill_name} — skipping. Use --force to override." >&2
+      rm -f "${tmp_file}"
       continue
     fi
   fi
 
   # Backup existing SKILL.md (D-05)
-  if [[ "$BACKUP" = "true" ]] && [[ -f "$dest_skill_dir/SKILL.md" ]]; then
-    cp "$dest_skill_dir/SKILL.md" "$dest_skill_dir/SKILL.md.bak"
+  if [[ "$BACKUP" = "true" ]] && [[ -f "$dest_file" ]]; then
+    cp "${dest_file}" "${dest_file}.bak"
   fi
 
-  # Copy skill directory contents
-  mkdir -p "$dest_skill_dir"
-  cp -r "$src_skill_dir/." "$dest_skill_dir/"
+  mkdir -p "${dest_skill_dir}"
+  mv "${tmp_file}" "${dest_file}"
 
-  INSTALLED+=("$skill_name")
+  INSTALLED+=("${skill_name}")
 done
 
 # Post-install output (D-07)
@@ -124,7 +122,7 @@ fi
 
 echo "Installed skills:"
 for name in "${INSTALLED[@]}"; do
-  echo "$name"
+  echo "  ${name}"
 done
 
 echo ""
