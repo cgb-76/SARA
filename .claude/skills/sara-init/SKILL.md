@@ -39,36 +39,31 @@ If the command succeeds (no wiki/ directory), continue to Step 2.
 Use AskUserQuestion to ask for the project name:
 - header: "Project name"  (12 chars exactly — acceptable)
 - question: "What is the name of this project? (used in wiki/CLAUDE.md header)"
-- options: ["My Project"]
+- options: []
 
-The user may select the preset option or type their own name directly. Capture whatever the user
-provides as `{project_name}`.
+Capture whatever the user types as `{project_name}`.
 
 **Step 3 — Collect verticals**
 
 Use AskUserQuestion to collect market verticals:
 - header: "Verticals"     (9 chars — acceptable)
 - question: "List the market verticals for this project, separated by commas (e.g. Residential, Enterprise, Wholesale)"
-- options: ["Residential, Enterprise, Wholesale", "Skip for now"]
+- options: ["Residential, Enterprise, Wholesale"]
 
-The user may select the preset option or type their own comma-separated list directly. If the user
-selects or types "Skip for now", store `{verticals_array}` as an empty array [].
-
-Otherwise, parse the response by splitting on commas, trimming whitespace from each item, and
-filtering empty strings. Store the result as `{verticals_array}` (e.g. ["Residential", "Enterprise", "Wholesale"]).
+The user may select the preset option or type their own comma-separated list directly. Parse the
+response by splitting on commas, trimming whitespace from each item, and filtering empty strings.
+Store the result as `{verticals_array}` (e.g. ["Residential", "Enterprise", "Wholesale"]).
 
 **Step 4 — Collect departments**
 
 Use AskUserQuestion to collect functional departments:
 - header: "Departments"   (11 chars — acceptable)
 - question: "List the functional departments for this project, separated by commas (e.g. Sales, Operations, Finance)"
-- options: ["Sales, Operations, Finance", "Skip for now"]
+- options: ["Sales, Operations, Finance"]
 
-The user may select the preset option or type their own comma-separated list directly. If the user
-selects or types "Skip for now", store `{departments_array}` as an empty array [].
-
-Otherwise, parse the response by splitting on commas, trimming whitespace from each item, and
-filtering empty strings. Store the result as `{departments_array}`.
+The user may select the preset option or type their own comma-separated list directly. Parse the
+response by splitting on commas, trimming whitespace from each item, and filtering empty strings.
+Store the result as `{departments_array}`.
 
 **Step 5 — Create directory tree**
 
