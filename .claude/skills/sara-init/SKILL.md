@@ -44,25 +44,19 @@ Capture the user's reply as `{project_name}`.
 
 **Step 3 — Collect verticals**
 
-Use AskUserQuestion to collect market verticals:
-- header: "Verticals"
-- question: "Select all market verticals that apply (or type your own)"
-- type: checkbox
-- options: ["Residential", "Business, Enterprise & Government", "Wholesale"]
+Output the following question as plain text and wait for the user's reply:
 
-Collect all checked options into `{verticals_array}`. If the user types a custom value via "Type
-something", split on commas, trim whitespace, and merge with any checked options.
+> Provide all market verticals that apply? (eg. Residential, BE\&G, Wholesale)
+
+Capture the user's reply, split on commas, trim whitespace, and store as `{verticals_array}`.
 
 **Step 4 — Collect departments**
 
-Use AskUserQuestion to collect functional departments:
-- header: "Departments"
-- question: "Select all departments that apply (or type your own)"
-- type: checkbox
-- options: ["Sales", "Operations", "Finance", "Technology", "Marketing", "Legal", "HR", "Product", "Executive"]
+Output the following question as plain text and wait for the user's reply:
 
-Collect all checked options into `{departments_array}`. If the user types a custom value via "Type
-something", split on commas, trim whitespace, and merge with any checked options.
+> What departments are involved in this project? (eg. Sales, Operations, Finance)
+
+Capture the user's reply, split on commas, trim whitespace, and store as `{departments_array}`.
 
 **Step 5 — Create directory tree**
 
@@ -436,7 +430,27 @@ Report success to the user with the following information:
   - `.sara/templates/risk.md`
   - `.sara/templates/stakeholder.md`
 - **Next step:** Run `/sara-ingest` to register your first input document.
-- **Note:** `/sara-init` does not commit files to git. Use `git add . && git commit` when ready.
+
+**Step 13 — Commit to git**
+
+Run the following Bash commands to initialise a git repository (if one does not already exist) and
+commit all created files:
+
+```bash
+git rev-parse --git-dir > /dev/null 2>&1 || git init
+git add \
+  .sara/config.json \
+  pipeline-state.json \
+  wiki/CLAUDE.md \
+  wiki/index.md \
+  wiki/log.md \
+  .sara/templates/requirement.md \
+  .sara/templates/decision.md \
+  .sara/templates/action.md \
+  .sara/templates/risk.md \
+  .sara/templates/stakeholder.md
+git commit -m "chore: initialise SARA wiki — {project_name}"
+```
 
 </process>
 
@@ -449,9 +463,8 @@ Report success to the user with the following information:
   (rm -rf wiki/ raw/ .sara/ pipeline-state.json) and re-run /sara-init. The guard clause
   prevents re-init on a live repo but will also block recovery of an incomplete init that left
   wiki/ behind.
-- /sara-init does not run git init or commit files. The initialised structure is ready to commit
-  but the user must do so. Suggested commit: git add .sara/ pipeline-state.json wiki/ raw/ &&
-  git commit -m "chore: initialise SARA wiki structure"
+- Git is managed invisibly — /sara-init initialises the repo if needed and commits all created
+  files automatically. Users never need to run git commands manually for SARA operations.
 - Ingest types (meeting, email, slack, document) are hardcoded in SARA skill logic. They are NOT
   stored in .sara/config.json. Do not add an ingest-types key to config (per D-05).
 - Vertical and department are always separate fields in both .sara/config.json and entity templates.
