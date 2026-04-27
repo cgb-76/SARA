@@ -278,6 +278,7 @@ related: []
 ---
 id: STK-000
 name: ""
+nickname: ""  # colloquial name used in transcript body text (e.g. "Raj" for "Rajiwath")
 vertical: ""    # from project config verticals list
 department: ""  # from project config departments list
 email: ""
@@ -427,6 +428,7 @@ related: []
 ---
 id: STK-000
 name: ""
+nickname: ""  # colloquial name used in transcript body text (e.g. "Raj" for "Rajiwath")
 vertical: ""    # from project config verticals list
 department: ""  # from project config departments list
 email: ""
