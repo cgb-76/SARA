@@ -76,7 +76,8 @@ Capture the user's reply, split on commas, trim whitespace, and store as `{depar
 
 **Step 5 — Create directory tree**
 
-Run the following Bash command to create the full directory structure in a single call:
+Run the following Bash commands to create the full directory structure and add `.gitkeep` files
+so all empty directories are tracked in git:
 
 ```bash
 mkdir -p \
@@ -91,6 +92,18 @@ mkdir -p \
   wiki/risks \
   wiki/stakeholders \
   .sara/templates
+
+touch \
+  raw/input/.gitkeep \
+  raw/meetings/.gitkeep \
+  raw/emails/.gitkeep \
+  raw/slack/.gitkeep \
+  raw/documents/.gitkeep \
+  wiki/requirements/.gitkeep \
+  wiki/decisions/.gitkeep \
+  wiki/actions/.gitkeep \
+  wiki/risks/.gitkeep \
+  wiki/stakeholders/.gitkeep
 ```
 
 **Step 6 — Write .sara/config.json**
@@ -460,6 +473,16 @@ git add \
   CLAUDE.md \
   wiki/index.md \
   wiki/log.md \
+  wiki/requirements/.gitkeep \
+  wiki/decisions/.gitkeep \
+  wiki/actions/.gitkeep \
+  wiki/risks/.gitkeep \
+  wiki/stakeholders/.gitkeep \
+  raw/input/.gitkeep \
+  raw/meetings/.gitkeep \
+  raw/emails/.gitkeep \
+  raw/slack/.gitkeep \
+  raw/documents/.gitkeep \
   .sara/templates/requirement.md \
   .sara/templates/decision.md \
   .sara/templates/action.md \
