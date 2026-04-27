@@ -2,11 +2,11 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: complete
-stopped_at: Phase 3 complete
-last_updated: "2026-04-27T12:00:00.000Z"
+status: completed
+stopped_at: Phase 4 context gathered
+last_updated: "2026-04-27T21:19:34.521Z"
 progress:
-  total_phases: 3
+  total_phases: 4
   completed_phases: 3
   total_plans: 13
   completed_plans: 13
@@ -52,8 +52,14 @@ See: .planning/ROADMAP.md
 - stage=complete written to pipeline-state.json ONLY after git commit succeeds (exit code 0) — prevents permanent item strand on commit failure (Pitfall 1 guard)
 - sara-update entity counter incremented and persisted before each create-action page write — prevents duplicate ID assignment on re-run after partial failure
 
+## Accumulated Context
+
+### Roadmap Evolution
+
+- Phase 4 added: make-installable
+
 ## Open Items
 
 (None yet)
 
-**Stopped at:** Phase 3 complete
+**Stopped at:** Phase 4 context gathered
