@@ -23,6 +23,16 @@ After installation:
 1. Open Claude Code in your project directory
 2. Run `/sara-init` — this sets up the wiki structure and prompts for your project's vertical and department lists
 
+## Updating
+
+Re-run the install command to update:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/cgb-76/SARA/main/install.sh | bash
+```
+
+Downgrade protection is built in — if the source version is older than what you have installed, a warning is printed and that skill is skipped. Use `--force` to override.
+
 ## Commands
 
 | Command | Description |
@@ -35,13 +45,3 @@ After installation:
 | `/sara-add-stakeholder` | Create a new stakeholder page |
 | `/sara-minutes` | Generate meeting minutes from a completed ingest item |
 | `/sara-agenda` | Generate a pre-meeting agenda draft |
-
-## Updating
-
-Re-run the install command to update:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/cgb-76/SARA/main/install.sh | bash
-```
-
-Downgrade protection is built in — if the source version is older than what you have installed, a warning is printed and that skill is skipped. Use `--force` to override.
