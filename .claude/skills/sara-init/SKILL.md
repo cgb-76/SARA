@@ -136,7 +136,16 @@ variable substitution needed — all counters start at zero):
 }
 ```
 
-**Step 8 — Write CLAUDE.md**
+**Step 8 — Write .gitignore**
+
+Use the Write tool to create `.gitignore` with the following exact content:
+
+```
+# ignore Claude's local settings file
+.claude/settings.local.json
+```
+
+**Step 9 — Write CLAUDE.md**
 
 Use the Write tool to create `CLAUDE.md` with the following content. Substitute
 `{project_name}` with the project name collected in Step 2.
@@ -279,7 +288,7 @@ related: []
 ```
 ```
 
-**Step 9 — Write wiki/index.md**
+**Step 10 — Write wiki/index.md**
 
 Use the Write tool to create `wiki/index.md` with the following exact content:
 
@@ -295,7 +304,7 @@ last-updated: ""
 |----|-------|--------|------|------|--------------|
 ```
 
-**Step 10 — Write wiki/log.md**
+**Step 11 — Write wiki/log.md**
 
 Use the Write tool to create `wiki/log.md` with the following exact content:
 
@@ -310,7 +319,7 @@ last-updated: ""
 <!-- Append-only. Each entry: ingest ID, date, type, filename, entities created/updated -->
 ```
 
-**Step 11 — Write entity templates**
+**Step 12 — Write entity templates**
 
 Use the Write tool to create each of the five template files in `.sara/templates/`. Write each
 file as a separate Write call.
@@ -430,7 +439,7 @@ related: []
 CRITICAL: `vertical` and `department` MUST be two separate fields. Never merge them into a
 combined field. Do not add body section headings to `stakeholder.md`.
 
-**Step 12 — Report success**
+**Step 13 — Report success**
 
 Report success to the user with the following information:
 
@@ -448,6 +457,7 @@ Report success to the user with the following information:
   - `wiki/stakeholders/`
   - `.sara/templates/`
 - **Files created:**
+  - `.gitignore`
   - `.sara/config.json`
   - `.sara/pipeline-state.json`
   - `CLAUDE.md`
@@ -460,7 +470,7 @@ Report success to the user with the following information:
   - `.sara/templates/stakeholder.md`
 - **Next step:** Run `/sara-ingest` to register your first input document.
 
-**Step 13 — Commit to git**
+**Step 14 — Commit to git**
 
 Run the following Bash commands to initialise a git repository (if one does not already exist) and
 commit all created files:
@@ -468,6 +478,7 @@ commit all created files:
 ```bash
 git rev-parse --git-dir > /dev/null 2>&1 || git init
 git add \
+  .gitignore \
   .sara/config.json \
   .sara/pipeline-state.json \
   CLAUDE.md \
@@ -498,7 +509,7 @@ git commit -m "chore: initialise SARA — {project_name}"
   project — all SARA skills inherit the schema and behavioral rules.
 - If /sara-init fails partway through (e.g. a permission error after the guard clause passed),
   the wiki/ directory may exist but be incomplete. Recovery: delete the partial output
-  (rm -rf wiki/ raw/ .sara/ CLAUDE.md) and re-run /sara-init. The guard clause
+  (rm -rf wiki/ raw/ .sara/ CLAUDE.md .gitignore) and re-run /sara-init. The guard clause
   prevents re-init on a live repo but will also block recovery of an incomplete init that left
   wiki/ behind.
 - Git is managed invisibly — /sara-init initialises the repo if needed and commits all created
