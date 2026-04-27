@@ -12,7 +12,7 @@ allowed-tools:
 <objective>
 Initialise a new SARA wiki in the current directory. Creates the full /raw/ and /wiki/ directory
 tree, captures project configuration (name, verticals, departments), writes .sara/config.json and
-pipeline-state.json, creates the wiki/CLAUDE.md schema contract, wiki/index.md and wiki/log.md
+.sara/pipeline-state.json, creates the wiki/CLAUDE.md schema contract, wiki/index.md and wiki/log.md
 catalog stubs, and five entity page templates in .sara/templates/.
 
 Run this skill once per project in an empty directory before using any other SARA commands.
@@ -92,10 +92,10 @@ Steps 2–4. Format the arrays as valid JSON arrays (e.g. ["Residential", "Enter
 }
 ```
 
-**Step 7 — Write pipeline-state.json**
+**Step 7 — Write .sara/pipeline-state.json**
 
-Use the Write tool to create `pipeline-state.json` at the project root with the following exact
-content (no variable substitution needed — all counters start at zero):
+Use the Write tool to create `.sara/pipeline-state.json` with the following exact content (no
+variable substitution needed — all counters start at zero):
 
 ```json
 {
@@ -131,7 +131,7 @@ All SARA pipeline commands that read or write wiki pages must follow the rules b
 3. **Log maintenance:** Every entity write must append an entry to `wiki/log.md` recording the
    ingest ID, date, entity IDs created/updated, and source filename.
 4. **ID assignment:** Before assigning a new entity ID, increment the relevant counter in
-   `pipeline-state.json`. Read the post-increment value and use it as the new ID (e.g. REQ-001).
+   `.sara/pipeline-state.json`. Read the post-increment value and use it as the new ID (e.g. REQ-001).
 5. **Cross-references:** `related` fields must use entity IDs only (e.g. `REQ-001`, `DEC-003`) —
    never file paths, relative links, or Obsidian wiki-links.
 
@@ -420,7 +420,7 @@ Report success to the user with the following information:
   - `.sara/templates/`
 - **Files created:**
   - `.sara/config.json`
-  - `pipeline-state.json`
+  - `.sara/pipeline-state.json`
   - `wiki/CLAUDE.md`
   - `wiki/index.md`
   - `wiki/log.md`
@@ -440,7 +440,7 @@ commit all created files:
 git rev-parse --git-dir > /dev/null 2>&1 || git init
 git add \
   .sara/config.json \
-  pipeline-state.json \
+  .sara/pipeline-state.json \
   wiki/CLAUDE.md \
   wiki/index.md \
   wiki/log.md \
@@ -449,7 +449,7 @@ git add \
   .sara/templates/action.md \
   .sara/templates/risk.md \
   .sara/templates/stakeholder.md
-git commit -m "chore: initialise SARA wiki — {project_name}"
+git commit -m "chore: initialise SARA — {project_name}"
 ```
 
 </process>
@@ -460,7 +460,7 @@ git commit -m "chore: initialise SARA wiki — {project_name}"
   automatically.
 - If /sara-init fails partway through (e.g. a permission error after the guard clause passed),
   the wiki/ directory may exist but be incomplete. Recovery: delete the partial output
-  (rm -rf wiki/ raw/ .sara/ pipeline-state.json) and re-run /sara-init. The guard clause
+  (rm -rf wiki/ raw/ .sara/) and re-run /sara-init. The guard clause
   prevents re-init on a live repo but will also block recovery of an incomplete init that left
   wiki/ behind.
 - Git is managed invisibly — /sara-init initialises the repo if needed and commits all created
