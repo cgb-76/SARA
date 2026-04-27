@@ -50,9 +50,8 @@ Use AskUserQuestion to collect market verticals:
 - question: "List the market verticals for this project, separated by commas (e.g. Residential, Enterprise, Wholesale)"
 - options: ["Residential, Enterprise, Wholesale"]
 
-The user may select the preset option or type their own comma-separated list directly. Parse the
-response by splitting on commas, trimming whitespace from each item, and filtering empty strings.
-Store the result as `{verticals_array}` (e.g. ["Residential", "Enterprise", "Wholesale"]).
+Parse the user's response by splitting on commas, trimming whitespace from each item, and filtering
+empty strings. Store the result as `{verticals_array}` (e.g. ["Residential", "Enterprise", "Wholesale"]).
 
 **Step 4 — Collect departments**
 
@@ -61,9 +60,8 @@ Use AskUserQuestion to collect functional departments:
 - question: "List the functional departments for this project, separated by commas (e.g. Sales, Operations, Finance)"
 - options: ["Sales, Operations, Finance"]
 
-The user may select the preset option or type their own comma-separated list directly. Parse the
-response by splitting on commas, trimming whitespace from each item, and filtering empty strings.
-Store the result as `{departments_array}`.
+Parse the user's response by splitting on commas, trimming whitespace from each item, and filtering
+empty strings. Store the result as `{departments_array}`.
 
 **Step 5 — Create directory tree**
 
