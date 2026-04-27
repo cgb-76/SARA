@@ -72,7 +72,7 @@ For each artifact in `{extraction_plan}`:
     Construct the wiki page content by substituting all fields from the artifact into the template frontmatter and body:
     - `id` = `{assigned_id}`
     - `title` = `artifact.title`
-    - `description` = `artifact.source_quote` (place the source quote in the description to preserve the evidence trail)
+    - `description` = `artifact.source_quote` (frontmatter field — place the source quote here to preserve the evidence trail)
     - `source` = `{item.id}` (e.g. `MTG-001`)
     - `raised-by` = `artifact.raised_by` (note: template field is `raised-by`; artifact schema field is `raised_by`)
     - `related` = `artifact.related` (array of entity IDs)
@@ -82,6 +82,50 @@ For each artifact in `{extraction_plan}`:
     - For action artifacts: set `status` = `"open"`, `owner` = `artifact.raised_by`
     - For risk artifacts: set `status` = `"open"`, `owner` = `artifact.raised_by`
     - All other fields not supplied by the artifact: use the template default value (empty string `""` or empty array `[]`)
+
+    Populate the body sections below the frontmatter using the following rules per type:
+
+    **requirement:**
+    ```
+    ## Description
+    {artifact.source_quote}
+
+    ## Acceptance Criteria
+
+    ## Notes
+    ```
+
+    **decision:**
+    ```
+    ## Context
+    {artifact.source_quote}
+
+    ## Decision
+
+    ## Rationale
+
+    ## Alternatives Considered
+    ```
+
+    **action:**
+    ```
+    ## Description
+    {artifact.source_quote}
+
+    ## Notes
+    ```
+
+    **risk:**
+    ```
+    ## Description
+    {artifact.source_quote}
+
+    ## Mitigation
+
+    ## Notes
+    ```
+
+    Body sections beyond the first (Description/Context) are left empty — they will be filled in manually or by future pipeline runs.
 
     Use the Write tool to create `{wiki_dir}{assigned_id}.md`.
     If write succeeds: append `{wiki_dir}{assigned_id}.md` to `written_files`.
