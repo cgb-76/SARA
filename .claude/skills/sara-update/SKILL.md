@@ -110,6 +110,10 @@ For each artifact in `{extraction_plan}`:
     > "{artifact.source_quote}" — {stakeholder_name}
     ```
 
+    For every section, synthesise content if the source document or discussion notes contain
+    relevant material. If nothing relevant is available for a section, leave it empty (heading
+    only). Never fabricate content that is not grounded in {source_doc} or {discussion_notes}.
+
     **requirement:**
     ```
     ## Description
@@ -119,8 +123,12 @@ For each artifact in `{extraction_plan}`:
     > "{artifact.source_quote}" — {stakeholder_name}
 
     ## Acceptance Criteria
+    {synthesised testable criteria derived from the requirement text and any conditions or
+     constraints mentioned in the source or discussion notes — leave empty if none available}
 
     ## Notes
+    {synthesised caveats, dependencies, open questions, or related context from discussion
+     notes — leave empty if none available}
     ```
 
     **decision:**
@@ -132,10 +140,16 @@ For each artifact in `{extraction_plan}`:
     > "{artifact.source_quote}" — {stakeholder_name}
 
     ## Decision
+    {synthesised statement of what was decided, drawn from the artifact title and any
+     resolution captured in discussion notes — leave empty if not clearly stated}
 
     ## Rationale
+    {synthesised explanation of why this decision was made, drawn from discussion notes and
+     source context — leave empty if not available}
 
     ## Alternatives Considered
+    {synthesised list of alternatives mentioned in the source or discussion notes — leave
+     empty if none were discussed}
     ```
 
     **action:**
@@ -147,6 +161,8 @@ For each artifact in `{extraction_plan}`:
     > "{artifact.source_quote}" — {stakeholder_name}
 
     ## Notes
+    {synthesised blockers, dependencies, follow-up context, or related items from discussion
+     notes — leave empty if none available}
     ```
 
     **risk:**
@@ -158,8 +174,12 @@ For each artifact in `{extraction_plan}`:
     > "{artifact.source_quote}" — {stakeholder_name}
 
     ## Mitigation
+    {synthesised mitigation approaches or controls mentioned in the source or discussion
+     notes — leave empty if none were discussed}
 
     ## Notes
+    {synthesised monitoring notes, triggers, owners, or related context from discussion
+     notes — leave empty if none available}
     ```
 
     Use the Write tool to create `{wiki_dir}{assigned_id}.md`.
