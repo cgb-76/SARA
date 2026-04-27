@@ -12,7 +12,7 @@ allowed-tools:
 <objective>
 Initialise a new SARA wiki in the current directory. Creates the full /raw/ and /wiki/ directory
 tree, captures project configuration (name, verticals, departments), writes .sara/config.json and
-.sara/pipeline-state.json, creates the wiki/CLAUDE.md schema contract, wiki/index.md and wiki/log.md
+.sara/pipeline-state.json, creates the CLAUDE.md schema contract, wiki/index.md and wiki/log.md
 catalog stubs, and five entity page templates in .sara/templates/.
 
 Run this skill once per project in an empty directory before using any other SARA commands.
@@ -31,14 +31,14 @@ Output the following as plain text before doing anything else:
    ╚════██║██╔══██║██╔══██╗██╔══██║
    ███████║██║  ██║██║  ██║██║  ██║
    ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝
+   Solution Architecture Recall Assistant
 
-   Structured Analysis & Requirements Artefacts
-   Wiki initialisation
+   [Wiki Initialisation...]
 ```
 
 **Step 1 — Guard clause**
 
-Run the following Bash command. If it exits non-zero (wiki/ already exists), report the error to
+Run the following Bash command silently. If it exits non-zero (wiki/ already exists), report the error to
 the user and STOP — do not proceed to any further steps.
 
 ```bash
@@ -123,9 +123,9 @@ variable substitution needed — all counters start at zero):
 }
 ```
 
-**Step 8 — Write wiki/CLAUDE.md**
+**Step 8 — Write CLAUDE.md**
 
-Use the Write tool to create `wiki/CLAUDE.md` with the following content. Substitute
+Use the Write tool to create `CLAUDE.md` with the following content. Substitute
 `{project_name}` with the project name collected in Step 2.
 
 ```markdown
@@ -437,7 +437,7 @@ Report success to the user with the following information:
 - **Files created:**
   - `.sara/config.json`
   - `.sara/pipeline-state.json`
-  - `wiki/CLAUDE.md`
+  - `CLAUDE.md`
   - `wiki/index.md`
   - `wiki/log.md`
   - `.sara/templates/requirement.md`
@@ -457,7 +457,7 @@ git rev-parse --git-dir > /dev/null 2>&1 || git init
 git add \
   .sara/config.json \
   .sara/pipeline-state.json \
-  wiki/CLAUDE.md \
+  CLAUDE.md \
   wiki/index.md \
   wiki/log.md \
   .sara/templates/requirement.md \
@@ -471,12 +471,11 @@ git commit -m "chore: initialise SARA — {project_name}"
 </process>
 
 <notes>
-- wiki/CLAUDE.md is only automatically loaded by Claude Code when the active file is within the
-  wiki/ subtree. Skills operating on files outside wiki/ will not inherit the schema context
-  automatically.
+- CLAUDE.md at the project root is automatically loaded by Claude Code for all work in the
+  project — all SARA skills inherit the schema and behavioral rules.
 - If /sara-init fails partway through (e.g. a permission error after the guard clause passed),
   the wiki/ directory may exist but be incomplete. Recovery: delete the partial output
-  (rm -rf wiki/ raw/ .sara/) and re-run /sara-init. The guard clause
+  (rm -rf wiki/ raw/ .sara/ CLAUDE.md) and re-run /sara-init. The guard clause
   prevents re-init on a live repo but will also block recovery of an incomplete init that left
   wiki/ behind.
 - Git is managed invisibly — /sara-init initialises the repo if needed and commits all created
