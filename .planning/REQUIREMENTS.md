@@ -11,7 +11,7 @@
 - [x] **FOUND-03
 **: All wiki entity pages include a `schema_version` field in YAML frontmatter from creation, enabling future schema evolution without bulk rewrites
 - [x] **FOUND-04
-**: `pipeline-state.json` at repo root persists all ingest pipeline state (item registry, stage per item, ID counters per entity type, discussion notes, extraction plan) across Claude Code session boundaries
+**: `.sara/pipeline-state.json` persists all ingest pipeline state (item registry, stage per item, ID counters per entity type, discussion notes, extraction plan) across Claude Code session boundaries
 
 ### Ingest Pipeline
 

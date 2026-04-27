@@ -23,7 +23,7 @@
 **Goal:** User can run `/sara-init` to create a fully structured SARA wiki with all entity schemas locked, pipeline state initialised, and project configuration captured — ready to accept its first ingest
 
 **Requirements:**
-- FOUND-01: `/sara-init` creates full directory structure, CLAUDE.md schema, `pipeline-state.json`, and entity page templates
+- FOUND-01: `/sara-init` creates full directory structure, CLAUDE.md schema, `.sara/pipeline-state.json`, and entity page templates
 - FOUND-02: `/sara-init` prompts for and stores project-specific vertical list (e.g. Residential, Enterprise, Wholesale) and department list (e.g. Sales, Operations, Finance) as separate axes
 - FOUND-03: All wiki entity pages include a `schema_version` field in YAML frontmatter from creation
 - FOUND-04: `pipeline-state.json` persists all pipeline state (item registry, stage, ID counters, discussion notes, extraction plan) across Claude Code session boundaries
@@ -40,13 +40,13 @@
 Plans:
 - [x] 01-01-PLAN.md — Write sara-init SKILL.md scaffold: guard clause, user input collection, directory creation, .sara/config.json and pipeline-state.json writes
 - [x] 01-02-PLAN.md — Complete SKILL.md: wiki/CLAUDE.md schema contract, wiki/index.md and wiki/log.md stubs, five entity templates, success report and notes
-- [ ] 01-03-PLAN.md — End-to-end verification: run /sara-init in temp directory, verify all outputs, confirm guard clause, human approval checkpoint
+- [x] 01-03-PLAN.md — End-to-end verification: run /sara-init in temp directory, verify all outputs, confirm guard clause, human approval checkpoint
 
 **Success Criteria:**
 1. User runs `/sara-init` in an empty directory and the complete `/raw/` and `/wiki/` tree is created with no manual steps
 2. User is prompted for vertical names (e.g. Residential, Enterprise) and department names (e.g. Sales, Finance) separately during init — both lists appear in the project config and a different project produces different lists
 3. A freshly created entity page template (for each of the five types) contains a `schema_version` field and all required YAML frontmatter fields with no omissions
-4. `pipeline-state.json` exists at repo root after init with correct structure — reopening a new Claude Code session against the repo allows pipeline commands to read existing state without error
+4. `.sara/pipeline-state.json` exists after init with correct structure — reopening a new Claude Code session against the repo allows pipeline commands to read existing state without error
 
 **Dependencies:** None
 
