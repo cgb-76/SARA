@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-last_updated: "2026-04-27T03:00:44.245Z"
+last_updated: "2026-04-27T03:04:54.775Z"
 progress:
   total_phases: 3
   completed_phases: 0
   total_plans: 3
-  completed_plans: 1
-  percent: 33
+  completed_plans: 2
+  percent: 67
 ---
 
 # SARA — Project State
@@ -17,6 +17,7 @@ progress:
 ## Current Status
 
 **Phase:** 1 — Foundation & Schema
+**Plan:** 02 of 03 complete
 **Status:** Executing Phase 01
 **Last updated:** 2026-04-27
 
@@ -36,8 +37,15 @@ See: .planning/ROADMAP.md
 | 2 | Ingest Pipeline | Not started |
 | 3 | Meeting Specialisation | Not started |
 
+## Decisions
+
+- schema_version quoted as '1.0' string in all templates and wiki/CLAUDE.md schema blocks to prevent Obsidian YAML float parse
+- stakeholder template has vertical and department as separate YAML fields — never merged — domain constraint
+- wiki/CLAUDE.md behavioral contract pattern: five numbered rules (deduplication, index maintenance, log maintenance, ID assignment, cross-references) auto-loaded by Claude Code for all wiki-scoped skills
+
 ## Open Items
 
 (None yet)
 
 **Planned Phase:** 1 (Foundation & Schema) — 3 plans — 2026-04-27T02:54:31.612Z
+**Stopped at:** Completed 01-02-PLAN.md — 2026-04-27T03:04:00Z

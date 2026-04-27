@@ -38,8 +38,8 @@
 **Plans:** 3 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Write sara-init SKILL.md scaffold: guard clause, user input collection, directory creation, .sara/config.json and pipeline-state.json writes
-- [ ] 01-02-PLAN.md — Complete SKILL.md: wiki/CLAUDE.md schema contract, wiki/index.md and wiki/log.md stubs, five entity templates, success report and notes
+- [x] 01-01-PLAN.md — Write sara-init SKILL.md scaffold: guard clause, user input collection, directory creation, .sara/config.json and pipeline-state.json writes
+- [x] 01-02-PLAN.md — Complete SKILL.md: wiki/CLAUDE.md schema contract, wiki/index.md and wiki/log.md stubs, five entity templates, success report and notes
 - [ ] 01-03-PLAN.md — End-to-end verification: run /sara-init in temp directory, verify all outputs, confirm guard clause, human approval checkpoint
 
 **Success Criteria:**
@@ -97,6 +97,6 @@ Plans:
 
 | Phase | Status | Completed |
 |-------|--------|-----------|
-| 1. Foundation & Schema | Not started | - |
+| 1. Foundation & Schema | In progress (2/3 plans) | - |
 | 2. Ingest Pipeline | Not started | - |
 | 3. Meeting Specialisation | Not started | - |

@@ -8,7 +8,8 @@
 **: User can run `/sara-init` to create the full directory structure (`/raw/input/`, `/raw/meetings/`, `/raw/emails/`, `/raw/slack/`, `/raw/documents/`, `/wiki/` and subfolders), CLAUDE.md schema, `pipeline-state.json` with ID counters, and entity page templates
 - [x] **FOUND-02
 **: User can configure project-specific vertical list (e.g. Residential, Enterprise, Wholesale) and department list (e.g. Sales, Operations, Finance) separately during `/sara-init` — these are distinct axes; a stakeholder belongs to one vertical and one department
-- [ ] **FOUND-03**: All wiki entity pages include a `schema_version` field in YAML frontmatter from creation, enabling future schema evolution without bulk rewrites
+- [x] **FOUND-03
+**: All wiki entity pages include a `schema_version` field in YAML frontmatter from creation, enabling future schema evolution without bulk rewrites
 - [x] **FOUND-04
 **: `pipeline-state.json` at repo root persists all ingest pipeline state (item registry, stage per item, ID counters per entity type, discussion notes, extraction plan) across Claude Code session boundaries
 
@@ -29,13 +30,20 @@
 
 ### Wiki Entity Types
 
-- [ ] **WIKI-01**: Requirements wiki pages have structured fields: ID (REQ-NNN), title, status (open/accepted/rejected/superseded), description, source (ingest ID), raised-by (stakeholder ID), owner (stakeholder ID), schema_version, tags, related (cross-references)
-- [ ] **WIKI-02**: Decision wiki pages have structured fields: ID (DEC-NNN), title, status (proposed/accepted/rejected/superseded), context, decision, rationale, alternatives-considered, date, deciders (stakeholder IDs), supersedes (DEC-NNN), schema_version, tags, related
-- [ ] **WIKI-03**: Action wiki pages have structured fields: ID (ACT-NNN), title, status (open/in-progress/done/cancelled), description, owner (stakeholder ID), due-date, source (ingest ID), schema_version, tags, related
-- [ ] **WIKI-04**: Risk wiki pages have structured fields: ID (RISK-NNN), title, status (open/mitigated/accepted/closed), description, likelihood, impact, owner (stakeholder ID), mitigation, source (ingest ID), schema_version, tags, related
-- [ ] **WIKI-05**: Stakeholder wiki pages have structured fields: ID (STK-NNN), name, vertical (e.g. Residential), department (e.g. Sales), email, role, schema_version, related — vertical and department are separate fields drawn from the project config lists defined at init
-- [ ] **WIKI-06**: `wiki/index.md` is an LLM-maintained catalog of all wiki pages — one row per entity with ID, title, status, type, tags, and last-updated; updated atomically as part of every `/sara-update N` commit
-- [ ] **WIKI-07**: `wiki/log.md` is an append-only chronological record of all ingest events — each entry records ingest ID, date, source type, source filename, artifacts created/updated
+- [x] **WIKI-01
+**: Requirements wiki pages have structured fields: ID (REQ-NNN), title, status (open/accepted/rejected/superseded), description, source (ingest ID), raised-by (stakeholder ID), owner (stakeholder ID), schema_version, tags, related (cross-references)
+- [x] **WIKI-02
+**: Decision wiki pages have structured fields: ID (DEC-NNN), title, status (proposed/accepted/rejected/superseded), context, decision, rationale, alternatives-considered, date, deciders (stakeholder IDs), supersedes (DEC-NNN), schema_version, tags, related
+- [x] **WIKI-03
+**: Action wiki pages have structured fields: ID (ACT-NNN), title, status (open/in-progress/done/cancelled), description, owner (stakeholder ID), due-date, source (ingest ID), schema_version, tags, related
+- [x] **WIKI-04
+**: Risk wiki pages have structured fields: ID (RISK-NNN), title, status (open/mitigated/accepted/closed), description, likelihood, impact, owner (stakeholder ID), mitigation, source (ingest ID), schema_version, tags, related
+- [x] **WIKI-05
+**: Stakeholder wiki pages have structured fields: ID (STK-NNN), name, vertical (e.g. Residential), department (e.g. Sales), email, role, schema_version, related — vertical and department are separate fields drawn from the project config lists defined at init
+- [x] **WIKI-06
+**: `wiki/index.md` is an LLM-maintained catalog of all wiki pages — one row per entity with ID, title, status, type, tags, and last-updated; updated atomically as part of every `/sara-update N` commit
+- [x] **WIKI-07
+**: `wiki/log.md` is an append-only chronological record of all ingest events — each entry records ingest ID, date, source type, source filename, artifacts created/updated
 
 ---
 
