@@ -65,6 +65,17 @@ Plans:
 - PIPE-06: During `/sara-extract N` the LLM checks existing wiki pages and proposes updates rather than duplicate creation
 - PIPE-07: `/sara-ingest` with no arguments displays pipeline status (all items, type, stage, filename)
 
+**Plans:** 7 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Phase 1 amendments: add nickname field to stakeholder template and CLAUDE.md schema block; create test fixture transcript
+- [ ] 02-02-PLAN.md — /sara-ingest skill: register file as pipeline item + pipeline status table (PIPE-01, PIPE-07)
+- [ ] 02-03-PLAN.md — /sara-add-stakeholder skill: capture fields, write STK page, commit atomically (PIPE-03)
+- [ ] 02-04-PLAN.md — /sara-discuss skill: LLM-driven blocker-clearing session with inline /sara-add-stakeholder (PIPE-02, PIPE-03)
+- [ ] 02-05-PLAN.md — /sara-extract skill: per-artifact approval loop with source quotes and dedup check (PIPE-04, PIPE-06)
+- [ ] 02-06-PLAN.md — /sara-update skill: atomic wiki commit, source archiving, stage advance after commit (PIPE-05)
+- [ ] 02-07-PLAN.md — End-to-end verification: full pipeline run with test fixture, human approval checkpoint
+
 **Success Criteria:**
 1. User drops a file in `/raw/input/`, runs `/sara-ingest meeting file.md`, and sees item N created in `pending` state — re-running `/sara-ingest` with no args shows the item in the backlog
 2. User runs `/sara-discuss N` and receives a contextual discussion that references existing wiki artifacts by ID, not just a list of possible extractions

@@ -15,13 +15,20 @@
 
 ### Ingest Pipeline
 
-- [ ] **PIPE-01**: User can run `/sara-ingest <type> <filename>` (types: `meeting`, `email`, `slack`, `document`) to register a file from `/raw/input/` as input item N, creating a pipeline entry in `pending` state
-- [ ] **PIPE-02**: User can run `/sara-discuss N` to engage in a human-guided discussion of the source; LLM reads the source, discusses key takeaways, surfaces cross-linking opportunities with existing wiki artifacts ("this decision may relate to DEC-003"), and flags unknown stakeholder names for addition to the registry
-- [ ] **PIPE-03**: Stakeholders are added to the wiki registry organically — when `/sara-discuss N` surfaces an unknown name, the user confirms and SARA creates a stakeholder page with name, department/vertical, and email
-- [ ] **PIPE-04**: User can run `/sara-extract N` to see the full extraction plan (list of artifacts to create or update, with source quote citations for each) before any wiki changes are made; user approves, adjusts, or cancels
-- [ ] **PIPE-05**: User can run `/sara-update N` to execute the approved extraction plan atomically — all wiki page writes and `index.md` / `log.md` updates land in a single git commit; source file is renamed with numeric prefix and archived to `/raw/<type>/`; pipeline stage advances to `complete` only after successful commit
-- [ ] **PIPE-06**: During `/sara-extract N`, the LLM checks existing wiki pages before proposing new entity creation — updates existing pages rather than creating duplicates ("update, don't duplicate")
-- [ ] **PIPE-07**: User can see pipeline status (list of all input items, their type, stage, and filename) without reading raw files — available via `/sara-ingest` with no arguments or as part of `/sara-update` completion output
+- [x] **PIPE-01
+**: User can run `/sara-ingest <type> <filename>` (types: `meeting`, `email`, `slack`, `document`) to register a file from `/raw/input/` as input item N, creating a pipeline entry in `pending` state
+- [x] **PIPE-02
+**: User can run `/sara-discuss N` to engage in a human-guided discussion of the source; LLM reads the source, discusses key takeaways, surfaces cross-linking opportunities with existing wiki artifacts ("this decision may relate to DEC-003"), and flags unknown stakeholder names for addition to the registry
+- [x] **PIPE-03
+**: Stakeholders are added to the wiki registry organically — when `/sara-discuss N` surfaces an unknown name, the user confirms and SARA creates a stakeholder page with name, department/vertical, and email
+- [x] **PIPE-04
+**: User can run `/sara-extract N` to see the full extraction plan (list of artifacts to create or update, with source quote citations for each) before any wiki changes are made; user approves, adjusts, or cancels
+- [x] **PIPE-05
+**: User can run `/sara-update N` to execute the approved extraction plan atomically — all wiki page writes and `index.md` / `log.md` updates land in a single git commit; source file is renamed with numeric prefix and archived to `/raw/<type>/`; pipeline stage advances to `complete` only after successful commit
+- [x] **PIPE-06
+**: During `/sara-extract N`, the LLM checks existing wiki pages before proposing new entity creation — updates existing pages rather than creating duplicates ("update, don't duplicate")
+- [x] **PIPE-07
+**: User can see pipeline status (list of all input items, their type, stage, and filename) without reading raw files — available via `/sara-ingest` with no arguments or as part of `/sara-update` completion output
 
 ### Meeting Specialisation
 
