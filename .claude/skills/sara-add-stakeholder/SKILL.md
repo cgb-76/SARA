@@ -51,35 +51,27 @@ Capture reply as `{nickname}`. If "Skip": set `{nickname}` = `""`.
 AskUserQuestion:
   header: "Vertical"
   question: "Which market vertical? (leave blank if unknown)"
-  options: [values from .sara/config.json verticals array] + ["New...", "Skip"]
+  options: [values from .sara/config.json verticals array] + ["Skip"]
 ```
-Capture reply as `{vertical_reply}`.
-- If "Skip": set `{vertical}` = `""`.
-- If "New...": output `"Enter new vertical name:"` as plain text, wait for reply, capture as `{vertical}`. Set `{new_vertical}` = `{vertical}` (to be added to config in Step 2b).
-- Otherwise: set `{vertical}` = `{vertical_reply}`.
+Capture reply as `{vertical}`. If "Skip": set `{vertical}` = `""`.
 
 ```
 AskUserQuestion:
   header: "Dept"
   question: "Which department? (leave blank if unknown)"
-  options: [values from .sara/config.json departments array] + ["New...", "Skip"]
+  options: [values from .sara/config.json departments array] + ["Skip"]
 ```
-Capture reply as `{dept_reply}`.
-- If "Skip": set `{department}` = `""`.
-- If "New...": output `"Enter new department name:"` as plain text, wait for reply, capture as `{department}`. Set `{new_department}` = `{department}` (to be added to config in Step 2b).
-- Otherwise: set `{department}` = `{dept_reply}`.
+Capture reply as `{department}`. If "Skip": set `{department}` = `""`.
 
-**Step 2b — Persist new verticals/departments to config**
+**Step 2b — Sync new values to config**
 
-If `{new_vertical}` is set OR `{new_department}` is set:
+Re-read `.sara/config.json` using the Read tool (use the already-read copy if still in memory).
 
-  Read `.sara/config.json` using the Read tool.
+If `{vertical}` is non-empty and not already present in `config.verticals`: append `{vertical}` to the `verticals` array and write the updated JSON back to `.sara/config.json` using the Write tool.
 
-  If `{new_vertical}` is set and not already in `config.verticals`: append `{new_vertical}` to the `verticals` array.
+If `{department}` is non-empty and not already present in `config.departments`: append `{department}` to the `departments` array and write the updated JSON back to `.sara/config.json` using the Write tool.
 
-  If `{new_department}` is set and not already in `config.departments`: append `{new_department}` to the `departments` array.
-
-  Write the updated config back to `.sara/config.json` using the Write tool.
+If neither value is new, skip the write.
 
 
 ```
