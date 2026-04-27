@@ -1,7 +1,7 @@
 ---
 name: sara-extract
 description: "Present planned wiki artifacts for per-artifact approval before any wiki writes"
-argument-hint: "<N>"
+argument-hint: "<ID>"
 allowed-tools:
   - Read
   - Write
@@ -19,10 +19,10 @@ This skill reads the source document and discussion notes for pipeline item N, c
 
 Read `.sara/pipeline-state.json` using the Read tool.
 
-Validate `$ARGUMENTS`: it must be a positive integer. If empty, non-numeric, zero, or negative:
-Output: `"Usage: /sara-extract <N> where N is a positive integer pipeline item number."` and STOP.
+Validate `$ARGUMENTS`: it must be a non-empty pipeline item ID (e.g. `MTG-001`). If empty:
+Output: `"Usage: /sara-extract <ID> where ID is a pipeline item identifier (e.g. MTG-001)."` and STOP.
 
-Find the item with key `"{N}"` in the `items` object (N is the integer argument — for `/sara-extract 1`, N = `"1"`).
+Find the item with key `"{N}"` in the `items` object (N is the full ID argument — for `/sara-extract MTG-001`, N = `"MTG-001"`).
 
 If no item exists with key `"{N}"`:
   Output: `"No pipeline item {N} found. Run /sara-ingest to register a new item, or run /sara-ingest with no arguments to see the full pipeline status."`
@@ -31,7 +31,7 @@ If no item exists with key `"{N}"`:
 Check `items["{N}"].stage`. Expected stage: `"extracting"`.
 
 If actual stage != `"extracting"`:
-  Output: `"Item {N} ({id}) is in stage '{actual_stage}'. Run /sara-extract N only when stage is 'extracting'. Re-run /sara-discuss N if you need to revisit the discussion."`
+  Output: `"Item {N} is in stage '{actual_stage}'. Run /sara-extract <ID> only when stage is 'extracting'. Re-run /sara-discuss {N} if you need to revisit the discussion."`
   STOP.
 
 Store `{item}` = `items["{N}"]` for use in subsequent steps.
@@ -174,7 +174,7 @@ If zero artifacts were accepted: still write the empty `extraction_plan: []` and
 - AskUserQuestion header hard limit is 12 characters. Use `"Artifact {N}"` for N = 1–9 (10 chars — safe). Use `"Item {N}"` for N = 10 or more (7 chars — safe). Never exceed 12 chars in the header field.
 - When user selects "Discuss": output a plain-text question and wait for the user's freeform reply. Do NOT use another AskUserQuestion call. The freeform rule applies because the user wants to explain the correction in their own words — structured options would constrain that. Resume AskUserQuestion only after incorporating the correction and re-presenting the updated artifact.
 - `extraction_plan` is written to `pipeline-state.json` ONLY after the full loop completes. If the session resets mid-loop, the extraction_plan in pipeline-state.json will be empty or absent. Re-run `/sara-extract N` to start a fresh loop — the wiki has not been written yet, so this is safe.
-- The N argument must be a positive integer. The `items` key in pipeline-state.json is the string-encoded integer (`"1"`, `"2"`, etc.) — not the ingest ID (e.g. not `"MTG-001"`). For `/sara-extract 2`, look up `items["2"]`.
+- The N argument is the full pipeline item ID (e.g. `MTG-001`). The JSON key in `items` is that same ID string. For `/sara-extract MTG-001`, look up `items["MTG-001"]`.
 - `id_to_assign` and `existing_id` are mutually exclusive. For action=create, use `id_to_assign` (placeholder like `"REQ-NNN"`). For action=update, use `existing_id` (the real ID from the wiki index, like `"DEC-001"`). Omit or set the inapplicable field to `""`.
 - Topics matching existing wiki entities MUST produce UPDATE artifacts (action=update), not duplicate CREATE artifacts. The dedup check at Step 3 is required for every topic — not optional.
 - pipeline-state.json is written using Read + Write tools only — never Bash shell text-processing tools.

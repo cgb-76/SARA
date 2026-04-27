@@ -1,7 +1,7 @@
 ---
 name: sara-update
 description: "Execute approved extraction plan — write wiki artifacts and commit atomically"
-argument-hint: "<N>"
+argument-hint: "<ID>"
 allowed-tools:
   - Read
   - Write
@@ -18,10 +18,10 @@ Reads the approved extraction plan from `pipeline-state.json` and writes all wik
 
 Read `.sara/pipeline-state.json` using the Read tool.
 
-Validate `$ARGUMENTS`: it must be a positive integer. If empty, non-numeric, zero, or negative:
-  Output: `"Usage: /sara-update <N> where N is a positive integer pipeline item number."` and STOP.
+Validate `$ARGUMENTS`: it must be a non-empty pipeline item ID (e.g. `MTG-001`). If empty:
+  Output: `"Usage: /sara-update <ID> where ID is a pipeline item identifier (e.g. MTG-001)."` and STOP.
 
-Find the item with key `"{N}"` in the `items` object (N is the integer argument — for `/sara-update 1`, N = `"1"`).
+Find the item with key `"{N}"` in the `items` object (N is the full ID argument — for `/sara-update MTG-001`, N = `"MTG-001"`).
 
 If no item exists with key `"{N}"`:
   Output: `"No pipeline item {N} found. Run /sara-ingest to register a new item, or run /sara-ingest with no arguments to see the full pipeline status."`
@@ -30,7 +30,7 @@ If no item exists with key `"{N}"`:
 Check `items["{N}"].stage`. Expected stage: `"approved"`.
 
 If actual stage != `"approved"`:
-  Output: `"Item {N} ({id}) is in stage '{actual_stage}'. Run /sara-update N only when stage is 'approved'. Re-run /sara-extract N if you need to revise the plan."`
+  Output: `"Item {N} is in stage '{actual_stage}'. Run /sara-update <ID> only when stage is 'approved'. Re-run /sara-extract {N} if you need to revise the plan."`
   STOP.
 
 Store `{item}` = `items["{N}"]`.
@@ -208,7 +208,7 @@ Check the exit code from the `echo "EXIT:$?"` output.
 <notes>
 - CRITICAL: Stage advances to `"complete"` ONLY after the git commit succeeds (exit code 0). Writing `stage=complete` before the commit is a fatal error — the item would be permanently stuck with no way to re-run `/sara-update` (Pitfall 1 from 02-RESEARCH.md). The correct ordering is: (1) write all wiki files, (2) git add + commit, (3) only then write `stage=complete`.
 - CRITICAL: Entity counter increments happen BEFORE each create-action page write, and the updated counter is written to `pipeline-state.json` immediately (as a separate Write call before the page Write call). This prevents duplicate ID assignment if a page write fails and the skill is re-run — the counter stays at its incremented value across re-runs.
-- Item key vs item ID: the user runs `/sara-update 1`; look up `items["1"]` (string integer key), NOT `items["MTG-001"]`. The `item.id` field (e.g. `MTG-001`) appears only in the commit message, the `source` field of written pages, and the log entry. These are different things (Pitfall 2 from 02-RESEARCH.md).
+- The N argument is the full pipeline item ID (e.g. `MTG-001`). The JSON key in `items` is that same ID string. For `/sara-update MTG-001`, look up `items["MTG-001"]`. The `item.id` field equals the key — it appears in the commit message, the `source` field of written pages, and the log entry.
 - Source file tracking: files dropped manually into `raw/input/` are untracked by git. Use `git ls-files --error-unmatch` to check before moving. If tracked: use `git mv` (git handles both the rename and the stage). If untracked: use `mv` and then include the archive path in `git add` (the move appears as a new file at the archive path). The `git add` command in Step 5 covers the archive path in both cases.
 - Do NOT auto-rollback on partial failure (D-14). The user has full git history. Report which files were written and which were not; let the user decide whether to `git reset` or re-run `/sara-update {N}` after fixing the root cause. The written files are uncommitted changes — no commit was made.
 - `schema_version` must always be quoted: `"1.0"` (not `1.0`). This prevents Obsidian's YAML parser from treating it as a float.

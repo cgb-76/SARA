@@ -1,7 +1,7 @@
 ---
 name: sara-discuss
 description: "Run LLM-driven blocker-clearing session for a pipeline item before extraction"
-argument-hint: "<N>"
+argument-hint: "<ID>"
 allowed-tools:
   - Read
   - Write
@@ -21,10 +21,10 @@ Note: `AskUserQuestion` is required in `allowed-tools` because `/sara-add-stakeh
 
 Read `.sara/pipeline-state.json` using the Read tool.
 
-Validate `$ARGUMENTS`: it must be a positive integer. If empty, non-numeric, zero, or negative:
-Output: `"Usage: /sara-discuss <N> where N is a positive integer pipeline item number."` and STOP.
+Validate `$ARGUMENTS`: it must be a non-empty pipeline item ID (e.g. `MTG-001`). If empty:
+Output: `"Usage: /sara-discuss <ID> where ID is a pipeline item identifier (e.g. MTG-001)."` and STOP.
 
-Find the item with key `"{N}"` in the `items` object (N is the integer argument — for `/sara-discuss 1`, N = `"1"`).
+Find the item with key `"{N}"` in the `items` object (N is the full ID argument — for `/sara-discuss MTG-001`, N = `"MTG-001"`).
 
 If no item exists with key `"{N}"`:
   Output: `"No pipeline item {N} found. Run /sara-ingest to register a new item, or run /sara-ingest with no arguments to see the full pipeline status."`
@@ -33,7 +33,7 @@ If no item exists with key `"{N}"`:
 Check `items["{N}"].stage`. Expected stage: `"pending"`.
 
 If actual stage != `"pending"`:
-  Output: `"Item {N} ({id}) is currently in stage '{actual_stage}'. Run /sara-discuss N only when stage is 'pending'. If the item is 'extracting', run /sara-extract N."`
+  Output: `"Item {N} is currently in stage '{actual_stage}'. Run /sara-discuss <ID> only when stage is 'pending'. If the item is 'extracting', run /sara-extract {N}."`
   STOP.
 
 Store `{item}` = `items["{N}"]` for use in subsequent steps.
@@ -143,7 +143,7 @@ Do NOT use Bash shell text-processing tools — use Read and Write tools only.
 Output:
 ```
 Discussion complete. All blockers resolved.
-Discussion notes saved to pipeline-state.json (item {N} stage: extracting).
+Discussion notes saved to pipeline-state.json ({N} stage: extracting).
 Run /sara-extract {N} to proceed to extraction.
 ```
 
@@ -156,7 +156,7 @@ Run /sara-extract {N} to proceed to extraction.
 - Blocker Priority 2–4 clarification uses plain-text output and waits for the user's reply. Do NOT use AskUserQuestion for these open-ended questions (freeform rule applies). AskUserQuestion is only invoked within the inline sara-add-stakeholder sub-skill during Priority 1 work.
 - Stage advance to `"extracting"` happens ONLY after all blockers across all four priorities are resolved. Do not write `"extracting"` partway through the session.
 - The `discussion_notes` string is the key output — it carries resolved context forward into `/sara-extract`. Make it specific: include STK-NNN IDs, entity type decisions, wiki entity IDs for confirmed cross-links. Vague notes reduce the quality of the extraction step.
-- The N argument must be a positive integer string key. The JSON key is `"1"`, `"2"`, etc. — not the ingest ID (e.g. not `"MTG-001"`). For `/sara-discuss 1`, look up `items["1"]`.
+- The N argument is the full pipeline item ID (e.g. `MTG-001`). The JSON key in `items` is that same ID string. For `/sara-discuss MTG-001`, look up `items["MTG-001"]`.
 - When invoking `/sara-add-stakeholder` inline: read `.claude/skills/sara-add-stakeholder/SKILL.md` fresh for each stakeholder. Pass the stakeholder name as `$ARGUMENTS`. The sub-skill will collect optional fields (nickname, vertical, department, email, role) via AskUserQuestion before writing the STK page and committing. This is expected — the AskUserQuestion calls originate from the sub-skill, which is why `AskUserQuestion` is in this skill's `allowed-tools`.
 - pipeline-state.json is written using Read + Write tools only — never shell text-processing tools.
 </notes>

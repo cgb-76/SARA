@@ -1,7 +1,7 @@
 ---
 name: sara-ingest
 description: "Register a source file in the SARA ingest pipeline, or show pipeline status"
-argument-hint: "[<type> <filename>]"
+argument-hint: "[<type> <filename>]  — items are keyed by full ID (e.g. MTG-001)"
 allowed-tools:
   - Read
   - Write
@@ -14,11 +14,11 @@ stage `pending`, or display a table of all current pipeline items when called wi
 
 INGEST mode (with arguments): validates the type and filename, checks the file exists in
 `raw/input/`, increments the appropriate ingest counter, assigns a type-prefixed ID (e.g.
-MTG-001), and adds a new item entry keyed by the next integer index. Outputs a confirmation
-with the next-step command to run.
+MTG-001), and adds a new item entry keyed by that ID. Outputs a confirmation with the
+next-step command to run.
 
 STATUS mode (no arguments): reads `pipeline-state.json` and displays all pipeline items in a
-markdown table showing the integer key, type-prefixed ID, type, current stage, and filename.
+markdown table showing the item ID, type, current stage, and filename.
 If no items exist, outputs a plain message.
 
 Run this skill to register each source document before running any other pipeline command.
@@ -81,11 +81,7 @@ Increment `counters.ingest.{type_key}` by 1. The new value is `{counter_value}`.
 Compute `{new_id}` = `{type_key}` + `-` + zero-padded 3-digit counter value.
 Example: counter=1 → `MTG-001`, counter=12 → `MTG-012`.
 
-Compute `{item_index}` = total number of existing keys in `items` plus 1 (i.e., the next
-integer index as a string). Example: if `items` currently has keys `"1"` and `"2"`, the new
-key is `"3"`. If `items` is empty (`{}`), the new key is `"1"`.
-
-Add a new entry to `items` with key `"{item_index}"`:
+Add a new entry to `items` with key `"{new_id}"`:
 ```json
 {
   "id": "{new_id}",
@@ -106,9 +102,9 @@ Use only the Read tool and Write tool for this JSON operation — no shell text-
 Output the following (substituting all values):
 
 ```
-{new_id} registered as item {item_index}.
-Type: {type}  |  Filename: {filename}  |  Stage: pending
-Run /sara-discuss {item_index} to begin the discussion phase.
+{new_id} registered. Stage: pending.
+Type: {type}  |  Filename: {filename}
+Run /sara-discuss {new_id} to begin the discussion phase.
 ```
 
 STOP.
@@ -124,13 +120,13 @@ No pipeline items registered. Run /sara-ingest <type> <filename> to add one.
 
 Otherwise, output a markdown table with a header row and separator row:
 ```
-| # | ID      | Type     | Stage     | Filename                 |
-|---|---------|----------|-----------|--------------------------|
+| ID      | Type     | Stage     | Filename                 |
+|---------|----------|-----------|--------------------------|
 ```
 
-For each key in `items` (sorted numerically by key as integers: 1, 2, 3…), append one row:
+For each key in `items` (sorted lexicographically by key), append one row:
 ```
-| {key} | {item.id} | {item.type} | {item.stage} | {item.filename} |
+| {key} | {item.type} | {item.stage} | {item.filename} |
 ```
 
 STOP.
@@ -139,16 +135,11 @@ STOP.
 
 <notes>
 
-- **Item keys vs item IDs:** Item keys in `pipeline-state.json items` are string integers
-  (`"1"`, `"2"`, `"3"`), NOT type-prefixed IDs. The `id` field inside the item (`MTG-001`)
-  is different from the integer key. A project with 2 meetings and 1 email has item keys
-  `"1"`, `"2"`, `"3"` but `counters.ingest.MTG=2` and `counters.ingest.EML=1`. Never use the
-  type-prefixed ID as an item key, and never use the item key as an ID.
-
-- **item_index is NOT the ingest type counter:** The `{item_index}` (new key in `items`) is
-  computed from the count of existing items, not from the incremented type counter. If there
-  are already 5 items and you add a second meeting, the new item gets key `"6"` and id
-  `MTG-002`.
+- **Item keys are the type-prefixed ID:** Item keys in `pipeline-state.json items` are the
+  same as the type-prefixed IDs (`"MTG-001"`, `"EML-001"`, etc.). A project with 2 meetings
+  and 1 email has item keys `"MTG-001"`, `"MTG-002"`, `"EML-001"` and `counters.ingest.MTG=2`,
+  `counters.ingest.EML=1`. All downstream skills (`/sara-discuss`, `/sara-extract`,
+  `/sara-update`) accept the full ID as their argument.
 
 - **Filename validation prevents path traversal:** Always validate `{filename}` for `/` and
   `..` before constructing any file path. This check must run in Step 1, before any file
