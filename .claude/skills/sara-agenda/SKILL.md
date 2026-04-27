@@ -3,6 +3,7 @@ name: sara-agenda
 description: "Generate an email-friendly meeting agenda draft from user-provided meeting description"
 argument-hint: ""
 allowed-tools: []
+version: 1.0.0
 ---
 
 <objective>

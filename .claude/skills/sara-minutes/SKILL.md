@@ -4,6 +4,7 @@ description: "Generate plain-text meeting minutes from a completed meeting item"
 argument-hint: "<ID>"
 allowed-tools:
   - Read
+version: 1.0.0
 ---
 
 <objective>

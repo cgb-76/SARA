@@ -6,6 +6,7 @@ allowed-tools:
   - Read
   - Write
   - Bash
+version: 1.0.0
 ---
 
 <objective>

@@ -7,6 +7,7 @@ allowed-tools:
   - Write
   - Bash
   - AskUserQuestion
+version: 1.0.0
 ---
 
 <objective>
