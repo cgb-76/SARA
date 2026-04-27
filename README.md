@@ -12,21 +12,8 @@ SARA is a personal, git-backed knowledge pipeline for solution design, operated 
 From inside your project directory, run:
 
 ```bash
+git init
 curl -fsSL https://raw.githubusercontent.com/cgb-76/SARA/main/install.sh | bash
-```
-
-Skills are downloaded from GitHub and written to `.claude/skills/` in the current directory. The installer checks for a `.git` directory and aborts if one is not found.
-
-**`--backup`:** To preserve any customised `SKILL.md` files as `SKILL.md.bak` before overwriting:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/cgb-76/SARA/main/install.sh | bash -s -- --backup
-```
-
-**`--help`:** For the full flag reference:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/cgb-76/SARA/main/install.sh | bash -s -- --help
 ```
 
 ## Setup
