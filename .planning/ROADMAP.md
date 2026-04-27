@@ -92,12 +92,19 @@ Plans:
 **Goal:** User can generate structured meeting minutes from a completed meeting ingest item, and produce a pre-meeting agenda on demand — with no wiki changes required for agenda generation
 
 **Requirements:**
-- MEET-01: `/sara-minutes N` generates structured markdown minutes filed in the wiki and an email-ready plain-text version
+- MEET-01: `/sara-minutes N` generates structured meeting minutes (markdown block + email-ready plain-text) output to screen only — wiki is the data source, not the destination (revised from original spec)
 - MEET-02: `/sara-agenda` generates an email-friendly agenda from user-provided attendees, topics, and goals — output is a draft only, not stored in the wiki
 
+**Plans:** 3 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — /sara-minutes skill: type + stage guards, extraction_plan aggregation, dual-format terminal output (MEET-01)
+- [ ] 03-02-PLAN.md — /sara-agenda skill: freeform prompt, stateless plain-text agenda generation (MEET-02)
+- [ ] 03-03-PLAN.md — End-to-end verification checkpoint and planning doc updates
+
 **Success Criteria:**
-1. User runs `/sara-minutes N` on a meeting ingest item and receives both a markdown file committed to the wiki and a plain-text block ready to paste into an email client
-2. User runs `/sara-agenda` with attendee names and topic inputs and receives a formatted agenda draft — the wiki directory contains no new files after the command completes
+1. User runs `/sara-minutes N` on a meeting ingest item and receives a markdown minutes block and a plain-text email-ready block in the same terminal response — nothing is written to the wiki
+2. User runs `/sara-agenda` with attendee names and topic inputs and receives a formatted plain-text agenda draft — the wiki directory contains no new files after the command completes
 3. `/sara-minutes N` run on a non-meeting ingest type returns a clear error rather than generating a nonsensical output
 
 **Dependencies:** Phase 2
@@ -110,4 +117,4 @@ Plans:
 |-------|--------|-----------|
 | 1. Foundation & Schema | Done | - |
 | 2. Ingest Pipeline | Done | - |
-| 3. Meeting Specialisation | Not started | - |
+| 3. Meeting Specialisation | In progress | - |
