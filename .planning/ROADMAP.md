@@ -93,11 +93,11 @@ Plans:
 
 **Requirements:**
 - MEET-01: `/sara-minutes N` generates structured markdown minutes filed in the wiki and an email-ready plain-text version
-- MEET-02: `/sara-meeting-agenda` generates an email-friendly agenda from user-provided attendees, topics, and goals — output is a draft only, not stored in the wiki
+- MEET-02: `/sara-agenda` generates an email-friendly agenda from user-provided attendees, topics, and goals — output is a draft only, not stored in the wiki
 
 **Success Criteria:**
 1. User runs `/sara-minutes N` on a meeting ingest item and receives both a markdown file committed to the wiki and a plain-text block ready to paste into an email client
-2. User runs `/sara-meeting-agenda` with attendee names and topic inputs and receives a formatted agenda draft — the wiki directory contains no new files after the command completes
+2. User runs `/sara-agenda` with attendee names and topic inputs and receives a formatted agenda draft — the wiki directory contains no new files after the command completes
 3. `/sara-minutes N` run on a non-meeting ingest type returns a clear error rather than generating a nonsensical output
 
 **Dependencies:** Phase 2

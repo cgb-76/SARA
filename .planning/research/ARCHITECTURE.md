@@ -539,7 +539,7 @@ wiki/log.md
 **Build last (Phase 4 — Meeting Specialisation):**
 
 10. **`/sara-minutes`** — Depends on a completed meeting ingest (update complete, archived). Narrow scope; build last as a specialisation of the ingest pipeline.
-11. **`/sara-meeting-agenda`** — Standalone generate command; no dependencies on other commands. Can be built anytime after Phase 1 but is lowest priority (throw-away output, no wiki integration).
+11. **`/sara-agenda`** — Standalone generate command; no dependencies on other commands. Can be built anytime after Phase 1 but is lowest priority (throw-away output, no wiki integration).
 
 ### Critical Path
 

@@ -213,7 +213,7 @@ Features to deliberately not build, with rationale.
   → Reads: Full wiki
   → Checks: Orphaned pages, unresolved action items, stale risk status, missing cross-references, contradicting decisions
 
-/sara-meeting-agenda
+/sara-agenda
   → Requires: Nothing (stateless, throw-away)
   → Optional: /sara-query patterns to pull in open actions / risks for agenda items
 

@@ -25,7 +25,7 @@ Every meeting, email thread, Slack conversation, and document gets permanently i
 ### Active
 
 - [ ] `/sara-minutes N` (meetings only) generates markdown minutes filed in wiki + email-ready draft — Phase 3
-- [ ] `/sara-meeting-agenda` generates an email-friendly agenda from user input (throw-away, not stored in wiki) — Phase 3
+- [ ] `/sara-agenda` generates an email-friendly agenda from user input (throw-away, not stored in wiki) — Phase 3
 - [ ] `/sara-query` answers questions synthesised from wiki content — v2
 - [ ] `/sara-lint` health-checks the wiki (orphans, contradictions, stale content, missing cross-references) — v2
 
@@ -69,7 +69,7 @@ Every meeting, email thread, Slack conversation, and document gets permanently i
 
 | Category | Commands | Description |
 |----------|----------|-------------|
-| **Generate** | `/sara-meeting-agenda` | Produce output from user input; throw-away |
+| **Generate** | `/sara-agenda` | Produce output from user input; throw-away |
 | **Initialize** | `/sara-init` | Set up wiki, config, directory structure |
 | **Process** | `/sara-ingest`, `/sara-discuss N`, `/sara-extract N`, `/sara-update N`, `/sara-minutes N` | Stateful ingest pipeline |
 | **Query** | `/sara-query` | Synthesise answers from wiki |
@@ -102,7 +102,7 @@ Meetings also include: **→ minutes**
 |----------|-----------|---------|
 | One repo per project | Each project has its own stakeholder set, department config, and artifact space | Validated — Phase 1 |
 | Stateful, human-gated pipeline | User said "stay involved" — not a one-shot processor | Validated — Phase 2 |
-| `/sara-meeting-agenda` is throw-away in v1 | Can't cleanly fit pre-ingest state into ingest pipeline without complicating `/sara-ingest` | Validated — Phase 3 pending |
+| `/sara-agenda` is throw-away in v1 | Can't cleanly fit pre-ingest state into ingest pipeline without complicating `/sara-ingest` | Validated — Phase 3 pending |
 | Five entity types (incl. Stakeholders) | Stakeholders are reference data that enable named entity linking and email automation | Validated — Phase 1 |
 | Processed files renamed + archived by type | Numeric prefix links archive to state; subfolder makes raw archive browsable | Validated — Phase 2 |
 | Departments are project-specific config | Domain-agnostic — the department list is defined at `/sara-init` time per project | Validated — Phase 1 |

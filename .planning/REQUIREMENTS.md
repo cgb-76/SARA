@@ -33,7 +33,7 @@
 ### Meeting Specialisation
 
 - [ ] **MEET-01**: User can run `/sara-minutes N` (where N is a meeting ingest item) to generate structured meeting minutes as a markdown file filed in the wiki, and an email-ready plain-text version suitable for copy-paste into an email client
-- [ ] **MEET-02**: User can run `/sara-meeting-agenda` to generate an email-friendly meeting agenda from user-provided information (attendees, topics, goals); output is a draft for review only — not stored in the wiki
+- [ ] **MEET-02**: User can run `/sara-agenda` to generate an email-friendly meeting agenda from user-provided information (attendees, topics, goals); output is a draft for review only — not stored in the wiki
 
 ### Wiki Entity Types
 
@@ -59,7 +59,7 @@
 - `/sara-query` — natural language query synthesised from wiki with source attribution (wiki page IDs + ingest IDs cited per claim)
 - `/sara-lint` — wiki health checks: orphaned pages, broken cross-references, contradicting status fields, stale open Actions, index validation (bidirectional), regenerable index via `--fix`
 - `/sara-add-stakeholder` — standalone command for manually adding stakeholders outside the discuss flow
-- Agenda linked to ingest item — `/sara-meeting-agenda` optionally creates a pending meeting item; linked when transcript is later ingested
+- Agenda linked to ingest item — `/sara-agenda` optionally creates a pending meeting item; linked when transcript is later ingested
 - Full-text search via `ripgrep` — supplement `index.md` routing at scale
 - External integrations (Jira, Linear, email send)
 

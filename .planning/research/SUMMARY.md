@@ -134,9 +134,9 @@ Research points to four phases aligned with the architectural dependency graph.
 
 ### Phase 4: Meeting Specialisation and UX Polish
 
-**Rationale:** `/sara-minutes` and `/sara-meeting-agenda` are narrow in scope with the most dependencies. Pipeline status visibility belongs here if not delivered in Phase 2.
+**Rationale:** `/sara-minutes` and `/sara-agenda` are narrow in scope with the most dependencies. Pipeline status visibility belongs here if not delivered in Phase 2.
 
-**Delivers:** `/sara-minutes N` (markdown minutes + email-ready draft); `/sara-meeting-agenda` (pre-meeting agenda generation); pipeline backlog visibility.
+**Delivers:** `/sara-minutes N` (markdown minutes + email-ready draft); `/sara-agenda` (pre-meeting agenda generation); pipeline backlog visibility.
 
 **Avoids:** Silent pipeline rot (C1 — backlog visibility is anti-abandonment).
 
