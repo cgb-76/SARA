@@ -20,6 +20,22 @@ Run this skill once per project in an empty directory before using any other SAR
 
 <process>
 
+**Step 0 — Output banner**
+
+Output the following as plain text before doing anything else:
+
+```
+   ███████╗ █████╗ ██████╗  █████╗
+   ██╔════╝██╔══██╗██╔══██╗██╔══██╗
+   ███████╗███████║██████╔╝███████║
+   ╚════██║██╔══██║██╔══██╗██╔══██║
+   ███████║██║  ██║██║  ██║██║  ██║
+   ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝
+
+   Structured Analysis & Requirements Artefacts
+   Wiki initialisation
+```
+
 **Step 1 — Guard clause**
 
 Run the following Bash command. If it exits non-zero (wiki/ already exists), report the error to
