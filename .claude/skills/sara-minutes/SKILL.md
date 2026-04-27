@@ -1,6 +1,6 @@
 ---
 name: sara-minutes
-description: "Generate structured meeting minutes and email-ready draft from a completed meeting item"
+description: "Generate structured meeting minutes from a completed meeting item"
 argument-hint: "<ID>"
 allowed-tools:
   - Read
@@ -8,8 +8,7 @@ allowed-tools:
 
 <objective>
 Reads pipeline state and wiki artifacts for a completed meeting item, then outputs structured
-meeting minutes as a markdown block followed by an email-ready plain-text version — all in one
-terminal response. Nothing is written to disk or committed to git.
+meeting minutes as a markdown block. Nothing is written to disk or committed to git.
 
 The minutes are structured around wiki entities actually created or updated for this meeting
 item (per extraction_plan) — not a generic summary of the transcript.
@@ -96,7 +95,7 @@ If no attendees can be resolved from either source, `{attendees}` = ["(attendees
 `{meeting_date}` = check transcript header or filename for a date. If not found, use today's ISO date (YYYY-MM-DD).
 `{source_ref}` = `{item.id}` — `{item.filename}`.
 
-**Step 5 — Compose markdown minutes (D-06, D-08)**
+**Step 5 — Compose and output markdown minutes (D-06)**
 
 Compose the markdown block. Omit any section that has zero entries (D-06 — do not print empty sections).
 
@@ -125,27 +124,7 @@ If `{no_entities}` is true, include the Attendees section (from transcript) and 
 `_No wiki entities were recorded for this meeting._`
 Still omit empty entity sections.
 
-**Step 6 — Derive plain-text email version (D-07)**
-
-Apply these rules to produce `{plaintext_block}` from the markdown content:
-- `# Heading` or `## Heading` → `HEADING` (all-caps, no `#` prefix)
-- `**bold text**` → `bold text` (remove `**` markers)
-- Bullet items (`- item`) → `- item` (keep dash; do not change to `*` or `•`)
-- Blank lines preserved as-is
-
-**Step 7 — Output both blocks (D-08)**
-
-Output the following in a single terminal response:
-
-```
-{markdown_minutes_block}
-
----
-
-## Email Version
-
-{plaintext_block}
-```
+Output the markdown block to the terminal.
 
 STOP — do NOT write any file, do NOT run any git command.
 
@@ -161,7 +140,7 @@ STOP — do NOT write any file, do NOT run any git command.
 - For `action == "create"` artifacts: use `artifact.assigned_id` as the entity ID. For `action == "update"` artifacts: use `artifact.existing_id`.
 - Transcript archive path after `/sara-update` ran: `raw/meetings/{item.id}-{item.filename}`. If that path does not resolve (e.g. item was complete before archive ran), fall back to `raw/input/{item.filename}`.
 - Attendee resolution is best-effort. If neither STK pages nor transcript yield attendees, output `(attendees not recorded)` rather than an error.
-- Empty sections are silently omitted — never print a section heading with no content. (D-06)
+- Empty sections are silently omitted — never print a section heading with no content.
 - `schema_version` in wiki frontmatter is always the string `"1.0"` — treat as string, not float.
 - `vertical` and `department` are always separate fields in STK pages — never merged.
 - `related` fields in wiki pages use plain entity IDs. When displaying in minutes body, render as-is (no wikilinks needed in terminal output).
