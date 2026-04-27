@@ -39,41 +39,36 @@ If the command succeeds (no wiki/ directory), continue to Step 2.
 Use AskUserQuestion to ask for the project name:
 - header: "Project name"  (12 chars exactly — acceptable)
 - question: "What is the name of this project? (used in wiki/CLAUDE.md header)"
-- options: ["My Project", "Enter name"]
+- options: ["My Project"]
 
-If user selects an option or answers with their own text, capture the response as `{project_name}`.
-If the response was "Enter name" or any free-form signal, ask for the name as plain text (not
-another AskUserQuestion): "Type the project name and press Enter."
+The user may select the preset option or type their own name directly. Capture whatever the user
+provides as `{project_name}`.
 
 **Step 3 — Collect verticals**
 
 Use AskUserQuestion to collect market verticals:
 - header: "Verticals"     (9 chars — acceptable)
-- question: "List the market verticals for this project, separated by commas (e.g. Residential, BE&G, Wholesale)"
-- options: ["Residential, BE, Wholesale", "My own list", "Skip for now"]
+- question: "List the market verticals for this project, separated by commas (e.g. Residential, Enterprise, Wholesale)"
+- options: ["Residential, Enterprise, Wholesale", "Skip for now"]
 
-If user selects a preset option, use that string as-is. If user selects "My own list" or any
-free-form signal, ask as plain text: "Type your verticals separated by commas."
+The user may select the preset option or type their own comma-separated list directly. If the user
+selects or types "Skip for now", store `{verticals_array}` as an empty array [].
 
-Parse the response by splitting on commas, trimming whitespace from each item, and filtering empty
-strings. Store the result as `{verticals_array}` (e.g. ["Residential", "BE&G", "Wholesale"]).
-
-If user selected "Skip for now", store `{verticals_array}` as an empty array [].
+Otherwise, parse the response by splitting on commas, trimming whitespace from each item, and
+filtering empty strings. Store the result as `{verticals_array}` (e.g. ["Residential", "Enterprise", "Wholesale"]).
 
 **Step 4 — Collect departments**
 
 Use AskUserQuestion to collect functional departments:
 - header: "Departments"   (11 chars — acceptable)
 - question: "List the functional departments for this project, separated by commas (e.g. Sales, Operations, Finance)"
-- options: ["Sales, Operations, Finance", "My own list", "Skip for now"]
+- options: ["Sales, Operations, Finance", "Skip for now"]
 
-If user selects a preset option, use that string as-is. If user selects "My own list" or any
-free-form signal, ask as plain text: "Type your departments separated by commas."
+The user may select the preset option or type their own comma-separated list directly. If the user
+selects or types "Skip for now", store `{departments_array}` as an empty array [].
 
-Parse the response by splitting on commas, trimming whitespace from each item, and filtering empty
-strings. Store the result as `{departments_array}`.
-
-If user selected "Skip for now", store `{departments_array}` as an empty array [].
+Otherwise, parse the response by splitting on commas, trimming whitespace from each item, and
+filtering empty strings. Store the result as `{departments_array}`.
 
 **Step 5 — Create directory tree**
 
