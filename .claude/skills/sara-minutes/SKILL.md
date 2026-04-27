@@ -1,6 +1,6 @@
 ---
 name: sara-minutes
-description: "Generate structured meeting minutes from a completed meeting item"
+description: "Generate plain-text meeting minutes from a completed meeting item"
 argument-hint: "<ID>"
 allowed-tools:
   - Read
@@ -8,7 +8,7 @@ allowed-tools:
 
 <objective>
 Reads pipeline state and wiki artifacts for a completed meeting item, then outputs structured
-meeting minutes as a markdown block. Nothing is written to disk or committed to git.
+meeting minutes as plain text. Nothing is written to disk or committed to git.
 
 The minutes are structured around wiki entities actually created or updated for this meeting
 item (per extraction_plan) — not a generic summary of the transcript.
@@ -95,36 +95,38 @@ If no attendees can be resolved from either source, `{attendees}` = ["(attendees
 `{meeting_date}` = check transcript header or filename for a date. If not found, use today's ISO date (YYYY-MM-DD).
 `{source_ref}` = `{item.id}` — `{item.filename}`.
 
-**Step 5 — Compose and output markdown minutes (D-06)**
+**Step 5 — Compose and output plain-text minutes**
 
-Compose the markdown block. Omit any section that has zero entries (D-06 — do not print empty sections).
+Compose plain-text output. Omit any section that has zero entries — do not print a section label with no content.
+
+Use CAPS for section labels. No `#` headings, no `**bold**`, no markdown formatting.
 
 ```
-# Meeting Minutes — {item.id}
-**Date:** {meeting_date}
-**Source:** {source_ref}
+MEETING MINUTES — {item.id}
+Date: {meeting_date}
+Source: {source_ref}
 
-## Attendees
+ATTENDEES
 {for each attendee: - {name} ({role})}
 
-## Decisions
-{for each decision: - **{id}** ({title}) — {status}: {## Decision body text, condensed to 1 sentence}}
+DECISIONS
+{for each decision: - {id} ({title}) — {status}: {decision body text, condensed to 1 sentence}}
 
-## Actions
-{for each action: - **{id}** ({title}) — Owner: {owner}, Due: {due-date}, Status: {status}}
+ACTIONS
+{for each action: - {id} ({title}) — Owner: {owner}, Due: {due-date}, Status: {status}}
 
-## Risks
-{for each risk: - **{id}** ({title}) — {status}, Likelihood: {likelihood}, Impact: {impact}}
+RISKS
+{for each risk: - {id} ({title}) — {status}, Likelihood: {likelihood}, Impact: {impact}}
 
-## Requirements
-{for each requirement: - **{id}** ({title}) — Status: {status}}
+REQUIREMENTS
+{for each requirement: - {id} ({title}) — Status: {status}}
 ```
 
-If `{no_entities}` is true, include the Attendees section (from transcript) and add the following note after the date/source header:
-`_No wiki entities were recorded for this meeting._`
+If `{no_entities}` is true, include the ATTENDEES section (from transcript) and add after the date/source lines:
+`No wiki entities were recorded for this meeting.`
 Still omit empty entity sections.
 
-Output the markdown block to the terminal.
+Output the plain-text block to the terminal.
 
 STOP — do NOT write any file, do NOT run any git command.
 
@@ -140,7 +142,8 @@ STOP — do NOT write any file, do NOT run any git command.
 - For `action == "create"` artifacts: use `artifact.assigned_id` as the entity ID. For `action == "update"` artifacts: use `artifact.existing_id`.
 - Transcript archive path after `/sara-update` ran: `raw/meetings/{item.id}-{item.filename}`. If that path does not resolve (e.g. item was complete before archive ran), fall back to `raw/input/{item.filename}`.
 - Attendee resolution is best-effort. If neither STK pages nor transcript yield attendees, output `(attendees not recorded)` rather than an error.
-- Empty sections are silently omitted — never print a section heading with no content.
+- PLAIN TEXT ONLY: Output uses CAPS section labels. No `#` headings, no `**bold**`, no markdown formatting.
+- Empty sections are silently omitted — never print a section label with no content.
 - `schema_version` in wiki frontmatter is always the string `"1.0"` — treat as string, not float.
 - `vertical` and `department` are always separate fields in STK pages — never merged.
 - `related` fields in wiki pages use plain entity IDs. When displaying in minutes body, render as-is (no wikilinks needed in terminal output).
