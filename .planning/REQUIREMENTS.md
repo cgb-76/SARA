@@ -4,10 +4,13 @@
 
 ### Foundation
 
-- [ ] **FOUND-01**: User can run `/sara-init` to create the full directory structure (`/raw/input/`, `/raw/meetings/`, `/raw/emails/`, `/raw/slack/`, `/raw/documents/`, `/wiki/` and subfolders), CLAUDE.md schema, `pipeline-state.json` with ID counters, and entity page templates
-- [ ] **FOUND-02**: User can configure project-specific vertical list (e.g. Residential, Enterprise, Wholesale) and department list (e.g. Sales, Operations, Finance) separately during `/sara-init` — these are distinct axes; a stakeholder belongs to one vertical and one department
+- [x] **FOUND-01
+**: User can run `/sara-init` to create the full directory structure (`/raw/input/`, `/raw/meetings/`, `/raw/emails/`, `/raw/slack/`, `/raw/documents/`, `/wiki/` and subfolders), CLAUDE.md schema, `pipeline-state.json` with ID counters, and entity page templates
+- [x] **FOUND-02
+**: User can configure project-specific vertical list (e.g. Residential, Enterprise, Wholesale) and department list (e.g. Sales, Operations, Finance) separately during `/sara-init` — these are distinct axes; a stakeholder belongs to one vertical and one department
 - [ ] **FOUND-03**: All wiki entity pages include a `schema_version` field in YAML frontmatter from creation, enabling future schema evolution without bulk rewrites
-- [ ] **FOUND-04**: `pipeline-state.json` at repo root persists all ingest pipeline state (item registry, stage per item, ID counters per entity type, discussion notes, extraction plan) across Claude Code session boundaries
+- [x] **FOUND-04
+**: `pipeline-state.json` at repo root persists all ingest pipeline state (item registry, stage per item, ID counters per entity type, discussion notes, extraction plan) across Claude Code session boundaries
 
 ### Ingest Pipeline
 

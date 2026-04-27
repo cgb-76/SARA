@@ -35,6 +35,13 @@
 - WIKI-06: `wiki/index.md` is an LLM-maintained catalog with one row per entity (ID, title, status, type, tags, last-updated)
 - WIKI-07: `wiki/log.md` is an append-only chronological record of all ingest events
 
+**Plans:** 3 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Write sara-init SKILL.md scaffold: guard clause, user input collection, directory creation, .sara/config.json and pipeline-state.json writes
+- [ ] 01-02-PLAN.md — Complete SKILL.md: wiki/CLAUDE.md schema contract, wiki/index.md and wiki/log.md stubs, five entity templates, success report and notes
+- [ ] 01-03-PLAN.md — End-to-end verification: run /sara-init in temp directory, verify all outputs, confirm guard clause, human approval checkpoint
+
 **Success Criteria:**
 1. User runs `/sara-init` in an empty directory and the complete `/raw/` and `/wiki/` tree is created with no manual steps
 2. User is prompted for vertical names (e.g. Residential, Enterprise) and department names (e.g. Sales, Finance) separately during init — both lists appear in the project config and a different project produces different lists
