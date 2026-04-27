@@ -117,10 +117,10 @@ For each artifact in `{extraction_plan}`:
     **requirement:**
     ```
     ## Description
+    > "{artifact.source_quote}" — {stakeholder_name}
+
     {synthesised summary of what this requirement captures, why it matters, and any constraints
      resolved during /sara-discuss}
-
-    > "{artifact.source_quote}" — {stakeholder_name}
 
     ## Acceptance Criteria
     {REQUIRED — derive at least one testable criterion directly from the requirement text,
@@ -137,10 +137,10 @@ For each artifact in `{extraction_plan}`:
     **decision:**
     ```
     ## Context
+    > "{artifact.source_quote}" — {stakeholder_name}
+
     {synthesised summary of the situation or problem that prompted this decision, drawn from
      the source document and discussion notes}
-
-    > "{artifact.source_quote}" — {stakeholder_name}
 
     ## Decision
     {synthesised statement of what was decided, drawn from the artifact title and any
@@ -158,10 +158,10 @@ For each artifact in `{extraction_plan}`:
     **action:**
     ```
     ## Description
+    > "{artifact.source_quote}" — {stakeholder_name}
+
     {synthesised summary of what needs to be done, who is responsible, and any relevant
      deadlines or dependencies resolved during /sara-discuss}
-
-    > "{artifact.source_quote}" — {stakeholder_name}
 
     ## Notes
     {synthesised blockers, dependencies, follow-up context, or related items from discussion
@@ -171,10 +171,10 @@ For each artifact in `{extraction_plan}`:
     **risk:**
     ```
     ## Description
+    > "{artifact.source_quote}" — {stakeholder_name}
+
     {synthesised summary of the risk, its likelihood/impact context, and any relevant
      triggers or conditions identified during /sara-discuss}
-
-    > "{artifact.source_quote}" — {stakeholder_name}
 
     ## Mitigation
     {synthesised mitigation approaches or controls mentioned in the source or discussion
