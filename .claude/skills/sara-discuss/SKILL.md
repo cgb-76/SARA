@@ -103,18 +103,30 @@ After all unknown stakeholders are resolved, proceed to Step 5.
 
 For each remaining blocker from the list (process in priority order: Priority 2, then Priority 3, then Priority 4):
 
-  Present the specific blocker to the user as plain text with context from the source document. Example formats:
+  Present the specific blocker to the user as plain text with context from the source document.
+  Where there are discrete options to choose from, label them A / B / C so the user can reply
+  with a single letter. Example formats:
 
-  For Priority 2 (ambiguous entity type):
-  `"Blocker [entity type ambiguity]: The passage '...' could be classified as REQ or DEC. Which entity type is correct? (reply freely)"`
+  For Priority 2 (ambiguous entity type — always has discrete options):
+  ```
+  Blocker [entity type ambiguity]: The passage '...' could be classified as:
+    A) REQ — {brief reason}
+    B) DEC — {brief reason}
+  Which is correct? (reply A or B, or describe a different classification)
+  ```
 
-  For Priority 3 (context gap):
-  `"Blocker [context gap]: The source references '{term}' but this does not appear in the wiki. What does this mean in context? (reply freely)"`
+  For Priority 3 (context gap — open-ended, no options to label):
+  `"Blocker [context gap]: The source references '{term}' but this does not appear in the wiki. What does this mean in context?"`
 
-  For Priority 4 (cross-link candidate):
-  `"Blocker [cross-link candidate]: The source discusses '{topic}', which relates to existing entity {entity_ID} — '{entity_title}'. Should this be confirmed as a cross-link? (reply freely)"`
+  For Priority 4 (cross-link candidate — binary confirm/deny):
+  ```
+  Blocker [cross-link candidate]: The source discusses '{topic}', which appears to relate to:
+    A) {entity_ID} — '{entity_title}'
+    B) Not a cross-link — treat as a new or unrelated topic
+  Confirm? (reply A or B, or describe a different relationship)
+  ```
 
-  Wait for the user's reply using a plain-text wait (freeform rule — do NOT use AskUserQuestion for these open-ended questions).
+  Wait for the user's reply using a plain-text wait (freeform rule — do NOT use AskUserQuestion for these questions).
 
   Incorporate the user's response into the running `discussion_notes` string.
 
