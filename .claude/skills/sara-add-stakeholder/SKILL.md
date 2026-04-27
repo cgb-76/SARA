@@ -51,17 +51,36 @@ Capture reply as `{nickname}`. If "Skip": set `{nickname}` = `""`.
 AskUserQuestion:
   header: "Vertical"
   question: "Which market vertical? (leave blank if unknown)"
-  options: [values from .sara/config.json verticals array] + ["Skip"]
+  options: [values from .sara/config.json verticals array] + ["New...", "Skip"]
 ```
-Capture reply as `{vertical}`. If "Skip": set `{vertical}` = `""`.
+Capture reply as `{vertical_reply}`.
+- If "Skip": set `{vertical}` = `""`.
+- If "New...": output `"Enter new vertical name:"` as plain text, wait for reply, capture as `{vertical}`. Set `{new_vertical}` = `{vertical}` (to be added to config in Step 2b).
+- Otherwise: set `{vertical}` = `{vertical_reply}`.
 
 ```
 AskUserQuestion:
   header: "Dept"
   question: "Which department? (leave blank if unknown)"
-  options: [values from .sara/config.json departments array] + ["Skip"]
+  options: [values from .sara/config.json departments array] + ["New...", "Skip"]
 ```
-Capture reply as `{department}`. If "Skip": set `{department}` = `""`.
+Capture reply as `{dept_reply}`.
+- If "Skip": set `{department}` = `""`.
+- If "New...": output `"Enter new department name:"` as plain text, wait for reply, capture as `{department}`. Set `{new_department}` = `{department}` (to be added to config in Step 2b).
+- Otherwise: set `{department}` = `{dept_reply}`.
+
+**Step 2b — Persist new verticals/departments to config**
+
+If `{new_vertical}` is set OR `{new_department}` is set:
+
+  Read `.sara/config.json` using the Read tool.
+
+  If `{new_vertical}` is set and not already in `config.verticals`: append `{new_vertical}` to the `verticals` array.
+
+  If `{new_department}` is set and not already in `config.departments`: append `{new_department}` to the `departments` array.
+
+  Write the updated config back to `.sara/config.json` using the Write tool.
+
 
 ```
 AskUserQuestion:
@@ -135,12 +154,16 @@ Write the updated `wiki/log.md` back using the Write tool.
 
 **Step 6 — Commit and report**
 
-Run the following Bash command:
+Run the following Bash command. If `.sara/config.json` was updated in Step 2b, include it in the staged files:
 
 ```bash
 git add wiki/stakeholders/{new_id}.md wiki/index.md wiki/log.md .sara/pipeline-state.json
+# If config was updated:
+git add .sara/config.json
 git commit -m "feat(sara): add stakeholder {new_id} — {name}"
 ```
+
+(Always run `git add .sara/config.json` — if the file was not modified it will be a no-op.)
 
 Output to the user:
 
@@ -163,6 +186,7 @@ When this skill is called inline from `/sara-discuss`: the output `{new_id}` is 
 - When called inline from `/sara-discuss`: `/sara-discuss` first reads `.claude/skills/sara-add-stakeholder/SKILL.md`, then executes this skill inline for the current unknown stakeholder. After Step 6 completes, `/sara-discuss` resumes with the returned `{new_id}` added to its resolved-stakeholders context. The caller should continue iterating over remaining unknown stakeholders before moving on to other blocker priorities.
 - `schema_version` must always be quoted: `"1.0"` — unquoted, YAML parsers (including Obsidian) interpret `1.0` as a float, which breaks frontmatter round-trips.
 - AskUserQuestion header lengths: "Nickname" = 8, "Vertical" = 8, "Dept" = 4, "Email" = 5, "Role" = 4 — all within the 12-character hard limit.
+- New verticals and departments entered via "New..." are appended to `.sara/config.json` in Step 2b and committed alongside the STK page in Step 6. This keeps the config in sync so the new value appears as a selectable option in future `/sara-add-stakeholder` runs.
 - The git add list in Step 6 uses explicit file paths — never `git add .` or `git add -A`. This ensures only the four expected files are staged and no unintended files are committed.
 - If `$ARGUMENTS` is provided (inline caller supplies the name), Step 1 skips the plain-text prompt entirely and uses the argument directly. The argument is the stakeholder's full formal name as determined by the calling skill.
 </notes>
