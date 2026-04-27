@@ -123,8 +123,11 @@ For each artifact in `{extraction_plan}`:
     > "{artifact.source_quote}" — {stakeholder_name}
 
     ## Acceptance Criteria
-    {synthesised testable criteria derived from the requirement text and any conditions or
-     constraints mentioned in the source or discussion notes — leave empty if none available}
+    {REQUIRED — derive at least one testable criterion directly from the requirement text,
+     even if the source does not state it explicitly. Infer what "done" looks like for this
+     requirement based on its title and source_quote. Format as a markdown checklist:
+     - [ ] {criterion}
+     Add further criteria for any conditions or constraints found in source or discussion notes.}
 
     ## Notes
     {synthesised caveats, dependencies, open questions, or related context from discussion
