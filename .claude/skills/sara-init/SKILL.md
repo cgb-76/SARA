@@ -289,6 +289,21 @@ related: []
 ```
 ```
 
+## GSD Phase Completion
+
+When all plans in a GSD phase have SUMMARY.md files, update these planning docs before moving on — even if execution was interrupted and resumed manually:
+
+1. **ROADMAP.md** — mark all phase plans as `[x]`, update Progress table row to Done
+2. **STATE.md** — update `stopped_at`, `completed_phases`, `completed_plans`, `percent`, phase progress table, and current focus
+3. **PROJECT.md** — move validated requirements from Active → Validated with phase reference, update Key Decisions outcomes, update `Last updated` footer
+
+These are the steps the GSD `transition.md` workflow would run automatically (`evolve_project` and `update_roadmap_and_state`). If execution was interrupted before reaching them, run them inline before starting the next phase.
+
+```bash
+gsd-sdk query commit "docs(phase-{X}): update planning docs after phase completion" .planning/STATE.md .planning/ROADMAP.md .planning/PROJECT.md
+```
+```
+
 **Step 10 — Write wiki/index.md**
 
 Use the Write tool to create `wiki/index.md` with the following exact content:

@@ -31,7 +31,8 @@
     "_auto_chain_active": false
   },
   "hooks": {
-    "context_warnings": true
+    "context_warnings": true,
+    "community": true
   },
   "project_code": null,
   "phase_naming": "sequential",

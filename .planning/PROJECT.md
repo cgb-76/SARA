@@ -12,23 +12,22 @@ Every meeting, email thread, Slack conversation, and document gets permanently i
 
 ### Validated
 
-(None yet — ship to validate)
+- [x] `/sara-init` sets up a new SARA wiki (directory structure, schema, vertical list and department list — separate axes) — Phase 1
+- [x] `/sara-ingest <type> <filename>` registers a raw input item (meeting, email, slack, document) from `/raw/input/`, assigns ingest ID N — Phase 2
+- [x] `/sara-discuss N` guides a human-in-the-loop discussion of source N, agreeing on extraction intent — Phase 2
+- [x] `/sara-extract N` presents the extraction plan (artifacts to create/update) for user approval before any wiki changes — Phase 2
+- [x] `/sara-update N` writes approved artifacts to the wiki, commits, moves source file to processed subfolder with numeric prefix — Phase 2
+- [x] Five wiki entity types with structured fields: Requirements, Decisions, Actions, Risks, Stakeholders — Phase 1
+- [x] Stakeholders tracked with name, nickname, department, vertical, email; linked to all artifact types — Phase 2
+- [x] SARA maintains pipeline state per input item (stage, discussion context) — resumable across sessions — Phase 1
+- [x] Processed sources renamed with numeric prefix and archived to type subfolder (`/raw/meetings/`, `/raw/emails/`, etc.) — Phase 2
 
 ### Active
 
-- [ ] `/sara-init` sets up a new SARA wiki (directory structure, schema, vertical list and department list — separate axes)
-- [ ] `/sara-ingest <type> <filename>` registers a raw input item (meeting, email, slack, document) from `/raw/input/`, assigns ingest ID N
-- [ ] `/sara-discuss N` guides a human-in-the-loop discussion of source N, agreeing on extraction intent
-- [ ] `/sara-extract N` presents the extraction plan (artifacts to create/update) for user approval before any wiki changes
-- [ ] `/sara-update N` writes approved artifacts to the wiki, commits, moves source file to processed subfolder with numeric prefix
-- [ ] `/sara-minutes N` (meetings only) generates markdown minutes filed in wiki + email-ready draft
-- [ ] `/sara-meeting-agenda` generates an email-friendly agenda from user input (throw-away, not stored in wiki)
-- [ ] `/sara-query` answers questions synthesised from wiki content
-- [ ] `/sara-lint` health-checks the wiki (orphans, contradictions, stale content, missing cross-references)
-- [ ] Five wiki entity types with structured fields: Requirements, Decisions, Actions, Risks, Stakeholders
-- [ ] Stakeholders tracked with name, department/vertical, email; linked to all artifact types
-- [ ] SARA maintains pipeline state per input item (stage, discussion context) — resumable across sessions
-- [ ] Processed sources renamed with numeric prefix and archived to type subfolder (`/raw/meetings/`, `/raw/emails/`, etc.)
+- [ ] `/sara-minutes N` (meetings only) generates markdown minutes filed in wiki + email-ready draft — Phase 3
+- [ ] `/sara-meeting-agenda` generates an email-friendly agenda from user input (throw-away, not stored in wiki) — Phase 3
+- [ ] `/sara-query` answers questions synthesised from wiki content — v2
+- [ ] `/sara-lint` health-checks the wiki (orphans, contradictions, stale content, missing cross-references) — v2
 
 ### Out of Scope
 
@@ -101,12 +100,15 @@ Meetings also include: **→ minutes**
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| One repo per project | Each project has its own stakeholder set, department config, and artifact space | — Pending |
-| Stateful, human-gated pipeline | User said "stay involved" — not a one-shot processor | — Pending |
-| `/sara-meeting-agenda` is throw-away in v1 | Can't cleanly fit pre-ingest state into ingest pipeline without complicating `/sara-ingest` | — Pending |
-| Five entity types (incl. Stakeholders) | Stakeholders are reference data that enable named entity linking and email automation | — Pending |
-| Processed files renamed + archived by type | Numeric prefix links archive to state; subfolder makes raw archive browsable | — Pending |
-| Departments are project-specific config | Domain-agnostic — the department list is defined at `/sara-init` time per project | — Pending |
+| One repo per project | Each project has its own stakeholder set, department config, and artifact space | Validated — Phase 1 |
+| Stateful, human-gated pipeline | User said "stay involved" — not a one-shot processor | Validated — Phase 2 |
+| `/sara-meeting-agenda` is throw-away in v1 | Can't cleanly fit pre-ingest state into ingest pipeline without complicating `/sara-ingest` | Validated — Phase 3 pending |
+| Five entity types (incl. Stakeholders) | Stakeholders are reference data that enable named entity linking and email automation | Validated — Phase 1 |
+| Processed files renamed + archived by type | Numeric prefix links archive to state; subfolder makes raw archive browsable | Validated — Phase 2 |
+| Departments are project-specific config | Domain-agnostic — the department list is defined at `/sara-init` time per project | Validated — Phase 1 |
+| Stakeholder schema includes nickname field | Dual-field matching in `/sara-discuss` requires a short-form alias alongside full name | Validated — Phase 2 |
+| `schema_version` quoted as string '1.0' | Prevents Obsidian YAML float parse of bare 1.0 | Validated — Phase 1 |
+| `stage=complete` written only after git commit | Prevents permanent item strand on commit failure | Validated — Phase 2 |
 
 ## Evolution
 
@@ -126,4 +128,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-27 after initialization*
+*Last updated: 2026-04-27 after Phase 2 completion*
