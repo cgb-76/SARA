@@ -46,22 +46,24 @@ Capture whatever the user types as `{project_name}`.
 **Step 3 — Collect verticals**
 
 Use AskUserQuestion to collect market verticals:
-- header: "Verticals"     (9 chars — acceptable)
-- question: "List the market verticals for this project, separated by commas (e.g. Residential, Enterprise, Wholesale)"
-- options: ["Residential, Enterprise, Wholesale"]
+- header: "Verticals"
+- question: "Select all market verticals that apply (or type your own)"
+- type: checkbox
+- options: ["Residential", "Enterprise", "Wholesale", "Government", "SMB", "Education", "Healthcare"]
 
-Parse the user's response by splitting on commas, trimming whitespace from each item, and filtering
-empty strings. Store the result as `{verticals_array}` (e.g. ["Residential", "Enterprise", "Wholesale"]).
+Collect all checked options into `{verticals_array}`. If the user types a custom value via "Type
+something", split on commas, trim whitespace, and merge with any checked options.
 
 **Step 4 — Collect departments**
 
 Use AskUserQuestion to collect functional departments:
-- header: "Departments"   (11 chars — acceptable)
-- question: "List the functional departments for this project, separated by commas (e.g. Sales, Operations, Finance)"
-- options: ["Sales, Operations, Finance"]
+- header: "Departments"
+- question: "Select all departments that apply (or type your own)"
+- type: checkbox
+- options: ["Sales", "Operations", "Finance", "Engineering", "Marketing", "Legal", "HR", "Product", "Customer Success"]
 
-Parse the user's response by splitting on commas, trimming whitespace from each item, and filtering
-empty strings. Store the result as `{departments_array}`.
+Collect all checked options into `{departments_array}`. If the user types a custom value via "Type
+something", split on commas, trim whitespace, and merge with any checked options.
 
 **Step 5 — Create directory tree**
 
