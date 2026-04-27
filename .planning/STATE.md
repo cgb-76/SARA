@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-05-PLAN.md
-last_updated: "2026-04-27T07:06:40.145Z"
+stopped_at: Completed 02-06-PLAN.md
+last_updated: "2026-04-27T07:14:27.957Z"
 progress:
   total_phases: 3
   completed_phases: 1
   total_plans: 10
-  completed_plans: 8
-  percent: 80
+  completed_plans: 9
+  percent: 90
 ---
 
 # SARA — Project State
@@ -49,10 +49,12 @@ See: .planning/ROADMAP.md
 - sara-discuss SKILL.md created: 6-step LLM-driven blocker-clearing skill with dual-field stakeholder matching (name+nickname), priority-ordered blocker resolution, inline sara-add-stakeholder invocation, and freeform rule for P2-4 blockers
 - sara-extract raised_by canonical field contains sed substring — grep false positive documented in skill notes; field name non-negotiable as canonical schema consumed by sara-update
 - wiki/index.md re-read at dedup step (Step 2) not skill entry — catches index updates from sara-add-stakeholder mid-session (Pitfall 4 guard)
+- stage=complete written to pipeline-state.json ONLY after git commit succeeds (exit code 0) — prevents permanent item strand on commit failure (Pitfall 1 guard)
+- sara-update entity counter incremented and persisted before each create-action page write — prevents duplicate ID assignment on re-run after partial failure
 
 ## Open Items
 
 (None yet)
 
 **Planned Phase:** 2 (Ingest Pipeline) — 7 plans — 2026-04-27T06:36:03.444Z
-**Stopped at:** Completed 02-05-PLAN.md
+**Stopped at:** Completed 02-06-PLAN.md
