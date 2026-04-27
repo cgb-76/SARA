@@ -39,6 +39,14 @@ Store `{extraction_plan}` = `items["{N}"].extraction_plan`.
 If `{extraction_plan}` is empty or null:
   Output: `"Extraction plan for item {N} is empty. Re-run /sara-extract {N} to generate an approved plan."` and STOP.
 
+**Step 1b — Load source document and discussion notes**
+
+Read `raw/input/{item.filename}` using the Read tool. Store as `{source_doc}`.
+
+`{discussion_notes}` = `items["{N}"].discussion_notes` (already in memory from Step 1).
+
+These are used in Step 2 to synthesise body section content for each created artifact.
+
 **Step 2 — Write wiki artifact files**
 
 Initialize `written_files = []` and `failed_files = []`.
@@ -72,7 +80,7 @@ For each artifact in `{extraction_plan}`:
     Construct the wiki page content by substituting all fields from the artifact into the template frontmatter and body:
     - `id` = `{assigned_id}`
     - `title` = `artifact.title`
-    - `description` = `artifact.source_quote` (frontmatter field — place the source quote here to preserve the evidence trail)
+    - `description` = `artifact.title` (frontmatter one-liner — the source quote is preserved in the body callout instead)
     - `source` = `{item.id}` (e.g. `MTG-001`)
     - `raised-by` = `artifact.raised_by` (note: template field is `raised-by`; artifact schema field is `raised_by`)
     - `related` = `artifact.related` (array of entity IDs)
@@ -83,12 +91,27 @@ For each artifact in `{extraction_plan}`:
     - For risk artifacts: set `status` = `"open"`, `owner` = `artifact.raised_by`
     - All other fields not supplied by the artifact: use the template default value (empty string `""` or empty array `[]`)
 
-    Populate the body sections below the frontmatter using the following rules per type:
+    Populate the body sections below the frontmatter. For each section listed below, synthesise
+    a concise summary (2–4 sentences) using the artifact's title, `source_quote`, `discussion_notes`,
+    and the surrounding context in `{source_doc}`. Ground the primary section with the source quote
+    in a markdown callout immediately after the synthesised paragraph. Leave secondary sections
+    (Acceptance Criteria, Notes, Rationale, Alternatives Considered, Mitigation) empty — they will
+    be filled in manually or by future pipeline runs.
+
+    Callout format:
+    ```
+    > [!quote] Source: {item.id}
+    > {artifact.source_quote}
+    ```
 
     **requirement:**
     ```
     ## Description
-    {artifact.source_quote}
+    {synthesised summary of what this requirement captures, why it matters, and any constraints
+     resolved during /sara-discuss}
+
+    > [!quote] Source: {item.id}
+    > {artifact.source_quote}
 
     ## Acceptance Criteria
 
@@ -98,7 +121,11 @@ For each artifact in `{extraction_plan}`:
     **decision:**
     ```
     ## Context
-    {artifact.source_quote}
+    {synthesised summary of the situation or problem that prompted this decision, drawn from
+     the source document and discussion notes}
+
+    > [!quote] Source: {item.id}
+    > {artifact.source_quote}
 
     ## Decision
 
@@ -110,7 +137,11 @@ For each artifact in `{extraction_plan}`:
     **action:**
     ```
     ## Description
-    {artifact.source_quote}
+    {synthesised summary of what needs to be done, who is responsible, and any relevant
+     deadlines or dependencies resolved during /sara-discuss}
+
+    > [!quote] Source: {item.id}
+    > {artifact.source_quote}
 
     ## Notes
     ```
@@ -118,14 +149,16 @@ For each artifact in `{extraction_plan}`:
     **risk:**
     ```
     ## Description
-    {artifact.source_quote}
+    {synthesised summary of the risk, its likelihood/impact context, and any relevant
+     triggers or conditions identified during /sara-discuss}
+
+    > [!quote] Source: {item.id}
+    > {artifact.source_quote}
 
     ## Mitigation
 
     ## Notes
     ```
-
-    Body sections beyond the first (Description/Context) are left empty — they will be filled in manually or by future pipeline runs.
 
     Use the Write tool to create `{wiki_dir}{assigned_id}.md`.
     If write succeeds: append `{wiki_dir}{assigned_id}.md` to `written_files`.
