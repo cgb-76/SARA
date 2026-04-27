@@ -59,27 +59,25 @@
 
 ## Traceability
 
-*(Populated by roadmapper)*
-
 | REQ-ID | Phase |
 |--------|-------|
-| FOUND-01 | — |
-| FOUND-02 | — |
-| FOUND-03 | — |
-| FOUND-04 | — |
-| PIPE-01 | — |
-| PIPE-02 | — |
-| PIPE-03 | — |
-| PIPE-04 | — |
-| PIPE-05 | — |
-| PIPE-06 | — |
-| PIPE-07 | — |
-| MEET-01 | — |
-| MEET-02 | — |
-| WIKI-01 | — |
-| WIKI-02 | — |
-| WIKI-03 | — |
-| WIKI-04 | — |
-| WIKI-05 | — |
-| WIKI-06 | — |
-| WIKI-07 | — |
+| FOUND-01 | Phase 1 — Foundation & Schema |
+| FOUND-02 | Phase 1 — Foundation & Schema |
+| FOUND-03 | Phase 1 — Foundation & Schema |
+| FOUND-04 | Phase 1 — Foundation & Schema |
+| WIKI-01 | Phase 1 — Foundation & Schema |
+| WIKI-02 | Phase 1 — Foundation & Schema |
+| WIKI-03 | Phase 1 — Foundation & Schema |
+| WIKI-04 | Phase 1 — Foundation & Schema |
+| WIKI-05 | Phase 1 — Foundation & Schema |
+| WIKI-06 | Phase 1 — Foundation & Schema |
+| WIKI-07 | Phase 1 — Foundation & Schema |
+| PIPE-01 | Phase 2 — Ingest Pipeline |
+| PIPE-02 | Phase 2 — Ingest Pipeline |
+| PIPE-03 | Phase 2 — Ingest Pipeline |
+| PIPE-04 | Phase 2 — Ingest Pipeline |
+| PIPE-05 | Phase 2 — Ingest Pipeline |
+| PIPE-06 | Phase 2 — Ingest Pipeline |
+| PIPE-07 | Phase 2 — Ingest Pipeline |
+| MEET-01 | Phase 3 — Meeting Specialisation |
+| MEET-02 | Phase 3 — Meeting Specialisation |
