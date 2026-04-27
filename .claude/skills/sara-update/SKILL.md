@@ -139,9 +139,7 @@ Determine `{archive_dir}` from `{item.type}`:
 - `slack`    → `raw/slack/`
 - `document` → `raw/documents/`
 
-Determine `{archive_prefix}`: the zero-padded 3-digit numeric portion of `{item.id}` (e.g. `MTG-001` → prefix `"001"`, `EML-003` → prefix `"003"`). This is the value of `counters.ingest.{TYPE_KEY}` at the time the item was ingested — it is already encoded in the item ID.
-
-Compute `{archive_filename}` = `{archive_prefix}-{item.filename}` (e.g. `001-transcript-2026-04-27.md`).
+Compute `{archive_filename}` = `{item.id}-{item.filename}` (e.g. `MTG-001-transcript-2026-04-27.md`).
 
 Check whether the source file is git-tracked:
 ```bash
@@ -209,7 +207,7 @@ Check the exit code from the `echo "EXIT:$?"` output.
 - CRITICAL: Stage advances to `"complete"` ONLY after the git commit succeeds (exit code 0). Writing `stage=complete` before the commit is a fatal error — the item would be permanently stuck with no way to re-run `/sara-update` (Pitfall 1 from 02-RESEARCH.md). The correct ordering is: (1) write all wiki files, (2) git add + commit, (3) only then write `stage=complete`.
 - CRITICAL: Entity counter increments happen BEFORE each create-action page write, and the updated counter is written to `pipeline-state.json` immediately (as a separate Write call before the page Write call). This prevents duplicate ID assignment if a page write fails and the skill is re-run — the counter stays at its incremented value across re-runs.
 - The N argument is the full pipeline item ID (e.g. `MTG-001`). The JSON key in `items` is that same ID string. For `/sara-update MTG-001`, look up `items["MTG-001"]`. The `item.id` field equals the key — it appears in the commit message, the `source` field of written pages, and the log entry.
-- Source file tracking: files dropped manually into `raw/input/` are untracked by git. Use `git ls-files --error-unmatch` to check before moving. If tracked: use `git mv` (git handles both the rename and the stage). If untracked: use `mv` and then include the archive path in `git add` (the move appears as a new file at the archive path). The `git add` command in Step 5 covers the archive path in both cases.
+- Source file tracking: files dropped manually into `raw/input/` are untracked by git. Use `git ls-files --error-unmatch` to check before moving. If tracked: use `git mv` (git handles both the rename and the stage). If untracked: use `mv` and then include the archive path in `git add` (the move appears as a new file at the archive path). The `git add` command in Step 5 covers the archive path in both cases. The archived filename is always `{item.id}-{item.filename}` (e.g. `MTG-001-transcript.md`) — never just the numeric portion.
 - Do NOT auto-rollback on partial failure (D-14). The user has full git history. Report which files were written and which were not; let the user decide whether to `git reset` or re-run `/sara-update {N}` after fixing the root cause. The written files are uncommitted changes — no commit was made.
 - `schema_version` must always be quoted: `"1.0"` (not `1.0`). This prevents Obsidian's YAML parser from treating it as a float.
 - `related` fields must use entity IDs only (e.g. `REQ-001`, `DEC-003`) — never file paths, relative links, or Obsidian `[[wiki-links]]`. This is a Phase 1 behavioral rule carried forward.
