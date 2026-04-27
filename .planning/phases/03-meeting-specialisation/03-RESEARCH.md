@@ -513,7 +513,7 @@ REQUIREMENTS
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Attendee resolution depth**
    - What we know: D-04 says "optionally read raw transcript for attendee list and context not captured in wiki entities"
