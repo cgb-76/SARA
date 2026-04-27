@@ -13,6 +13,7 @@
 | 1 | Foundation & Schema | User can initialise a new SARA wiki with locked schemas and a working `/sara-init` command | FOUND-01, FOUND-02, FOUND-03, FOUND-04, WIKI-01, WIKI-02, WIKI-03, WIKI-04, WIKI-05, WIKI-06, WIKI-07 | 4 |
 | 2 | Ingest Pipeline | User can take any source document through the full ingest pipeline — ingest, discuss, extract, update — and have structured artifacts committed to the wiki | PIPE-01, PIPE-02, PIPE-03, PIPE-04, PIPE-05, PIPE-06, PIPE-07 | 5 |
 | 3 | Meeting Specialisation | User can generate meeting minutes and a pre-meeting agenda from meeting-specific commands | MEET-01, MEET-02 | 3 |
+| 4 | Make Installable | Any user can install SARA skills into their project with a single shell command | — | 3 |
 
 ---
 
@@ -111,6 +112,27 @@ Plans:
 
 ---
 
+### Phase 4: Make Installable
+
+**Goal:** Any user can install SARA skills into their own Claude Code project with a single shell command — skills are versioned, overwrite-safe, and self-documenting via README
+
+**Requirements:** No formal requirement IDs — this phase adds distribution infrastructure outside the v1 numbered requirement set
+
+**Depends on:** Phase 3
+**Plans:** 3 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — Add `version: 1.0.0` to YAML frontmatter of all 8 existing SKILL.md files
+- [ ] 04-02-PLAN.md — Write install.sh: git guard, dynamic sara-* glob, --backup, downgrade protection, next-step message
+- [ ] 04-03-PLAN.md — Create README.md with Installation section + human end-to-end verification checkpoint
+
+**Success Criteria:**
+1. User runs `./install.sh --target /path/to/project` and all 8 sara-* skill directories are copied into the target's `.claude/skills/`
+2. Running install.sh outside a git repo produces a plain-English error and exits non-zero
+3. Running install.sh with `--backup` preserves an existing SKILL.md as SKILL.md.bak before overwriting
+
+---
+
 ## Progress
 
 | Phase | Status | Completed |
@@ -118,3 +140,4 @@ Plans:
 | 1. Foundation & Schema | Done | - |
 | 2. Ingest Pipeline | Done | - |
 | 3. Meeting Specialisation | Done | 2026-04-27 |
+| 4. Make Installable | In Progress | - |
