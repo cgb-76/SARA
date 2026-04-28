@@ -5,6 +5,7 @@ argument-hint: "<ID>"
 allowed-tools:
   - Read
   - Write
+  - Edit
   - Bash
 version: 1.0.0
 ---
