@@ -27,6 +27,9 @@ Agent receives via prompt:
 <process>
 1. Parse `<merged_artifacts>` as a JSON array.
 
+   If `<merged_artifacts>` is empty (`[]`):
+     Return immediately: `{"cleaned_artifacts": [], "questions": []}`
+
 2. **Deduplication pass:** Scan for artifacts within the merged array that describe the same topic (e.g. two specialists each extracted the same event as a decision and a requirement). Identify these cross-type duplicates. Do NOT merge them yet — flag them as type-ambiguity questions for the human.
 
 3. **Create-vs-update resolution:** For each artifact in the merged array:

@@ -73,6 +73,11 @@ Spawn all four in parallel (or sequentially if context window is a concern):
 Merge all four arrays:
 `{merged}` = req_artifacts + dec_artifacts + act_artifacts + risk_artifacts
 
+If `{merged}` is empty (all four specialists returned []):
+  Output: `"No artifacts found in source document. All specialist agents returned empty results."`
+  Output: `"Proceeding to Step 4 with empty artifact list. You may reject this result or re-run /sara-discuss {N} to add discussion notes."`
+  Set `{cleaned_artifacts}` = [] and skip the sorter dispatch and sorter question loop. Proceed directly to Step 4.
+
 Load grep summaries using the Bash tool:
 ```bash
 grep -rh "^summary:" wiki/requirements/ wiki/decisions/ wiki/actions/ wiki/risks/ wiki/stakeholders/ 2>/dev/null
