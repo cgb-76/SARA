@@ -164,11 +164,11 @@ Plans:
 **Plans:** 5 plans
 
 Plans:
-- [ ] 06-01-PLAN.md — Create four specialist agent files in .claude/agents/ (requirement, decision, action, risk extractors)
-- [ ] 06-02-PLAN.md — Create sara-artifact-sorter agent file in .claude/agents/
-- [ ] 06-03-PLAN.md — Rewrite sara-extract SKILL.md Steps 2-3 with multi-agent dispatch and sorter question resolution
-- [ ] 06-04-PLAN.md — Narrow sara-discuss SKILL.md scope; update install.sh with agent distribution loop
-- [ ] 06-05-PLAN.md — Static file audit + end-to-end verification checkpoint
+- [x] 06-01-PLAN.md — Create four specialist agent files in .claude/agents/ (requirement, decision, action, risk extractors)
+- [x] 06-02-PLAN.md — Create sara-artifact-sorter agent file in .claude/agents/
+- [x] 06-03-PLAN.md — Rewrite sara-extract SKILL.md Steps 2-3 with multi-agent dispatch and sorter question resolution
+- [x] 06-04-PLAN.md — Narrow sara-discuss SKILL.md scope; update install.sh with agent distribution loop
+- [x] 06-05-PLAN.md — Static file audit + end-to-end verification checkpoint
 
 **Success Criteria:**
 1. Running `/sara-extract N` dispatches four specialist Task() calls and one sorter Task() call — specialist agents extract only their own artifact type; sorter resolves create-vs-update and presents ambiguity questions before the approval loop starts
