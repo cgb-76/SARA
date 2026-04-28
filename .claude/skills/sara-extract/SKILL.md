@@ -98,7 +98,11 @@ If `{sorter_questions}` is non-empty:
     Sorter question {i} of {total}: {question}
     ```
     Wait for the user's reply using a plain-text wait (freeform — do NOT use AskUserQuestion here).
-    Apply the user's resolution to `{cleaned_artifacts}` before moving to the next question.
+    Apply the user's resolution to `{cleaned_artifacts}` using the following logic:
+      If user replies "A": apply resolution A (keep as type1; remove the type2 duplicate from cleaned_artifacts).
+      If user replies "B": apply resolution B (keep as type2; remove the type1 duplicate).
+      If user replies "C": remove both from cleaned_artifacts (skip the passage).
+      If user replies anything else: re-present the same question with the note "Please reply A, B, or C." and wait again — do not advance to the next question.
 
 Proceed to Step 4 with `{cleaned_artifacts}` as the artifact list. All sorter questions are now resolved.
 
