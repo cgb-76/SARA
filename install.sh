@@ -19,6 +19,9 @@ BACKUP=false
 FORCE=false
 BRANCH="main"
 REPO="cgb-76/SARA"
+tmp_file=""
+
+trap 'rm -f "${tmp_file:-}"' EXIT
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -136,6 +139,20 @@ for agent_name in "${AGENTS[@]}"; do
     echo "Warning: could not download ${agent_name} from ${src_url} — skipping." >&2
     rm -f "${tmp_file}"
     continue
+  fi
+
+  # Downgrade check for agents (mirrors skills loop D-09)
+  if [[ -f "$dest_file" ]] && [[ "$FORCE" != "true" ]]; then
+    inst_ver="$(grep "^version:" "${dest_file}" 2>/dev/null | awk '{print $2}' || true)"
+    [[ -z "$inst_ver" ]] && inst_ver="0.0.0"
+    src_ver_agent="$(grep "^version:" "${tmp_file}" 2>/dev/null | awk '{print $2}' || true)"
+    [[ -z "$src_ver_agent" ]] && src_ver_agent="0.0.0"
+    older="$(printf '%s\n%s\n' "${src_ver_agent}" "${inst_ver}" | sort -V | head -1)"
+    if [[ "$older" = "$src_ver_agent" ]] && [[ "$src_ver_agent" != "$inst_ver" ]]; then
+      echo "Warning: source version (${src_ver_agent}) is older than installed (${inst_ver}) for ${agent_name} — skipping. Use --force to override." >&2
+      rm -f "${tmp_file}"
+      continue
+    fi
   fi
 
   if [[ "$BACKUP" = "true" ]] && [[ -f "$dest_file" ]]; then
