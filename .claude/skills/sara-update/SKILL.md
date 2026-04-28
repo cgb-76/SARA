@@ -67,7 +67,7 @@ For each artifact in `{extraction_plan}`:
     - `requirement` → `REQ`
     - `decision`    → `DEC`
     - `action`      → `ACT`
-    - `risk`        → `RISK`
+    - `risk`        → `RSK`
 
     Increment `counters.entity.{entity_type_key}` by 1 in the in-memory JSON state (do NOT re-read `pipeline-state.json` — the counters loaded in Step 1 are kept current in memory across loop iterations; each Write call below persists the latest state).
 
@@ -94,7 +94,7 @@ For each artifact in `{extraction_plan}`:
       - REQ: title, status, one-line description of what is required
       - DEC: options considered, chosen option/recommendation, status, decision date
       - ACT: owner, due-date, status (open/in-progress/done/cancelled)
-      - RISK: likelihood, impact, mitigation approach, status
+      - RSK: likelihood, impact, mitigation approach, status
       - STK: vertical, department, role — enough to distinguish from other stakeholders
       Generate the summary from the artifact fields already set (title, status, owner, etc.) and `{discussion_notes}`. Write it as a single prose string — not a list, not bullet points.
 
@@ -121,7 +121,7 @@ For each artifact in `{extraction_plan}`:
     in body text, always use the `[[ID|display text]]` form:
     - STK entities: display text = name only (e.g. `[[STK-001|Rajiwath Patel]]`).
       Read `wiki/stakeholders/{ID}.md` to resolve the name.
-    - REQ / DEC / ACT / RISK entities: display text = `{ID} {title}` (e.g.
+    - REQ / DEC / ACT / RSK entities: display text = `{ID} {title}` (e.g.
       `[[DEC-007|DEC-007 Defer SSO to Phase 3]]`). Read the wiki page or look up `wiki/index.md`.
     - Ingest IDs (MTG, EML, SLK, DOC): display text = `{ID} {title}` (e.g.
       `[[MTG-001|MTG-001 ACME Platform Integration Review]]`). Use the source document title.
@@ -221,7 +221,7 @@ For each artifact in `{extraction_plan}`:
 
     Read the existing file `{wiki_dir}{artifact.existing_id}.md` using the Read tool.
     Apply `artifact.change_summary` to the relevant field(s) in the frontmatter or body. Update the `source` field to include `{item.id}` in addition to any existing source value. Update the `related` field by merging `artifact.related` with the existing related array (deduplicating by entity ID).
-    Regenerate the `summary` field: read `summary_max_words` from pipeline-state.json (already in memory; default 50 if absent). Generate a fresh summary prose string using the same type-specific content rules as the create branch — REQ: title/status/description; DEC: options/chosen option/status/date; ACT: owner/due-date/status; RISK: likelihood/impact/mitigation/status; STK: vertical/department/role. Replace the existing `summary` value in the frontmatter with the newly generated string.
+    Regenerate the `summary` field: read `summary_max_words` from pipeline-state.json (already in memory; default 50 if absent). Generate a fresh summary prose string using the same type-specific content rules as the create branch — REQ: title/status/description; DEC: options/chosen option/status/date; ACT: owner/due-date/status; RSK: likelihood/impact/mitigation/status; STK: vertical/department/role. Replace the existing `summary` value in the frontmatter with the newly generated string.
     Use the Write tool to overwrite `{wiki_dir}{artifact.existing_id}.md` with the updated content.
     If write succeeds: append `{wiki_dir}{artifact.existing_id}.md` to `written_files`.
     If write fails: append `{wiki_dir}{artifact.existing_id}.md` to `failed_files`. Output the partial failure report (see format below). STOP.

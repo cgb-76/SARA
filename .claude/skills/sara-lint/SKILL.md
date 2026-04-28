@@ -57,7 +57,7 @@ If `{missing_files}` is non-empty:
 
   Count: `{missing_count}` = number of files in the list.
 
-  Preview: Read the first file in `{missing_files}` using the Read tool. Generate a sample summary for it using the type-specific content rules (determine type from the directory path — `wiki/requirements/` → REQ, `wiki/decisions/` → DEC, `wiki/actions/` → ACT, `wiki/risks/` → RISK, `wiki/stakeholders/` → STK). The preview summary must be within `{summary_max_words}` words.
+  Preview: Read the first file in `{missing_files}` using the Read tool. Generate a sample summary for it using the type-specific content rules (determine type from the directory path — `wiki/requirements/` → REQ, `wiki/decisions/` → DEC, `wiki/actions/` → ACT, `wiki/risks/` → RSK, `wiki/stakeholders/` → STK). The preview summary must be within `{summary_max_words}` words.
 
   Present the dry-run summary to the user as plain text:
   ```
@@ -97,9 +97,9 @@ If `{missing_files}` is non-empty:
         - REQ: title, status, one-line description of what is required
         - DEC: options considered, chosen option/recommendation, status, decision date
         - ACT: owner, due-date, status (open/in-progress/done/cancelled)
-        - RISK: likelihood, impact, mitigation approach, status
+        - RSK: likelihood, impact, mitigation approach, status
         - STK: vertical, department, role — enough to distinguish from other stakeholders
-      Insert `summary: "{generated_summary}"` into the frontmatter of the file, immediately after the `status:` field (for REQ, DEC, ACT, RISK) or after the `role:` field (for STK).
+      Insert `summary: "{generated_summary}"` into the frontmatter of the file, immediately after the `status:` field (for REQ, DEC, ACT, RSK) or after the `role:` field (for STK).
       Write the file back using the Write tool.
       If write succeeds: append the file path to `written_files`.
       Do NOT use Bash text-processing tools (jq, sed, awk) — Read and Write tools only.

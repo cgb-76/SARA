@@ -132,7 +132,7 @@ variable substitution needed — all counters start at zero):
   "summary_max_words": 50,
   "counters": {
     "ingest": { "MTG": 0, "EML": 0, "SLK": 0, "DOC": 0 },
-    "entity": { "REQ": 0, "DEC": 0, "ACT": 0, "RISK": 0, "STK": 0 }
+    "entity": { "REQ": 0, "DEC": 0, "ACT": 0, "RSK": 0, "STK": 0 }
   },
   "items": {}
 }
@@ -179,7 +179,7 @@ All SARA pipeline commands that read or write wiki pages must follow the rules b
 6. **Summary field:** When writing or updating any wiki artifact, always generate or refresh the
    `summary` field using the type-specific content rules (REQ: title/status/description;
    DEC: options considered/chosen option/status/date; ACT: owner/due-date/status;
-   RISK: likelihood/impact/mitigation/status; STK: vertical/department/role) and the
+   RSK: likelihood/impact/mitigation/status; STK: vertical/department/role) and the
    `summary_max_words` limit from `.sara/pipeline-state.json` (default: 50 words if absent).
 
 ## Entity Schemas
@@ -261,10 +261,10 @@ related: []
 
 ```yaml
 ---
-id: RISK-000
+id: RSK-000
 title: ""
 status: open  # open | mitigated | accepted | closed
-summary: ""  # RISK: likelihood, impact, mitigation approach, status
+summary: ""  # RSK: likelihood, impact, mitigation approach, status
 likelihood: ""  # low | medium | high
 impact: ""      # low | medium | high
 owner: ""       # stakeholder ID (e.g. STK-001)
@@ -428,10 +428,10 @@ related: []
 
 ```markdown
 ---
-id: RISK-000
+id: RSK-000
 title: ""
 status: open  # open | mitigated | accepted | closed
-summary: ""  # RISK: likelihood, impact, mitigation approach, status
+summary: ""  # RSK: likelihood, impact, mitigation approach, status
 likelihood: ""  # low | medium | high
 impact: ""      # low | medium | high
 owner: ""       # stakeholder ID (e.g. STK-001)
