@@ -47,11 +47,19 @@ Read `wiki/index.md` HERE using the Read tool. Reading the index at this step (n
 
 **Step 3 — Generate artifact list with dedup check**
 
-Using the source document, `{discussion_notes}`, and the current `wiki/index.md`:
+Load artifact summaries using the grep-extract pattern — run this Bash command before the dedup loop:
+
+```bash
+grep -rh "^summary:" wiki/requirements/ wiki/decisions/ wiki/actions/ wiki/risks/ wiki/stakeholders/ 2>/dev/null
+```
+
+This returns one `summary: "..."` line per artifact that has a summary field. Use these summaries — alongside `wiki/index.md` (already loaded in Step 2) — to identify create-vs-update decisions and cross-link opportunities. The summaries give richer semantic signal than the index Title column alone.
+
+**Fallback for summary-less artifacts (D-10):** If an artifact appears in `wiki/index.md` but is absent from the grep output (it has no `summary` field — a pre-existing artifact created before Phase 5), fall back to reading that specific artifact's full page using the Read tool. This fallback is per-artifact only; do not read full pages for artifacts that have a summary in the grep output.
 
 For each extractable topic in the source:
-  Search `wiki/index.md` for an existing entity with a matching or similar title/description. The index format is: `| ID | Title | Status | Type | Tags | Last Updated |` — match on the Title and description columns.
-  If a matching entity is found in the index:
+  Search the grep-extract summaries and `wiki/index.md` for an existing entity with a matching or similar title/description. Match on the index Title column and the summary content.
+  If a matching entity is found:
     → Set action: `"update"`, set `existing_id` to the matching entity's ID, set `change_summary` to what needs to change.
   If no matching entity is found:
     → Set action: `"create"`, set `id_to_assign` to `"{TYPE}-NNN"` (placeholder; real ID assigned at update time by `/sara-update`).

@@ -67,7 +67,17 @@ Using the source document and existing wiki context, identify all blockers in pr
 
 **Priority 3 — Missing context gaps:** Identify references to concepts, systems, decisions, or terms mentioned in the source that are not present in `wiki/index.md` and whose meaning is unclear from the source alone. List each gap with the source reference.
 
-**Priority 4 — Cross-link candidates:** Identify topics in the source that clearly relate to an existing wiki entity (by matching title or description in `wiki/index.md`). List each candidate with the wiki entity ID.
+**Priority 4 — Cross-link candidates:** Before identifying cross-link candidates, load artifact summaries using the grep-extract pattern:
+
+```bash
+grep -rh "^summary:" wiki/requirements/ wiki/decisions/ wiki/actions/ wiki/risks/ wiki/stakeholders/ 2>/dev/null
+```
+
+Use these summaries — alongside `wiki/index.md` (already loaded in Step 2) — to identify topics in the source that clearly relate to an existing wiki entity. The summaries give richer semantic signal than the index Title column alone for spotting relationships.
+
+**Fallback for summary-less artifacts (D-10):** If an artifact appears in `wiki/index.md` but is absent from the grep output (it has no `summary` field — a pre-existing artifact), fall back to the index Title column only for that artifact. Do NOT read full artifact pages during sara-discuss.
+
+List each cross-link candidate with the wiki entity ID.
 
 Present a structured blocker summary to the user before proceeding. Example format:
 
