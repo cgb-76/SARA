@@ -220,6 +220,10 @@ For each artifact in `{extraction_plan}`:
   **If `artifact.action == "update"`:**
 
     Read the existing file `{wiki_dir}{artifact.existing_id}.md` using the Read tool.
+    If the Read tool returns an error or empty content:
+      Output: `"Cannot update {artifact.existing_id}: file not found at {wiki_dir}{artifact.existing_id}.md"`
+      Append `{wiki_dir}{artifact.existing_id}.md` to `failed_files`.
+      Output the partial failure report and STOP.
     Apply `artifact.change_summary` to the relevant field(s) in the frontmatter or body. Update the `source` field to include `{item.id}` in addition to any existing source value. Update the `related` field by merging `artifact.related` with the existing related array (deduplicating by entity ID).
     Regenerate the `summary` field: read `summary_max_words` from pipeline-state.json (already in memory; default 50 if absent). Generate a fresh summary prose string using the same type-specific content rules as the create branch — REQ: title/status/description; DEC: options/chosen option/status/date; ACT: owner/due-date/status; RSK: likelihood/impact/mitigation/status; STK: vertical/department/role. Replace the existing `summary` value in the frontmatter with the newly generated string.
     Use the Write tool to overwrite `{wiki_dir}{artifact.existing_id}.md` with the updated content.
