@@ -160,7 +160,7 @@ Check 3 — Broken cross-refs:  skipped (v2)
 <notes>
 - pipeline-state.json is read using the Read tool only — never jq/sed/awk
 - Wiki artifact files are read and written using Read and Write tools only — never Bash text-processing tools
-- The `summary` field is inserted after `related:` in frontmatter — consistent position across all entity types
+- The `summary` field is inserted immediately after the `status:` field (REQ, DEC, ACT, RSK) or the `role:` field (STK), consistent with the entity schema templates in `.sara/templates/`
 - If any file write fails mid-loop: output a partial failure report listing written and unwritten files; the git commit has NOT been issued; re-run /sara-lint to retry (it will skip already-summarised files because the grep -rL scan only returns files still missing summary)
 - Commit happens only after ALL files in {missing_files} are successfully written
 - summary_max_words defaults to 50 if absent from pipeline-state.json (D-07)
