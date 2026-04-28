@@ -88,6 +88,8 @@ If `{missing_files}` is non-empty:
     STOP.
 
   If user selects "Proceed":
+    Initialize `written_files = []`.
+
     For each file in `{missing_files}`:
       Read the file using the Read tool.
       Determine type from the directory path.
@@ -99,11 +101,12 @@ If `{missing_files}` is non-empty:
         - STK: vertical, department, role — enough to distinguish from other stakeholders
       Insert `summary: "{generated_summary}"` into the frontmatter of the file, immediately after the `related:` field.
       Write the file back using the Write tool.
+      If write succeeds: append the file path to `written_files`.
       Do NOT use Bash text-processing tools (jq, sed, awk) — Read and Write tools only.
 
-    After all files are written, run git commit:
+    After all files are written, stage only the files that were actually written (not entire directories) and commit:
     ```bash
-    git add wiki/requirements/ wiki/decisions/ wiki/actions/ wiki/risks/ wiki/stakeholders/
+    git add {written_files...}   # pass each file path explicitly — never stage by directory glob
     git commit -m "fix(wiki): back-fill artifact summaries via sara-lint"
     echo "EXIT:$?"
     ```
