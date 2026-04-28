@@ -5,24 +5,14 @@ SARA is a personal, git-backed knowledge pipeline for solution design, operated 
 ## Requirements
 
 - [Claude Code](https://claude.ai/code) installed
-- A git-initialised project directory
 
 ## Installation
 
 From inside your project directory, run:
 
 ```bash
-git init
 curl -fsSL https://raw.githubusercontent.com/cgb-76/SARA/main/install.sh | bash
 ```
-
-## Setup
-
-After installation:
-
-1. Open Claude Code in your project directory
-2. Run `/sara-init` — this sets up the wiki structure and prompts for your project's vertical and department lists
-
 ## Updating
 
 Re-run the install command to update:
@@ -32,6 +22,13 @@ curl -fsSL https://raw.githubusercontent.com/cgb-76/SARA/main/install.sh | bash
 ```
 
 Downgrade protection is built in — if the source version is older than what you have installed, a warning is printed and that skill is skipped. Use `--force` to override.
+
+## Setup
+
+After installation:
+
+1. Open Claude Code in your project directory
+2. Run `/sara-init` — this sets up the wiki structure and prompts for your project's vertical and department lists
 
 ## Commands
 

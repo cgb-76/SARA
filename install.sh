@@ -50,10 +50,10 @@ done
 TARGET_DIR="$PWD"
 BASE_URL="https://raw.githubusercontent.com/${REPO}/${BRANCH}"
 
-# Guard: must be run inside a git repository (D-03)
+# Ensure a git repository exists — initialise one if needed (D-03)
 if [[ ! -d "$TARGET_DIR/.git" ]]; then
-  echo "Error: install.sh must be run inside a git repository. SARA pipeline commands depend on git commits." >&2
-  exit 1
+  echo "No git repository found — running git init..."
+  git -C "$TARGET_DIR" init
 fi
 
 # Known skills — fixed set for this release
