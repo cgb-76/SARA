@@ -43,6 +43,11 @@ Agent receives via prompt:
    - Cross-reference confirmations (artifact relates to an existing wiki entity): "The artifact '{title}' appears to relate to {ID} '{existing_title}'. Confirm as a cross-link? (yes/no)"
    If there are no ambiguities, duplicates, or cross-references: set `questions` to [].
 
+   **ID resolution rule (mandatory):** Every entity ID that appears in a question string MUST be accompanied by the entity's human-readable name or title in the same string. Never reference a bare ID. Look up names/titles from `<wiki_index>` or `<grep_summaries>`:
+   - For artifact IDs (REQ-, DEC-, ACT-, RSK-): include the Title column from wiki/index.md — e.g. `ACT-001 "Schedule kickoff meeting"` not just `ACT-001`
+   - For stakeholder IDs (STK-): include the person's name from wiki/index.md — e.g. `STK-006 "Alice Wang"` not just `STK-006`
+   If the name cannot be found in the provided index or summaries, write the ID with a `(name unknown)` suffix rather than leaving it bare.
+
 6. Build the `cleaned_artifacts` array: the deduplicated, type-resolved list with create-vs-update set and related fields populated. Exclude duplicates that the human will resolve via questions — those will be re-added after resolution.
 </process>
 

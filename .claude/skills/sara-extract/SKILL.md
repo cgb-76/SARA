@@ -86,17 +86,15 @@ Parse `{sorter_output}`:
 - `{sorter_questions}` = sorter_output.questions
 
 If `{sorter_questions}` is non-empty:
-  Present all questions to the user as plain text before the approval loop:
-  ```
-  Before reviewing individual artifacts, please resolve the following:
+  For each question in `{sorter_questions}`, one at a time:
+    Present the question as plain text:
+    ```
+    Sorter question {i} of {total}: {question}
+    ```
+    Wait for the user's reply using a plain-text wait (freeform — do NOT use AskUserQuestion here).
+    Apply the user's resolution to `{cleaned_artifacts}` before moving to the next question.
 
-  {sorter_questions[0]}
-  {sorter_questions[1]}
-  ...
-  ```
-  Wait for the user's reply using a plain-text wait. Apply the user's resolutions to `{cleaned_artifacts}` (e.g. confirm/reject a type assignment, merge a duplicate into an update, confirm a cross-link).
-
-Proceed to Step 4 with `{cleaned_artifacts}` as the artifact list. The sorter questions are now fully resolved.
+Proceed to Step 4 with `{cleaned_artifacts}` as the artifact list. All sorter questions are now resolved.
 
 **Step 4 — Per-artifact approval loop**
 
