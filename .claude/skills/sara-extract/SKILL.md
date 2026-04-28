@@ -11,7 +11,7 @@ version: 1.0.0
 ---
 
 <objective>
-This skill reads the source document and discussion notes for pipeline item N, checks existing wiki pages for deduplication, and presents each planned artifact (with source-quote evidence) for user approval via accept/reject/discuss. Approved artifacts are written to `extraction_plan` in `pipeline-state.json` and the item stage advances to `approved`; no wiki files are created or modified by this skill.
+This skill reads the source document and discussion notes for pipeline item N, dispatches four specialist extraction agents (one per entity type) via Task() in parallel, passes their merged output to a sorter agent that deduplicates and resolves create-vs-update decisions, presents the sorter's ambiguity questions to the user, and then runs the per-artifact Accept/Reject/Discuss loop on the cleaned artifact list. Approved artifacts are written to `extraction_plan` in `pipeline-state.json` and the item stage advances to `approved`; no wiki files are created or modified by this skill.
 </objective>
 
 <process>
@@ -37,7 +37,7 @@ If actual stage != `"extracting"`:
 
 Store `{item}` = `items["{N}"]` for use in subsequent steps.
 
-**Step 2 — Load source, discussion notes, and dedup context**
+**Step 2 — Load source, discussion notes, and wiki index**
 
 Read `{item.source_path}` using the Read tool. This is the source document.
 
@@ -45,60 +45,58 @@ Read `{item.source_path}` using the Read tool. This is the source document.
 
 Read `wiki/index.md` HERE using the Read tool. Reading the index at this step (not at skill entry) ensures it is fresh — it may have been updated by `/sara-add-stakeholder` during the preceding `/sara-discuss` session. (See notes — Pitfall 4 guard.)
 
-**Step 3 — Generate artifact list with dedup check**
+**Step 3 — Dispatch specialist agents and sorter**
 
-Load artifact summaries using the grep-extract pattern — run this Bash command before the dedup loop:
+Spawn four specialist agents via Task() in parallel, passing the source document content and discussion_notes string explicitly in each prompt. Agents start cold and have no implicit access to pipeline-state.json or the wiki.
 
+Task prompt template for each specialist:
+```
+You are {agent-name}. Extract {type} artifacts only.
+
+<source_document>
+{full content of source file read in Step 2}
+</source_document>
+
+<discussion_notes>
+{discussion_notes string from pipeline-state.json, or empty string if not set}
+</discussion_notes>
+
+Return a JSON array of {type} artifacts. Each artifact must include a source_quote.
+```
+
+Spawn all four in parallel (or sequentially if context window is a concern):
+- Task(`sara-requirement-extractor`, prompt=source+discussion_notes) → `{req_artifacts}` (JSON array)
+- Task(`sara-decision-extractor`, prompt=source+discussion_notes) → `{dec_artifacts}` (JSON array)
+- Task(`sara-action-extractor`, prompt=source+discussion_notes) → `{act_artifacts}` (JSON array)
+- Task(`sara-risk-extractor`, prompt=source+discussion_notes) → `{risk_artifacts}` (JSON array)
+
+Merge all four arrays:
+`{merged}` = req_artifacts + dec_artifacts + act_artifacts + risk_artifacts
+
+Load grep summaries using the Bash tool:
 ```bash
 grep -rh "^summary:" wiki/requirements/ wiki/decisions/ wiki/actions/ wiki/risks/ wiki/stakeholders/ 2>/dev/null
 ```
 
-This returns one `summary: "..."` line per artifact that has a summary field. Use these summaries — alongside `wiki/index.md` (already loaded in Step 2) — to identify create-vs-update decisions and cross-link opportunities. The summaries give richer semantic signal than the index Title column alone.
+Spawn sorter:
+- Task(`sara-artifact-sorter`, prompt=merged+grep_summaries+wiki_index) → `{sorter_output}` (JSON object)
 
-**Fallback for summary-less artifacts (D-10):** If an artifact appears in `wiki/index.md` but is absent from the grep output (it has no `summary` field — a pre-existing artifact created before Phase 5), fall back to reading that specific artifact's full page using the Read tool. This fallback is per-artifact only; do not read full pages for artifacts that have a summary in the grep output.
+Parse `{sorter_output}`:
+- `{cleaned_artifacts}` = sorter_output.cleaned_artifacts
+- `{sorter_questions}` = sorter_output.questions
 
-For each extractable topic in the source:
-  Search the grep-extract summaries and `wiki/index.md` for an existing entity with a matching or similar title/description. Match on the index Title column and the summary content.
-  If a matching entity is found:
-    → Set action: `"update"`, set `existing_id` to the matching entity's ID, set `change_summary` to what needs to change.
-  If no matching entity is found:
-    → Set action: `"create"`, set `id_to_assign` to `"{TYPE}-NNN"` (placeholder; real ID assigned at update time by `/sara-update`).
+If `{sorter_questions}` is non-empty:
+  Present all questions to the user as plain text before the approval loop:
+  ```
+  Before reviewing individual artifacts, please resolve the following:
 
-Every artifact MUST include `source_quote`: an exact verbatim passage from the source document that supports this artifact. Do not generate any artifact without a source quote. This is the evidence trail and is mandatory.
+  {sorter_questions[0]}
+  {sorter_questions[1]}
+  ...
+  ```
+  Wait for the user's reply using a plain-text wait. Apply the user's resolutions to `{cleaned_artifacts}` (e.g. confirm/reject a type assignment, merge a duplicate into an update, confirm a cross-link).
 
-Build a list of artifact objects following this schema:
-
-```json
-{
-  "action": "create",
-  "type": "requirement",
-  "id_to_assign": "REQ-NNN",
-  "title": "Title of the requirement",
-  "source_quote": "Exact verbatim text from source document supporting this artifact",
-  "raised_by": "STK-NNN",
-  "related": [],
-  "change_summary": ""
-}
-```
-
-For UPDATE artifacts:
-
-```json
-{
-  "action": "update",
-  "type": "decision",
-  "existing_id": "DEC-001",
-  "title": "Title of existing decision",
-  "source_quote": "Exact verbatim text from source document motivating this update",
-  "raised_by": "STK-NNN",
-  "related": [],
-  "change_summary": "What should be added or changed in the existing page"
-}
-```
-
-Fields `id_to_assign` and `existing_id` are mutually exclusive: use `id_to_assign` for action=create, `existing_id` for action=update. Omit the inapplicable field or set it to `""`.
-
-Valid types: `"requirement"`, `"decision"`, `"action"`, `"risk"`.
+Proceed to Step 4 with `{cleaned_artifacts}` as the artifact list. The sorter questions are now fully resolved.
 
 **Step 4 — Per-artifact approval loop**
 
@@ -188,4 +186,8 @@ If zero artifacts were accepted: still write the empty `extraction_plan: []` and
 - Topics matching existing wiki entities MUST produce UPDATE artifacts (action=update), not duplicate CREATE artifacts. The dedup check at Step 3 is required for every topic — not optional.
 - pipeline-state.json is written using Read + Write tools only — never Bash shell text-processing tools.
 - NOTE: The canonical artifact schema field `raised_by` (defined in the plan interfaces) contains the letter sequence "sed" as a substring of "raised". The grep check `grep "jq\|sed\|awk"` will match this field name. This is a false positive — no shell text-processing tools are referenced in this skill. The field name is non-negotiable: it is the canonical schema consumed by `/sara-update`.
+- Agent dispatch: sara-extract spawns four specialist agents (sara-requirement-extractor, sara-decision-extractor, sara-action-extractor, sara-risk-extractor) via Task() in parallel. Each receives only the raw source content and discussion_notes — no wiki state (D-03, D-04). The sorter agent (sara-artifact-sorter) receives the merged output plus grep summaries and wiki/index.md (D-07). Specialist agents always return action="create"; the sorter resolves create-vs-update (D-06).
+- Sorter questions are presented to the human BEFORE the approval loop starts (Step 4). Never present sorter questions inside the artifact loop (Pitfall 4 guard).
+- If a specialist agent returns an empty array [], merge it as zero elements — skip silently, do not generate a question about the absent type.
+- The `discussion_notes` string MUST be passed explicitly in each specialist Task() prompt. Agents start cold and have no implicit access to pipeline-state.json. An empty discussion_notes string is valid — pass it as an empty string, not omitted. (Pitfall 1 guard.)
 </notes>
