@@ -66,6 +66,7 @@ SKILLS=(
   sara-add-stakeholder
   sara-minutes
   sara-agenda
+  sara-lint
 )
 
 TARGET_SKILLS_DIR="$TARGET_DIR/.claude/skills"
