@@ -112,8 +112,8 @@ For each artifact in `{extraction_plan}`:
     ```
 
     **Wikilink rule:** Never write a bare entity ID in body prose. When referencing any entity
-    in body text, always use the `[[ID|display text]]` form where display text = ID + title/name:
-    - STK entities: display text = `{ID} {name}` (e.g. `[[STK-001|STK-001 Rajiwath Patel]]`).
+    in body text, always use the `[[ID|display text]]` form:
+    - STK entities: display text = name only (e.g. `[[STK-001|Rajiwath Patel]]`).
       Read `wiki/stakeholders/{ID}.md` to resolve the name.
     - REQ / DEC / ACT / RISK entities: display text = `{ID} {title}` (e.g.
       `[[DEC-007|DEC-007 Defer SSO to Phase 3]]`). Read the wiki page or look up `wiki/index.md`.
@@ -129,7 +129,7 @@ For each artifact in `{extraction_plan}`:
     should support the prose, not replace names or become grammatical subjects. Prefer:
     "Rajiwath Patel asked Sarah Chen to update the auth token spec
     ([[ACT-002|ACT-002 Update auth token specification]])."
-    Over: "[[STK-001|STK-001 Rajiwath Patel]] told [[STK-009|STK-009 Sarah Chen]] to focus on
+    Over: "[[STK-001|Rajiwath Patel]] told [[STK-009|Sarah Chen]] to focus on
     [[ACT-002|ACT-002 Update auth token specification]]."
 
     For every section, synthesise content if the source document or discussion notes contain
