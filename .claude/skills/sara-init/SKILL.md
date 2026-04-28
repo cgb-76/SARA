@@ -129,6 +129,7 @@ variable substitution needed — all counters start at zero):
 
 ```json
 {
+  "summary_max_words": 50,
   "counters": {
     "ingest": { "MTG": 0, "EML": 0, "SLK": 0, "DOC": 0 },
     "entity": { "REQ": 0, "DEC": 0, "ACT": 0, "RISK": 0, "STK": 0 }
@@ -175,6 +176,11 @@ All SARA pipeline commands that read or write wiki pages must follow the rules b
    never file paths, relative links, or Obsidian wiki-links. In body prose, always use
    `[[ID|ID Title]]` (ID prefix + title or name, e.g. `[[DEC-007|DEC-007 Defer SSO to Phase 3]]`) —
    never a bare `[[ID]]` or raw ID string. Frontmatter fields remain plain IDs.
+6. **Summary field:** When writing or updating any wiki artifact, always generate or refresh the
+   `summary` field using the type-specific content rules (REQ: title/status/description;
+   DEC: options considered/chosen option/status/date; ACT: owner/due-date/status;
+   RISK: likelihood/impact/mitigation/status; STK: vertical/department/role) and the
+   `summary_max_words` limit from `.sara/pipeline-state.json` (default: 50 words if absent).
 
 ## Entity Schemas
 
@@ -192,6 +198,7 @@ owner: ""      # stakeholder ID (e.g. STK-001)
 schema_version: "1.0"
 tags: []
 related: []    # entity IDs (e.g. [DEC-001, ACT-002])
+summary: ""  # REQ: title, status, one-line description of what is required
 ---
 
 ## Description
@@ -218,6 +225,7 @@ supersedes: ""    # DEC-NNN or empty
 schema_version: "1.0"
 tags: []
 related: []
+summary: ""  # DEC: options considered, chosen option/recommendation, status, decision date
 ---
 
 ## Context
@@ -243,6 +251,7 @@ source: ""     # ingest ID (e.g. MTG-001)
 schema_version: "1.0"
 tags: []
 related: []
+summary: ""  # ACT: owner, due-date, status (open/in-progress/done/cancelled)
 ---
 
 ## Description
@@ -266,6 +275,7 @@ source: ""      # ingest ID (e.g. MTG-001)
 schema_version: "1.0"
 tags: []
 related: []
+summary: ""  # RISK: likelihood, impact, mitigation approach, status
 ---
 
 ## Description
@@ -288,6 +298,7 @@ email: ""
 role: ""
 schema_version: "1.0"
 related: []
+summary: ""  # STK: vertical, department, role — enough to distinguish from other stakeholders
 ---
 ```
 ```
@@ -357,6 +368,7 @@ owner: ""      # stakeholder ID (e.g. STK-001)
 schema_version: "1.0"
 tags: []
 related: []    # entity IDs (e.g. [DEC-001, ACT-002])
+summary: ""  # REQ: title, status, one-line description of what is required
 ---
 
 ## Description
@@ -383,6 +395,7 @@ supersedes: ""    # DEC-NNN or empty
 schema_version: "1.0"
 tags: []
 related: []
+summary: ""  # DEC: options considered, chosen option/recommendation, status, decision date
 ---
 
 ## Context
@@ -408,6 +421,7 @@ source: ""     # ingest ID (e.g. MTG-001)
 schema_version: "1.0"
 tags: []
 related: []
+summary: ""  # ACT: owner, due-date, status (open/in-progress/done/cancelled)
 ---
 
 ## Description
@@ -431,6 +445,7 @@ source: ""      # ingest ID (e.g. MTG-001)
 schema_version: "1.0"
 tags: []
 related: []
+summary: ""  # RISK: likelihood, impact, mitigation approach, status
 ---
 
 ## Description
@@ -453,6 +468,7 @@ email: ""
 role: ""
 schema_version: "1.0"
 related: []
+summary: ""  # STK: vertical, department, role — enough to distinguish from other stakeholders
 ---
 ```
 
