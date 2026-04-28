@@ -191,14 +191,13 @@ All SARA pipeline commands that read or write wiki pages must follow the rules b
 id: REQ-000
 title: ""
 status: open  # open | accepted | rejected | superseded
-description: ""
+summary: ""  # REQ: title, status, one-line description of what is required
 source: ""     # ingest ID (e.g. MTG-001)
 raised-by: ""  # stakeholder ID (e.g. STK-001)
 owner: ""      # stakeholder ID (e.g. STK-001)
 schema_version: "1.0"
 tags: []
 related: []    # entity IDs (e.g. [DEC-001, ACT-002])
-summary: ""  # REQ: title, status, one-line description of what is required
 ---
 
 ## Description
@@ -215,6 +214,7 @@ summary: ""  # REQ: title, status, one-line description of what is required
 id: DEC-000
 title: ""
 status: proposed  # proposed | accepted | rejected | superseded
+summary: ""  # DEC: options considered, chosen option/recommendation, status, decision date
 context: ""
 decision: ""
 rationale: ""
@@ -225,7 +225,6 @@ supersedes: ""    # DEC-NNN or empty
 schema_version: "1.0"
 tags: []
 related: []
-summary: ""  # DEC: options considered, chosen option/recommendation, status, decision date
 ---
 
 ## Context
@@ -244,14 +243,13 @@ summary: ""  # DEC: options considered, chosen option/recommendation, status, de
 id: ACT-000
 title: ""
 status: open  # open | in-progress | done | cancelled
-description: ""
+summary: ""  # ACT: owner, due-date, status (open/in-progress/done/cancelled)
 owner: ""      # stakeholder ID (e.g. STK-001)
 due-date: ""   # ISO 8601
 source: ""     # ingest ID (e.g. MTG-001)
 schema_version: "1.0"
 tags: []
 related: []
-summary: ""  # ACT: owner, due-date, status (open/in-progress/done/cancelled)
 ---
 
 ## Description
@@ -266,7 +264,7 @@ summary: ""  # ACT: owner, due-date, status (open/in-progress/done/cancelled)
 id: RISK-000
 title: ""
 status: open  # open | mitigated | accepted | closed
-description: ""
+summary: ""  # RISK: likelihood, impact, mitigation approach, status
 likelihood: ""  # low | medium | high
 impact: ""      # low | medium | high
 owner: ""       # stakeholder ID (e.g. STK-001)
@@ -275,7 +273,6 @@ source: ""      # ingest ID (e.g. MTG-001)
 schema_version: "1.0"
 tags: []
 related: []
-summary: ""  # RISK: likelihood, impact, mitigation approach, status
 ---
 
 ## Description
@@ -296,9 +293,9 @@ vertical: ""    # from project config verticals list
 department: ""  # from project config departments list
 email: ""
 role: ""
+summary: ""  # STK: vertical, department, role — enough to distinguish from other stakeholders
 schema_version: "1.0"
 related: []
-summary: ""  # STK: vertical, department, role — enough to distinguish from other stakeholders
 ---
 ```
 ```
@@ -361,14 +358,13 @@ file as a separate Write call.
 id: REQ-000
 title: ""
 status: open  # open | accepted | rejected | superseded
-description: ""
+summary: ""  # REQ: title, status, one-line description of what is required
 source: ""     # ingest ID (e.g. MTG-001)
 raised-by: ""  # stakeholder ID (e.g. STK-001)
 owner: ""      # stakeholder ID (e.g. STK-001)
 schema_version: "1.0"
 tags: []
 related: []    # entity IDs (e.g. [DEC-001, ACT-002])
-summary: ""  # REQ: title, status, one-line description of what is required
 ---
 
 ## Description
@@ -385,6 +381,7 @@ summary: ""  # REQ: title, status, one-line description of what is required
 id: DEC-000
 title: ""
 status: proposed  # proposed | accepted | rejected | superseded
+summary: ""  # DEC: options considered, chosen option/recommendation, status, decision date
 context: ""
 decision: ""
 rationale: ""
@@ -395,7 +392,6 @@ supersedes: ""    # DEC-NNN or empty
 schema_version: "1.0"
 tags: []
 related: []
-summary: ""  # DEC: options considered, chosen option/recommendation, status, decision date
 ---
 
 ## Context
@@ -414,14 +410,13 @@ summary: ""  # DEC: options considered, chosen option/recommendation, status, de
 id: ACT-000
 title: ""
 status: open  # open | in-progress | done | cancelled
-description: ""
+summary: ""  # ACT: owner, due-date, status (open/in-progress/done/cancelled)
 owner: ""      # stakeholder ID (e.g. STK-001)
 due-date: ""   # ISO 8601
 source: ""     # ingest ID (e.g. MTG-001)
 schema_version: "1.0"
 tags: []
 related: []
-summary: ""  # ACT: owner, due-date, status (open/in-progress/done/cancelled)
 ---
 
 ## Description
@@ -436,7 +431,7 @@ summary: ""  # ACT: owner, due-date, status (open/in-progress/done/cancelled)
 id: RISK-000
 title: ""
 status: open  # open | mitigated | accepted | closed
-description: ""
+summary: ""  # RISK: likelihood, impact, mitigation approach, status
 likelihood: ""  # low | medium | high
 impact: ""      # low | medium | high
 owner: ""       # stakeholder ID (e.g. STK-001)
@@ -445,7 +440,6 @@ source: ""      # ingest ID (e.g. MTG-001)
 schema_version: "1.0"
 tags: []
 related: []
-summary: ""  # RISK: likelihood, impact, mitigation approach, status
 ---
 
 ## Description
@@ -466,9 +460,9 @@ vertical: ""    # from project config verticals list
 department: ""  # from project config departments list
 email: ""
 role: ""
+summary: ""  # STK: vertical, department, role — enough to distinguish from other stakeholders
 schema_version: "1.0"
 related: []
-summary: ""  # STK: vertical, department, role — enough to distinguish from other stakeholders
 ---
 ```
 

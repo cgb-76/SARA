@@ -80,7 +80,6 @@ For each artifact in `{extraction_plan}`:
     Construct the wiki page content by substituting all fields from the artifact into the template frontmatter and body:
     - `id` = `{assigned_id}`
     - `title` = `artifact.title`
-    - `description` = `artifact.title` (frontmatter one-liner — the source quote is preserved in the body callout instead)
     - `source` = `{item.id}` (e.g. `MTG-001`)
     - `raised-by` = `artifact.raised_by` (note: template field is `raised-by`; artifact schema field is `raised_by`)
     - `related` = `artifact.related` (array of entity IDs)

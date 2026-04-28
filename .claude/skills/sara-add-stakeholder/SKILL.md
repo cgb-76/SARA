@@ -116,6 +116,7 @@ vertical: "{vertical}"    # from project config verticals list
 department: "{department}"  # from project config departments list
 email: "{email}"
 role: "{role}"
+summary: ""  # STK: vertical, department, role — enough to distinguish from other stakeholders
 schema_version: "1.0"
 related: []
 ---
