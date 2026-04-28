@@ -115,6 +115,37 @@ for skill_name in "${SKILLS[@]}"; do
   INSTALLED+=("${skill_name}")
 done
 
+# Known agent files — fixed set for this release
+AGENTS=(
+  sara-requirement-extractor
+  sara-decision-extractor
+  sara-action-extractor
+  sara-risk-extractor
+  sara-artifact-sorter
+)
+
+TARGET_AGENTS_DIR="$TARGET_DIR/.claude/agents"
+mkdir -p "$TARGET_AGENTS_DIR"
+
+for agent_name in "${AGENTS[@]}"; do
+  src_url="${BASE_URL}/.claude/agents/${agent_name}.md"
+  dest_file="${TARGET_AGENTS_DIR}/${agent_name}.md"
+
+  tmp_file="$(mktemp)"
+  if ! curl -fsSL "${src_url}" -o "${tmp_file}" 2>/dev/null; then
+    echo "Warning: could not download ${agent_name} from ${src_url} — skipping." >&2
+    rm -f "${tmp_file}"
+    continue
+  fi
+
+  if [[ "$BACKUP" = "true" ]] && [[ -f "$dest_file" ]]; then
+    cp "${dest_file}" "${dest_file}.bak"
+  fi
+
+  mv "${tmp_file}" "${dest_file}"
+  INSTALLED+=("${agent_name}")
+done
+
 # Post-install output (D-07)
 if [[ ${#INSTALLED[@]} -eq 0 ]]; then
   echo "No skills were installed."
