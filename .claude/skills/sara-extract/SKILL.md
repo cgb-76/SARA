@@ -82,6 +82,12 @@ Spawn sorter:
 - Task(`sara-artifact-sorter`, prompt=merged+grep_summaries+wiki_index) → `{sorter_output}` (JSON object)
 
 Parse `{sorter_output}`:
+
+If `{sorter_output}` cannot be parsed as a valid JSON object, or if `cleaned_artifacts` is absent from the parsed result:
+  Output: `"Sorter agent returned invalid output. Raw response: {sorter_output}"`
+  Output: `"Re-run /sara-extract {N} to retry. If the error persists, reduce the source document size."`
+  STOP.
+
 - `{cleaned_artifacts}` = sorter_output.cleaned_artifacts
 - `{sorter_questions}` = sorter_output.questions
 
