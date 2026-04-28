@@ -112,11 +112,13 @@ For each artifact in `{extraction_plan}`:
     ```
 
     **Wikilink rule:** Never write a bare entity ID in body prose. When referencing any entity
-    in body text, always use the `[[ID|display text]]` form:
-    - STK entities: display text = the stakeholder's `name` field (read `wiki/stakeholders/{ID}.md`).
-    - REQ / DEC / ACT / RISK entities: display text = the entity's `title` field (read the wiki
-      page or look up the `title` column in `wiki/index.md`).
-    - Ingest IDs (MTG, EML, SLK, DOC): display text = type and date (e.g. `[[MTG-001|Meeting 2026-04-27]]`).
+    in body text, always use the `[[ID|display text]]` form where display text = ID + title/name:
+    - STK entities: display text = `{ID} {name}` (e.g. `[[STK-001|STK-001 Rajiwath Patel]]`).
+      Read `wiki/stakeholders/{ID}.md` to resolve the name.
+    - REQ / DEC / ACT / RISK entities: display text = `{ID} {title}` (e.g.
+      `[[DEC-007|DEC-007 Defer SSO to Phase 3]]`). Read the wiki page or look up `wiki/index.md`.
+    - Ingest IDs (MTG, EML, SLK, DOC): display text = `{ID} {title}` (e.g.
+      `[[MTG-001|MTG-001 ACME Platform Integration Review]]`). Use the source document title.
     - Frontmatter fields (`raised-by`, `related`, `source`, `owner`) remain plain IDs — this rule
       applies to body text only.
     - `wiki/index.md` and `wiki/log.md` table rows use bare `[[ID]]` — they are structured tables,
@@ -126,9 +128,9 @@ For each artifact in `{extraction_plan}`:
     **Prose-first rule:** Write synthesised body sections as natural language. Entity references
     should support the prose, not replace names or become grammatical subjects. Prefer:
     "Rajiwath Patel asked Sarah Chen to update the auth token spec
-    ([[ACT-002|Update auth token specification]])."
-    Over: "[[STK-001|Rajiwath Patel]] told [[STK-009|Sarah Chen]] to focus on
-    [[ACT-002|Update auth token specification]]."
+    ([[ACT-002|ACT-002 Update auth token specification]])."
+    Over: "[[STK-001|STK-001 Rajiwath Patel]] told [[STK-009|STK-009 Sarah Chen]] to focus on
+    [[ACT-002|ACT-002 Update auth token specification]]."
 
     For every section, synthesise content if the source document or discussion notes contain
     relevant material. If nothing relevant is available for a section, leave it empty (heading

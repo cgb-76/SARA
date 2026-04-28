@@ -173,8 +173,8 @@ All SARA pipeline commands that read or write wiki pages must follow the rules b
    `.sara/pipeline-state.json`. Read the post-increment value and use it as the new ID (e.g. REQ-001).
 5. **Cross-references:** `related` fields must use entity IDs only (e.g. `REQ-001`, `DEC-003`) —
    never file paths, relative links, or Obsidian wiki-links. In body prose, always use
-   `[[ID|display text]]` (title or name) — never a bare `[[ID]]` or raw ID string.
-   Frontmatter fields remain plain IDs.
+   `[[ID|ID Title]]` (ID prefix + title or name, e.g. `[[DEC-007|DEC-007 Defer SSO to Phase 3]]`) —
+   never a bare `[[ID]]` or raw ID string. Frontmatter fields remain plain IDs.
 
 ## Entity Schemas
 
