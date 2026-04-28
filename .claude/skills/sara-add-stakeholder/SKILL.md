@@ -125,25 +125,17 @@ No body sections. Frontmatter only — stakeholders are reference data, not docu
 
 **Step 5 — Update wiki/index.md and wiki/log.md**
 
-Read `wiki/index.md` using the Read tool.
+Append a new row to `wiki/index.md` using Bash (no file read needed):
 
-Append a new row to the table:
-
-```
-| [[{new_id}]] | {name} | active | stakeholder | [] | {today YYYY-MM-DD} |
+```bash
+printf '%s\n' "| [[{new_id}]] | {name} | active | stakeholder | [] | {today YYYY-MM-DD} |" >> wiki/index.md
 ```
 
-Write the updated `wiki/index.md` back using the Write tool.
+Append an entry to `wiki/log.md` using Bash (no file read needed):
 
-Read `wiki/log.md` using the Read tool.
-
-Append the following entry after the existing content:
-
+```bash
+printf '%s\n' "| — | {today YYYY-MM-DD} | stakeholder | (standalone) | {new_id} created — {name} |" >> wiki/log.md
 ```
-| — | {today YYYY-MM-DD} | stakeholder | (standalone) | {new_id} created — {name} |
-```
-
-Write the updated `wiki/log.md` back using the Write tool.
 
 **Step 6 — Commit and report**
 

@@ -68,9 +68,7 @@ For each artifact in `{extraction_plan}`:
     - `action`      → `ACT`
     - `risk`        → `RISK`
 
-    Re-read `.sara/pipeline-state.json` using the Read tool (re-read to get current counter values — a previous artifact in this loop may have incremented the counter already).
-
-    Increment `counters.entity.{entity_type_key}` by 1.
+    Increment `counters.entity.{entity_type_key}` by 1 in the in-memory JSON state (do NOT re-read `pipeline-state.json` — the counters loaded in Step 1 are kept current in memory across loop iterations; each Write call below persists the latest state).
 
     Write the updated `pipeline-state.json` immediately using the Write tool (the counter increment MUST be persisted before the page is written — this prevents duplicate ID assignment if a page write fails and the skill is re-run).
 
@@ -239,21 +237,17 @@ Do NOT use git reset — no commit was made; the written files are uncommitted c
 
 After all artifact files are written successfully:
 
-Read `wiki/index.md` using the Read tool.
+**Index — CREATE artifacts:** For each artifact with `action == "create"`, append its row directly using Bash (no file read needed):
+```bash
+printf '%s\n' "| [[{assigned_id}]] | {artifact.title} | open | {artifact.type} | [] | {today YYYY-MM-DD} |" >> wiki/index.md
+```
 
-For each artifact written in Step 2:
-  - `action == "create"`: append a new row to the index table:
-    `| [[{assigned_id}]] | {artifact.title} | open | {artifact.type} | [] | {today YYYY-MM-DD} |`
-  - `action == "update"`: find the existing row matching `{artifact.existing_id}` in the table and update its `Last Updated` column to today's date.
+**Index — UPDATE artifacts:** If any artifacts have `action == "update"`, read `wiki/index.md` once using the Read tool, then use the Edit tool to update the `Last Updated` column in each affected row (find the row by `{artifact.existing_id}`, replace only the date cell). Perform all UPDATE row edits before proceeding. If no UPDATE artifacts exist, skip this read entirely.
 
-Write the updated `wiki/index.md` using the Write tool.
-
-Read `wiki/log.md` using the Read tool.
-
-Append the following entry as a new line after the last row (or after the header comment if the log is empty):
-`| [[{item.id}]] | {today YYYY-MM-DD} | {item.type} | {item.filename} | {comma-separated list of [[ID]] wikilinks for all artifact IDs written} |`
-
-Write the updated `wiki/log.md` using the Write tool.
+**Log — append entry:** Append the log row using Bash (no file read needed):
+```bash
+printf '%s\n' "| [[{item.id}]] | {today YYYY-MM-DD} | {item.type} | {item.filename} | {comma-separated [[ID]] wikilinks for all artifact IDs written} |" >> wiki/log.md
+```
 
 **Step 4 — Archive source file**
 
@@ -329,7 +323,7 @@ Check the exit code from the `echo "EXIT:$?"` output.
 
 <notes>
 - CRITICAL: Stage advances to `"complete"` ONLY after the git commit succeeds (exit code 0). Writing `stage=complete` before the commit is a fatal error — the item would be permanently stuck with no way to re-run `/sara-update` (Pitfall 1 from 02-RESEARCH.md). The correct ordering is: (1) write all wiki files, (2) git add + commit, (3) only then write `stage=complete`.
-- CRITICAL: Entity counter increments happen BEFORE each create-action page write, and the updated counter is written to `pipeline-state.json` immediately (as a separate Write call before the page Write call). This prevents duplicate ID assignment if a page write fails and the skill is re-run — the counter stays at its incremented value across re-runs.
+- CRITICAL: Entity counter increments happen BEFORE each create-action page write, and the updated counter is written to `pipeline-state.json` immediately (as a separate Write call before the page Write call). This prevents duplicate ID assignment if a page write fails and the skill is re-run. Counters are tracked in-memory across loop iterations — the in-memory state is authoritative after each Write; do NOT re-read `pipeline-state.json` inside the loop.
 - The N argument is the full pipeline item ID (e.g. `MTG-001`). The JSON key in `items` is that same ID string. For `/sara-update MTG-001`, look up `items["MTG-001"]`. The `item.id` field equals the key — it appears in the commit message, the `source` field of written pages, and the log entry.
 - Source file tracking: files dropped manually into `raw/input/` are untracked by git. Use `git ls-files --error-unmatch` to check before moving. If tracked: use `git mv` (git handles both the rename and the stage). If untracked: use `mv` and then include the archive path in `git add` (the move appears as a new file at the archive path). The `git add` command in Step 5 covers the archive path in both cases. The archived filename is always `{item.id}-{item.filename}` (e.g. `MTG-001-transcript.md`) — never just the numeric portion.
 - Do NOT auto-rollback on partial failure (D-14). The user has full git history. Report which files were written and which were not; let the user decide whether to `git reset` or re-run `/sara-update {N}` after fixing the root cause. The written files are uncommitted changes — no commit was made.

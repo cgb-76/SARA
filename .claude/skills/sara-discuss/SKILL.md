@@ -45,9 +45,15 @@ Read `raw/input/{item.filename}` using the Read tool. This is the source documen
 
 Read `wiki/index.md` using the Read tool. This is the existing entity catalog for cross-link identification.
 
-Read all files in `wiki/stakeholders/` using the Read tool. For each STK page found, extract both the `name` field and the `nickname` field from the frontmatter. Build a lookup `known_names` = the set of all `name` values AND all non-empty `nickname` values across all STK pages.
+Build `known_names` by running a Bash grep across all STK page frontmatter — do NOT read individual stakeholder pages into context:
 
-  Example: if STK-001 has `name: "Rajiwath Patel"` and `nickname: "Raj"`, then both `"Rajiwath Patel"` and `"Raj"` are in `known_names`. A source reference to "Raj" is NOT unknown.
+```bash
+grep -rh "^\(name\|nickname\):" wiki/stakeholders/ 2>/dev/null
+```
+
+Parse each output line to extract the value after the colon (stripping quotes and whitespace). Collect all non-empty values into the `known_names` set.
+
+  Example: if the grep output contains `name: "Rajiwath Patel"` and `nickname: "Raj"`, both `"Rajiwath Patel"` and `"Raj"` are in `known_names`. A source reference to "Raj" is NOT unknown.
 
 Read `.sara/config.json` using the Read tool. This is needed by `/sara-add-stakeholder` when invoked inline in Step 4.
 
@@ -164,7 +170,7 @@ Run /sara-extract {N} to proceed to extraction.
 
 <notes>
 - Stakeholder matching in Step 2 and Step 3 MUST check both the `name` field AND the `nickname` field in every STK page. A source reference to "Raj" is NOT unknown if any STK page has `nickname: "Raj"` — even if the page's `name` field is "Rajiwath Patel". Failure to check both fields causes false unknown-stakeholder blockers.
-- The `known_names` set is built at Step 2 from a fresh read of `wiki/stakeholders/`. Do not rely on any cached or earlier-read index — re-read the directory at this point so any STK pages created by prior `/sara-add-stakeholder` runs are included.
+- The `known_names` set is built at Step 2 using Bash grep — do NOT read individual STK pages into context. The grep runs fresh against `wiki/stakeholders/` so any STK pages created by prior `/sara-add-stakeholder` runs in this session are included without loading them into the context window.
 - Priority 1 (unknown stakeholders) must be fully cleared before any Priority 2, 3, or 4 blocker is tackled. Batch all unknown stakeholders upfront; do not interleave stakeholder work with other blocker types.
 - Blocker Priority 2–4 clarification uses plain-text output and waits for the user's reply. Do NOT use AskUserQuestion for these open-ended questions (freeform rule applies). AskUserQuestion is only invoked within the inline sara-add-stakeholder sub-skill during Priority 1 work.
 - Stage advance to `"extracting"` happens ONLY after all blockers across all four priorities are resolved. Do not write `"extracting"` partway through the session.
