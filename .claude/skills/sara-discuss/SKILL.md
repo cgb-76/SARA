@@ -11,7 +11,7 @@ version: 1.0.0
 ---
 
 <objective>
-This skill reads the source document for pipeline item N and generates a structured blocker list — everything that would cause `/sara-extract` to fail or produce wrong output. It works through blockers in priority order: unknown stakeholders first (resolved via inline `/sara-add-stakeholder`), then entity type ambiguities, context gaps, and cross-link candidates. The skill declares done objectively when the blocker list is empty; it then writes the resolved context to `discussion_notes` in `pipeline-state.json` and advances the item stage to `extracting`.
+This skill reads the source document for pipeline item N and generates a structured blocker list — things that would cause `/sara-extract` to fail or produce wrong output. It works through blockers in priority order: unknown stakeholders first (resolved via inline `/sara-add-stakeholder`), then source comprehension blockers (ambiguous or unclear passages that would prevent accurate extraction). Classification, deduplication, and cross-reference reasoning now belong to the sorter agent in `/sara-extract` — those concerns are no longer part of `/sara-discuss`. The skill declares done objectively when the blocker list is empty; it then writes the resolved context to `discussion_notes` in `pipeline-state.json` and advances the item stage to `extracting`.
 
 Note: `AskUserQuestion` is required in `allowed-tools` because `/sara-add-stakeholder` (invoked inline during stakeholder resolution) uses it for structured field collection.
 </objective>
@@ -59,25 +59,11 @@ Read `.sara/config.json` using the Read tool. This is needed by `/sara-add-stake
 
 **Step 3 — Generate blocker list**
 
-Using the source document and existing wiki context, identify all blockers in priority order. Present the full blocker list to the user as a structured summary before resolving anything.
+Using the source document and existing wiki context, identify blockers in priority order. Present the full blocker list to the user as a structured summary before resolving anything.
 
-**Priority 1 — Unknown stakeholders:** Scan the full source for every person mentioned by name (including informal references, initials, and nicknames). For each person found, check if their name appears in `known_names` (checking both `name` AND `nickname` fields — dual-field matching is required). Collect ALL unknown persons before proceeding. Do not process any Priority 2, 3, or 4 blockers until the complete list of unknown persons is identified.
+**Priority 1 — Unknown stakeholders:** Scan the full source for every person mentioned by name (including informal references, initials, and nicknames). For each person found, check if their name appears in `known_names` (checking both `name` AND `nickname` fields — dual-field matching is required). Collect ALL unknown persons before proceeding. Do not process any Priority 2 blockers until the complete list of unknown persons is identified.
 
-**Priority 2 — Ambiguous entity type:** Identify any passage that could be classified as multiple entity types (for example: a statement that could be REQ or DEC, or a concern that could be RISK or REQ). List each ambiguity with the source passage and the candidate types.
-
-**Priority 3 — Missing context gaps:** Identify references to concepts, systems, decisions, or terms mentioned in the source that are not present in `wiki/index.md` and whose meaning is unclear from the source alone. List each gap with the source reference.
-
-**Priority 4 — Cross-link candidates:** Before identifying cross-link candidates, load artifact summaries using the grep-extract pattern:
-
-```bash
-grep -rh "^summary:" wiki/requirements/ wiki/decisions/ wiki/actions/ wiki/risks/ wiki/stakeholders/ 2>/dev/null
-```
-
-Use these summaries — alongside `wiki/index.md` (already loaded in Step 2) — to identify topics in the source that clearly relate to an existing wiki entity. The summaries give richer semantic signal than the index Title column alone for spotting relationships.
-
-**Fallback for summary-less artifacts (D-10):** If an artifact appears in `wiki/index.md` but is absent from the grep output (it has no `summary` field — a pre-existing artifact), fall back to the index Title column only for that artifact. Do NOT read full artifact pages during sara-discuss.
-
-List each cross-link candidate with the wiki entity ID.
+**Priority 2 — Source comprehension blockers:** Identify passages in the source that are ambiguous, unclear, or reference context that cannot be inferred from the document alone — and where the ambiguity would prevent accurate extraction. Do NOT classify entity types here — that is the sorter's job in `/sara-extract`. List each comprehension blocker with the source passage and why it is unclear.
 
 Present a structured blocker summary to the user before proceeding. Example format:
 
@@ -88,19 +74,13 @@ Priority 1 — Unknown stakeholders (N found):
   - [name A]
   - [name B]
 
-Priority 2 — Ambiguous entity type (N found):
-  - [description of passage + candidate types]
-
-Priority 3 — Missing context gaps (N found):
-  - [term or reference with source excerpt]
-
-Priority 4 — Cross-link candidates (N found):
-  - [topic in source → existing entity ID]
+Priority 2 — Source comprehension blockers (N found):
+  - [passage excerpt] — unclear because: [reason]
 
 Total blockers: N. Resolving Priority 1 first.
 ```
 
-If all four priority lists are empty: skip Steps 4 and 5 entirely and proceed to Step 6.
+If both priority lists are empty: skip Steps 4 and 5 entirely and proceed to Step 6.
 
 **Step 4 — Resolve unknown stakeholders (Priority 1)**
 
@@ -116,48 +96,26 @@ For each unknown stakeholder identified in Step 3:
 
 After all unknown stakeholders are resolved, proceed to Step 5.
 
-**Step 5 — Work through remaining blockers (Priority 2 through 4)**
+**Step 5 — Work through source comprehension blockers (Priority 2)**
 
-For each remaining blocker from the list (process in priority order: Priority 2, then Priority 3, then Priority 4):
+For each source comprehension blocker from the list:
 
-  Present the specific blocker to the user as plain text with context from the source document.
-  Where there are discrete options to choose from, label them A / B / C so the user can reply
-  with a single letter. Example formats:
+  Present the specific blocker to the user as plain text with the relevant source passage:
+  `"Blocker [source comprehension]: The passage '...' is unclear because [reason]. What does this mean in context?"`
 
-  For Priority 2 (ambiguous entity type — always has discrete options):
-  ```
-  Blocker [entity type ambiguity]: The passage '...' could be classified as:
-    A) REQ — {brief reason}
-    B) DEC — {brief reason}
-  Which is correct? (reply A or B, or describe a different classification)
-  ```
+  Wait for the user's reply using a plain-text wait (freeform rule — do NOT use AskUserQuestion here).
 
-  For Priority 3 (context gap — open-ended, no options to label):
-  `"Blocker [context gap]: The source references '{term}' but this does not appear in the wiki. What does this mean in context?"`
-
-  For Priority 4 (cross-link candidate — binary confirm/deny):
-  ```
-  Blocker [cross-link candidate]: The source discusses '{topic}', which appears to relate to:
-    A) {entity_ID} — '{entity_title}'
-    B) Not a cross-link — treat as a new or unrelated topic
-  Confirm? (reply A or B, or describe a different relationship)
-  ```
-
-  Wait for the user's reply using a plain-text wait (freeform rule — do NOT use AskUserQuestion for these questions).
-
-  Incorporate the user's response into the running `discussion_notes` string.
+  Incorporate the user's clarification into the running `discussion_notes` string.
 
   Mark that blocker resolved. Proceed to the next blocker.
 
-Declare completion ONLY when all blockers (Priority 1 through Priority 4) are resolved and the blocker list is empty.
+Declare completion ONLY when all blockers (Priority 1 and Priority 2) are resolved and the blocker list is empty.
 
 **Step 6 — Write resolved context and advance stage**
 
 Compile `{discussion_notes}` as a single plain-text string summarising all resolved context:
 - Resolved stakeholders with their STK-NNN IDs (e.g. "Alice Wang → STK-002")
-- Entity type decisions made (e.g. "The budget discussion in paragraph 3 is a DEC, not a REQ")
-- Context gaps filled (e.g. "'SalesForce' = the CRM system in use by the Sales department")
-- Cross-link confirmations (e.g. "The capacity discussion relates to RISK-003 — confirmed cross-link")
+- Source comprehension clarifications (e.g. "'SalesForce' = the CRM system used by the Sales department")
 
 Read `.sara/pipeline-state.json` using the Read tool.
 
@@ -181,10 +139,10 @@ Run /sara-extract {N} to proceed to extraction.
 <notes>
 - Stakeholder matching in Step 2 and Step 3 MUST check both the `name` field AND the `nickname` field in every STK page. A source reference to "Raj" is NOT unknown if any STK page has `nickname: "Raj"` — even if the page's `name` field is "Rajiwath Patel". Failure to check both fields causes false unknown-stakeholder blockers.
 - The `known_names` set is built at Step 2 using Bash grep — do NOT read individual STK pages into context. The grep runs fresh against `wiki/stakeholders/` so any STK pages created by prior `/sara-add-stakeholder` runs in this session are included without loading them into the context window.
-- Priority 1 (unknown stakeholders) must be fully cleared before any Priority 2, 3, or 4 blocker is tackled. Batch all unknown stakeholders upfront; do not interleave stakeholder work with other blocker types.
-- Blocker Priority 2–4 clarification uses plain-text output and waits for the user's reply. Do NOT use AskUserQuestion for these open-ended questions (freeform rule applies). AskUserQuestion is only invoked within the inline sara-add-stakeholder sub-skill during Priority 1 work.
-- Stage advance to `"extracting"` happens ONLY after all blockers across all four priorities are resolved. Do not write `"extracting"` partway through the session.
-- The `discussion_notes` string is the key output — it carries resolved context forward into `/sara-extract`. Make it specific: include STK-NNN IDs, entity type decisions, wiki entity IDs for confirmed cross-links. Vague notes reduce the quality of the extraction step.
+- Priority 1 (unknown stakeholders) must be fully cleared before any Priority 2 blocker is tackled. Batch all unknown stakeholders upfront; do not interleave stakeholder work with source comprehension work.
+- Priority 2 (source comprehension) clarification uses plain-text output and waits for the user's reply. Do NOT use AskUserQuestion for these open-ended questions (freeform rule applies). AskUserQuestion is only invoked within the inline sara-add-stakeholder sub-skill during Priority 1 work.
+- Stage advance to `"extracting"` happens ONLY after all blockers across Priority 1 and Priority 2 are resolved. Do not write `"extracting"` partway through the session.
+- The `discussion_notes` string is the key output — it carries resolved context forward into `/sara-extract`. Make it specific: include STK-NNN IDs for resolved stakeholders and clear explanations of any source ambiguities. Entity type classification and cross-reference identification are handled by the sorter in `/sara-extract`, not here.
 - The N argument is the full pipeline item ID (e.g. `MTG-001`). The JSON key in `items` is that same ID string. For `/sara-discuss MTG-001`, look up `items["MTG-001"]`.
 - When invoking `/sara-add-stakeholder` inline: read `.claude/skills/sara-add-stakeholder/SKILL.md` fresh for each stakeholder. Pass the stakeholder name as `$ARGUMENTS`. The sub-skill will collect optional fields (nickname, vertical, department, email, role) via AskUserQuestion before writing the STK page and committing. This is expected — the AskUserQuestion calls originate from the sub-skill, which is why `AskUserQuestion` is in this skill's `allowed-tools`.
 - pipeline-state.json is written using Read + Write tools only — never shell text-processing tools.
