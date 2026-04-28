@@ -142,10 +142,10 @@ Plans:
 **Plans:** 4 plans
 
 Plans:
-- [ ] 05-01-PLAN.md — Add summary field to sara-init SKILL.md (pipeline-state.json template, CLAUDE.md behavioral rule, all 5 entity schema blocks and template writes)
-- [ ] 05-02-PLAN.md — Add summary generation to sara-update Step 2 (create and update branches, summary_max_words with fallback)
-- [ ] 05-03-PLAN.md — Switch sara-extract Step 3 and sara-discuss Priority 4 to grep-extract pattern with fallback for summary-less artifacts
-- [ ] 05-04-PLAN.md — Create /sara-lint skill: wiki guard, grep -rL scan, dry-run confirm, batch write-back, commit, Check 2/3 stubs
+- [x] 05-01-PLAN.md — Add summary field to sara-init SKILL.md (pipeline-state.json template, CLAUDE.md behavioral rule, all 5 entity schema blocks and template writes)
+- [x] 05-02-PLAN.md — Add summary generation to sara-update Step 2 (create and update branches, summary_max_words with fallback)
+- [x] 05-03-PLAN.md — Switch sara-extract Step 3 and sara-discuss Priority 4 to grep-extract pattern with fallback for summary-less artifacts
+- [x] 05-04-PLAN.md — Create /sara-lint skill: wiki guard, grep -rL scan, dry-run confirm, batch write-back, commit, Check 2/3 stubs
 
 **Success Criteria:**
 1. Running `/sara-init` in a fresh directory produces pipeline-state.json with `summary_max_words: 50`, CLAUDE.md with rule 6 (Summary field), and five templates each containing a `summary:` field
