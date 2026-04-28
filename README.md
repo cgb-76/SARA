@@ -15,13 +15,7 @@ curl -fsSL https://raw.githubusercontent.com/cgb-76/SARA/main/install.sh | bash
 ```
 ## Updating
 
-Re-run the install command to update:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/cgb-76/SARA/main/install.sh | bash
-```
-
-Downgrade protection is built in — if the source version is older than what you have installed, a warning is printed and that skill is skipped. Use `--force` to override.
+Re-run the install command to update. Downgrade protection is built in — if the source version is older than what you have installed, a warning is printed and that skill is skipped. Use `--force` to override.
 
 ## Setup
 
