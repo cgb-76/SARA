@@ -2,7 +2,7 @@
 .ideation
 
 # planning artifacts — local only
-.planning/
+.planning
 
 # ignore Claude's local settings file
 .claude/settings.local.json
