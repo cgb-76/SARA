@@ -15,6 +15,7 @@
 | 3 | Meeting Specialisation | User can generate meeting minutes and a pre-meeting agenda from meeting-specific commands | MEET-01, MEET-02 | 3 |
 | 4 | Make Installable | Any user can install SARA skills into their project with a single shell command | — | 3 |
 | 5 | Artifact Summaries | All wiki artifact types carry a compact summary field; sara-extract and sara-discuss use grep-extract for context-efficient cross-referencing; /sara-lint back-fills existing artifacts | — | 4 |
+| 6 | Refine Entity Extraction | sara-extract dispatches to specialist agents per entity type; a sorter agent deduplicates and resolves ambiguities; sara-discuss is narrowed to source comprehension and stakeholder surfacing only | — | 3 |
 
 ---
 
@@ -153,6 +154,27 @@ Plans:
 3. Running `/sara-extract N` on a wiki with 100+ artifacts uses a single grep command rather than reading individual artifact pages for the dedup check
 4. Running `/sara-lint` on a wiki with pre-existing summary-less artifacts presents a count + preview, asks for confirmation, back-fills all missing summaries, and commits with message `fix(wiki): back-fill artifact summaries via sara-lint`
 
+### Phase 6: Refine Entity Extraction
+
+**Goal:** sara-extract dispatches to four specialist extraction agents (one per entity type) and a sorter agent via Task(); the sorter deduplicates, resolves create-vs-update, and surfaces ambiguity questions for the human before the per-artifact approval loop; sara-discuss is narrowed to source comprehension and unknown-stakeholder surfacing only; install.sh distributes the new agent files
+
+**Requirements:** No formal requirement IDs — this phase refactors extraction architecture without changing the v1 requirement set
+
+**Depends on:** Phase 5
+**Plans:** 5 plans
+
+Plans:
+- [ ] 06-01-PLAN.md — Create four specialist agent files in .claude/agents/ (requirement, decision, action, risk extractors)
+- [ ] 06-02-PLAN.md — Create sara-artifact-sorter agent file in .claude/agents/
+- [ ] 06-03-PLAN.md — Rewrite sara-extract SKILL.md Steps 2-3 with multi-agent dispatch and sorter question resolution
+- [ ] 06-04-PLAN.md — Narrow sara-discuss SKILL.md scope; update install.sh with agent distribution loop
+- [ ] 06-05-PLAN.md — Static file audit + end-to-end verification checkpoint
+
+**Success Criteria:**
+1. Running `/sara-extract N` dispatches four specialist Task() calls and one sorter Task() call — specialist agents extract only their own artifact type; sorter resolves create-vs-update and presents ambiguity questions before the approval loop starts
+2. Running `/sara-discuss N` produces a blocker list with Priority 1 (unknown stakeholders) and Priority 2 (source comprehension) only — no entity type classification questions
+3. Running `install.sh` in a target project copies both the nine skill files AND all five agent files to the correct `.claude/` subdirectories
+
 ---
 
 ## Progress
@@ -164,3 +186,4 @@ Plans:
 | 3. Meeting Specialisation | Done | 2026-04-27 |
 | 4. Make Installable | In Progress | - |
 | 5. Artifact Summaries | Planned | - |
+| 6. Refine Entity Extraction | Planned | - |
