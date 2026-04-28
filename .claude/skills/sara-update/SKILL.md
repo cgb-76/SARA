@@ -89,6 +89,14 @@ For each artifact in `{extraction_plan}`:
     - For action artifacts: set `status` = `"open"`, `owner` = `artifact.raised_by`
     - For risk artifacts: set `status` = `"open"`, `owner` = `artifact.raised_by`
     - All other fields not supplied by the artifact: use the template default value (empty string `""` or empty array `[]`)
+    - Read `summary_max_words` from the already-loaded pipeline-state.json (field: `summary_max_words`). If the field is absent, use 50 as the default.
+    - `summary` = LLM-generated prose string within `summary_max_words` words. Write type-appropriate content:
+      - REQ: title, status, one-line description of what is required
+      - DEC: options considered, chosen option/recommendation, status, decision date
+      - ACT: owner, due-date, status (open/in-progress/done/cancelled)
+      - RISK: likelihood, impact, mitigation approach, status
+      - STK: vertical, department, role — enough to distinguish from other stakeholders
+      Generate the summary from the artifact fields already set (title, status, owner, etc.) and `{discussion_notes}`. Write it as a single prose string — not a list, not bullet points.
 
     Populate the body sections below the frontmatter. For each section listed below, synthesise
     a concise summary (2–4 sentences) using the artifact's title, `source_quote`, `discussion_notes`,
@@ -213,6 +221,7 @@ For each artifact in `{extraction_plan}`:
 
     Read the existing file `{wiki_dir}{artifact.existing_id}.md` using the Read tool.
     Apply `artifact.change_summary` to the relevant field(s) in the frontmatter or body. Update the `source` field to include `{item.id}` in addition to any existing source value. Update the `related` field by merging `artifact.related` with the existing related array (deduplicating by entity ID).
+    Regenerate the `summary` field: read `summary_max_words` from pipeline-state.json (already in memory; default 50 if absent). Generate a fresh summary prose string using the same type-specific content rules as the create branch — REQ: title/status/description; DEC: options/chosen option/status/date; ACT: owner/due-date/status; RISK: likelihood/impact/mitigation/status; STK: vertical/department/role. Replace the existing `summary` value in the frontmatter with the newly generated string.
     Use the Write tool to overwrite `{wiki_dir}{artifact.existing_id}.md` with the updated content.
     If write succeeds: append `{wiki_dir}{artifact.existing_id}.md` to `written_files`.
     If write fails: append `{wiki_dir}{artifact.existing_id}.md` to `failed_files`. Output the partial failure report (see format below). STOP.
