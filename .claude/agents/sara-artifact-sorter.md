@@ -37,16 +37,37 @@ Agent receives via prompt:
 
 4. **Cross-reference detection:** Identify pairs of artifacts (or artifact + existing wiki entity) that are clearly related. Add the existing wiki entity ID to the `related` array of the relevant artifact.
 
-5. **Question generation:** Build a `questions` array covering:
-   - Type ambiguities (two specialists extracted the same passage as different types): "Is the passage '...' a requirement or a decision? (candidates: REQ or DEC)"
-   - Likely duplicates (artifact closely matches an existing wiki entity): "The artifact '{title}' looks similar to {ID} '{existing_title}'. Is this a duplicate that should be merged as an update?"
-   - Cross-reference confirmations (artifact relates to an existing wiki entity): "The artifact '{title}' appears to relate to {ID} '{existing_title}'. Confirm as a cross-link? (yes/no)"
+5. **Question generation:** Build a `questions` array. Each question string MUST include labeled A/B/C options so the human can reply with a single letter. Use these templates:
+
+   - **Type ambiguity** (two specialists extracted the same passage as different types):
+     ```
+     The passage '...' was extracted as both a {type1} and a {type2}. Which is correct?
+       A) {TYPE1} — {brief reason}
+       B) {TYPE2} — {brief reason}
+       C) Neither — skip this passage
+     ```
+
+   - **Likely duplicate** (artifact closely matches an existing wiki entity):
+     ```
+     The new artifact '{title}' looks similar to {ID} "{existing_title}". What should we do?
+       A) Update {ID} "{existing_title}" with new information from this source
+       B) Create as a separate new artifact
+       C) Skip — not relevant
+     ```
+
+   - **Cross-reference confirmation** (artifact relates to an existing wiki entity):
+     ```
+     The artifact '{title}' appears to relate to {ID} "{existing_title}". Confirm?
+       A) Yes — add {ID} "{existing_title}" as a cross-link
+       B) No — not related
+     ```
+
    If there are no ambiguities, duplicates, or cross-references: set `questions` to [].
 
-   **ID resolution rule (mandatory):** Every entity ID that appears in a question string MUST be accompanied by the entity's human-readable name or title in the same string. Never reference a bare ID. Look up names/titles from `<wiki_index>` or `<grep_summaries>`:
+   **ID resolution rule (mandatory):** Every entity ID that appears in a question string MUST be accompanied by the entity's human-readable name or title in the same string. Look up names/titles from `<wiki_index>` or `<grep_summaries>`:
    - For artifact IDs (REQ-, DEC-, ACT-, RSK-): include the Title column from wiki/index.md — e.g. `ACT-001 "Schedule kickoff meeting"` not just `ACT-001`
    - For stakeholder IDs (STK-): include the person's name from wiki/index.md — e.g. `STK-006 "Alice Wang"` not just `STK-006`
-   If the name cannot be found in the provided index or summaries, write the ID with a `(name unknown)` suffix rather than leaving it bare.
+   If the name cannot be found, write the ID with a `(name unknown)` suffix rather than leaving it bare.
 
 6. Build the `cleaned_artifacts` array: the deduplicated, type-resolved list with create-vs-update set and related fields populated. Exclude duplicates that the human will resolve via questions — those will be re-added after resolution.
 </process>
@@ -78,8 +99,8 @@ Return a raw JSON object (no markdown fences, no prose):
     }
   ],
   "questions": [
-    "Is the passage '...' a requirement or a decision? (candidates: REQ or DEC)",
-    "The artifact 'API rate limiting' looks similar to DEC-003 'Rate limiting policy'. Is this a duplicate?"
+    "The passage '...' was extracted as both a requirement and a decision. Which is correct?\n  A) REQ — describes a system constraint\n  B) DEC — describes a concluded choice\n  C) Neither — skip this passage",
+    "The new artifact 'API rate limiting' looks similar to DEC-003 \"Rate limiting policy\". What should we do?\n  A) Update DEC-003 \"Rate limiting policy\" with new information from this source\n  B) Create as a separate new artifact\n  C) Skip — not relevant"
   ]
 }
 
