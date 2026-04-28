@@ -41,7 +41,7 @@ Store `{item}` = `items["{N}"]` for use in subsequent steps.
 
 **Step 2 — Load source and context**
 
-Read `raw/input/{item.filename}` using the Read tool. This is the source document.
+Read `{item.source_path}` using the Read tool. This is the source document.
 
 Read `wiki/index.md` using the Read tool. This is the existing entity catalog for cross-link identification.
 

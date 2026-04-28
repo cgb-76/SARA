@@ -82,10 +82,7 @@ For each STK-NNN ID in `{stakeholder_ids}`:
   Extract `name` and `role` from frontmatter.
   Append `{name} ({role})` to `{attendees_from_stk}`.
 
-Determine `{archive_path}`: `raw/meetings/{item.id}-{item.filename}` (the archived transcript path after sara-update ran).
-Also check `raw/input/{item.filename}` as fallback if archive path does not exist.
-
-Read the transcript file using the Read tool. Scan the transcript for attendee names, speaker labels, or participant list sections not already covered by `{attendees_from_stk}`. Add any additional names found to `{attendees_extra}`.
+Read `{item.source_path}` using the Read tool. Scan the transcript for attendee names, speaker labels, or participant list sections not already covered by `{attendees_from_stk}`. Add any additional names found to `{attendees_extra}`.
 
 `{attendees}` = merge of `{attendees_from_stk}` and `{attendees_extra}`, deduplicating by name.
 
@@ -141,7 +138,7 @@ STOP — do NOT write any file, do NOT run any git command.
 - `item.type` is stored as lowercase `"meeting"` by `/sara-ingest`. Check `item.type == "meeting"`, not `"MTG"`.
 - Aggregate BOTH `create` and `update` actions from extraction_plan — both represent what this meeting did to the wiki.
 - For `action == "create"` artifacts: use `artifact.assigned_id` as the entity ID. For `action == "update"` artifacts: use `artifact.existing_id`.
-- Transcript archive path after `/sara-update` ran: `raw/meetings/{item.id}-{item.filename}`. If that path does not resolve (e.g. item was complete before archive ran), fall back to `raw/input/{item.filename}`.
+- Transcript path: use `{item.source_path}` from `pipeline-state.json`. The source file was moved to this permanent path by `/sara-ingest` — it is never in `raw/input/` for items processed after that change.
 - Attendee resolution is best-effort. If neither STK pages nor transcript yield attendees, output `(attendees not recorded)` rather than an error.
 - PLAIN TEXT ONLY: Output uses CAPS section labels. No `#` headings, no `**bold**`, no markdown formatting.
 - Empty sections are silently omitted — never print a section label with no content.

@@ -11,7 +11,7 @@ version: 1.0.0
 ---
 
 <objective>
-Reads the approved extraction plan from `pipeline-state.json` and writes all wiki artifacts (create or update) plus `wiki/index.md` and `wiki/log.md` in a single atomic git commit. The source file is archived to the type-specific `/raw/` subdirectory in the same commit; stage advances to `complete` only after the commit succeeds.
+Reads the approved extraction plan from `pipeline-state.json` and writes all wiki artifacts (create or update) plus `wiki/index.md` and `wiki/log.md` in a single atomic git commit. Stage advances to `complete` only after the commit succeeds. The source file is already at its permanent path (`item.source_path`) — it was moved and committed by `/sara-ingest`.
 </objective>
 
 <process>
@@ -43,7 +43,7 @@ If `{extraction_plan}` is empty or null:
 
 **Step 1b — Load source document and discussion notes**
 
-Read `raw/input/{item.filename}` using the Read tool. Store as `{source_doc}`.
+Read `{item.source_path}` using the Read tool. Store as `{source_doc}`.
 
 `{discussion_notes}` = `items["{N}"].discussion_notes` (already in memory from Step 1).
 
@@ -259,34 +259,15 @@ printf '%s\n' "| [[{assigned_id}]] | {artifact.title} | open | {artifact.type} |
 printf '%s\n' "| [[{item.id}]] | {today YYYY-MM-DD} | {item.type} | {item.filename} | {comma-separated [[ID]] wikilinks for all artifact IDs written} |" >> wiki/log.md
 ```
 
-**Step 4 — Archive source file**
-
-Determine `{archive_dir}` from `{item.type}`:
-- `meeting`  → `raw/meetings/`
-- `email`    → `raw/emails/`
-- `slack`    → `raw/slack/`
-- `document` → `raw/documents/`
-
-Compute `{archive_filename}` = `{item.id}-{item.filename}` (e.g. `MTG-001-transcript-2026-04-27.md`).
-
-Check whether the source file is git-tracked:
-```bash
-git ls-files --error-unmatch raw/input/{item.filename} 2>/dev/null && echo "tracked" || echo "untracked"
-```
-
-If tracked: run `git mv raw/input/{item.filename} {archive_dir}{archive_filename}`
-If untracked: run `mv raw/input/{item.filename} {archive_dir}{archive_filename}`
-
-**Step 5 — Commit, advance stage, and report**
+**Step 4 — Commit, advance stage, and report**
 
 Run the git add and commit in a single Bash block. Capture the exit code:
 
 ```bash
 git add wiki/requirements/ wiki/decisions/ wiki/actions/ wiki/risks/ \
         wiki/index.md wiki/log.md \
-        .sara/pipeline-state.json \
-        {archive_dir}{archive_filename}
-git commit -m "feat(sara): ingest {item.id} — {item.filename}"
+        .sara/pipeline-state.json
+git commit -m "feat(sara): wiki {item.id} — {count} artifacts"
 echo "EXIT:$?"
 ```
 
@@ -307,7 +288,6 @@ Check the exit code from the `echo "EXIT:$?"` output.
   Commit: {commit_hash}
   Artifacts written: {count}
   {written_files list}
-  Source archived: {archive_dir}{archive_filename}
 
   Item {N} ({item.id}) is now complete.
   ```
@@ -335,13 +315,13 @@ Check the exit code from the `echo "EXIT:$?"` output.
 - CRITICAL: Stage advances to `"complete"` ONLY after the git commit succeeds (exit code 0). Writing `stage=complete` before the commit is a fatal error — the item would be permanently stuck with no way to re-run `/sara-update` (Pitfall 1 from 02-RESEARCH.md). The correct ordering is: (1) write all wiki files, (2) git add + commit, (3) only then write `stage=complete`.
 - CRITICAL: Entity counter increments happen BEFORE each create-action page write, and the updated counter is written to `pipeline-state.json` immediately (as a separate Write call before the page Write call). This prevents duplicate ID assignment if a page write fails and the skill is re-run. Counters are tracked in-memory across loop iterations — the in-memory state is authoritative after each Write; do NOT re-read `pipeline-state.json` inside the loop.
 - The N argument is the full pipeline item ID (e.g. `MTG-001`). The JSON key in `items` is that same ID string. For `/sara-update MTG-001`, look up `items["MTG-001"]`. The `item.id` field equals the key — it appears in the commit message, the `source` field of written pages, and the log entry.
-- Source file tracking: files dropped manually into `raw/input/` are untracked by git. Use `git ls-files --error-unmatch` to check before moving. If tracked: use `git mv` (git handles both the rename and the stage). If untracked: use `mv` and then include the archive path in `git add` (the move appears as a new file at the archive path). The `git add` command in Step 5 covers the archive path in both cases. The archived filename is always `{item.id}-{item.filename}` (e.g. `MTG-001-transcript.md`) — never just the numeric portion.
+- Source file location: the source file was moved to its permanent path by `/sara-ingest` and committed at that time. Use `{item.source_path}` (stored in `pipeline-state.json`) to read it. Do NOT look in `raw/input/` — the file is no longer there.
 - Do NOT auto-rollback on partial failure (D-14). The user has full git history. Report which files were written and which were not; let the user decide whether to `git reset` or re-run `/sara-update {N}` after fixing the root cause. The written files are uncommitted changes — no commit was made.
 - `schema_version` must always be quoted: `"1.0"` (not `1.0`). This prevents Obsidian's YAML parser from treating it as a float.
 - `related` fields must use entity IDs only (e.g. `REQ-001`, `DEC-003`) — never file paths, relative links, or Obsidian `[[wiki-links]]`. This is a Phase 1 behavioral rule carried forward.
 - The `raised_by` field in the artifact schema (written by `/sara-extract`) maps to the `raised-by` field in wiki page frontmatter (defined in the entity templates). The hyphen vs underscore difference is intentional: `raised_by` is the JSON field name in `pipeline-state.json`; `raised-by` is the YAML field name in wiki pages. Apply the mapping in Step 2 when substituting template fields.
 - `vertical` and `department` are always separate fields in stakeholder pages — never merged. This is a locked domain constraint.
-- `extraction_plan` may be empty (all artifacts rejected during `/sara-extract`). If non-empty check fails at Step 1, stop early with the re-run message. If it passes but the loop produces no writes, the git commit will still include `pipeline-state.json` (stage advance) and the archived source file.
+- `extraction_plan` may be empty (all artifacts rejected during `/sara-extract`). If non-empty check fails at Step 1, stop early with the re-run message. If it passes but the loop produces no writes, the git commit will still include `pipeline-state.json` (stage advance).
 - pipeline-state.json is read and written using Read and Write tools only — never Bash shell text-processing tools.
 - NOTE: The canonical artifact schema field `raised_by` (defined in the plan interfaces and written by `/sara-extract`) contains the letter sequence "sed" as a substring of "raised". Any grep check for `jq\|sed\|awk` will match this field name. This is a false positive — no shell text-processing tools are referenced in this skill. The field name is non-negotiable: it is the canonical schema consumed here from `/sara-extract`.
 </notes>

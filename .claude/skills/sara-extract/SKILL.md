@@ -39,7 +39,7 @@ Store `{item}` = `items["{N}"]` for use in subsequent steps.
 
 **Step 2 — Load source, discussion notes, and dedup context**
 
-Read `raw/input/{item.filename}` using the Read tool. This is the source document.
+Read `{item.source_path}` using the Read tool. This is the source document.
 
 `{discussion_notes}` = `items["{N}"].discussion_notes` (already in memory from the Step 1 read of pipeline-state.json).
 

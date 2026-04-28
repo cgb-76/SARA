@@ -15,11 +15,12 @@ stage `pending`, or display a table of all current pipeline items when called wi
 
 INGEST mode (with arguments): validates the type and filename, checks the file exists in
 `raw/input/`, increments the appropriate ingest counter, assigns a type-prefixed ID (e.g.
-MTG-001), and adds a new item entry keyed by that ID. Outputs a confirmation with the
-next-step command to run.
+MTG-001), moves the source file to its permanent numbered path (e.g.
+`raw/meetings/MTG-001-transcript.md`), and commits both the moved file and updated state in a
+single git commit. Outputs a confirmation with the next-step command to run.
 
 STATUS mode (no arguments): reads `pipeline-state.json` and displays all pipeline items in a
-markdown table showing the item ID, type, current stage, and filename.
+markdown table showing the item ID, type, current stage, and source path.
 If no items exist, outputs a plain message.
 
 Run this skill to register each source document before running any other pipeline command.
@@ -82,12 +83,22 @@ Increment `counters.ingest.{type_key}` by 1. The new value is `{counter_value}`.
 Compute `{new_id}` = `{type_key}` + `-` + zero-padded 3-digit counter value.
 Example: counter=1 → `MTG-001`, counter=12 → `MTG-012`.
 
+Determine `{type_dir}` from `{type}`:
+- `meeting`  → `raw/meetings/`
+- `email`    → `raw/emails/`
+- `slack`    → `raw/slack/`
+- `document` → `raw/documents/`
+
+Compute `{source_path}` = `{type_dir}` + `{new_id}` + `-` + `{filename}`.
+Example: `raw/meetings/MTG-001-transcript-2026-04-27.md`
+
 Add a new entry to `items` with key `"{new_id}"`:
 ```json
 {
   "id": "{new_id}",
   "type": "{type}",
   "filename": "{filename}",
+  "source_path": "{source_path}",
   "stage": "pending",
   "created": "{today ISO date YYYY-MM-DD}",
   "discussion_notes": "",
@@ -98,19 +109,52 @@ Add a new entry to `items` with key `"{new_id}"`:
 Write the modified JSON back to `.sara/pipeline-state.json` using the Write tool.
 Use only the Read tool and Write tool for this JSON operation — no shell text-processing tools.
 
-**Step 4 — Report success (INGEST mode)**
+**Step 4 — Move source file and commit (INGEST mode)**
+
+Check whether the source file is git-tracked:
+```bash
+git ls-files --error-unmatch "raw/input/{filename}" 2>/dev/null && echo "tracked" || echo "untracked"
+```
+
+Ensure the destination directory exists:
+```bash
+mkdir -p "{type_dir}"
+```
+
+If tracked: run `git mv "raw/input/{filename}" "{source_path}"`
+If untracked: run `mv "raw/input/{filename}" "{source_path}"`
+
+Stage and commit:
+```bash
+git add "{source_path}" .sara/pipeline-state.json
+git commit -m "feat(sara): ingest {new_id} — {filename}"
+echo "EXIT:$?"
+```
+
+If the commit exits non-zero: output the following and STOP:
+```
+Commit failed for {new_id}. The source file has been moved to {source_path} but the commit
+did not succeed. Resolve the git issue and run:
+  git add "{source_path}" .sara/pipeline-state.json
+  git commit -m "feat(sara): ingest {new_id} — {filename}"
+```
+
+Capture `{commit_hash}` by running: `git log --oneline -1`
+
+**Step 5 — Report success (INGEST mode)**
 
 Output the following (substituting all values):
 
 ```
 {new_id} registered. Stage: pending.
-Type: {type}  |  Filename: {filename}
+Type: {type}  |  Source: {source_path}
+Commit: {commit_hash}
 Run /sara-discuss {new_id} to begin the discussion phase.
 ```
 
 STOP.
 
-**Step 5 — STATUS mode (no-args branch)**
+**Step 6 — STATUS mode (no-args branch)**
 
 Read `.sara/pipeline-state.json` using the Read tool.
 
@@ -121,13 +165,15 @@ No pipeline items registered. Run /sara-ingest <type> <filename> to add one.
 
 Otherwise, output a markdown table with a header row and separator row:
 ```
-| ID      | Type     | Stage     | Filename                 |
-|---------|----------|-----------|--------------------------|
+| ID      | Type     | Stage     | Source                              |
+|---------|----------|-----------|-------------------------------------|
 ```
 
-For each key in `items` (sorted lexicographically by key), append one row:
+For each key in `items` (sorted lexicographically by key), append one row.
+Use `{item.source_path}` as the source value; fall back to `raw/input/{item.filename}` for legacy
+items that pre-date this change and have no `source_path` field:
 ```
-| {key} | {item.type} | {item.stage} | {item.filename} |
+| {key} | {item.type} | {item.stage} | {item.source_path or fallback} |
 ```
 
 STOP.
@@ -159,8 +205,24 @@ STOP.
   `pipeline-state.json`. This is the intended behavior — the state file must remain
   unchanged on a failed ingest.
 
+- **Source path construction:** `{source_path}` = `{type_dir}` + `{new_id}` + `-` + `{filename}`.
+  Type → directory mapping: `meeting→raw/meetings/`, `email→raw/emails/`, `slack→raw/slack/`,
+  `document→raw/documents/`. The `source_path` is stored in the pipeline item and is the
+  authoritative file location used by all downstream skills.
+
+- **Commit-on-ingest:** The git commit in Step 4 is required. If it fails, output the recovery
+  message and STOP — do not output the success confirmation. The state file has already been
+  written and the file moved, so the user can re-run the commit manually using the commands
+  shown in the error output.
+
+- **Source file tracking:** Files dropped manually into `raw/input/` are untracked by git.
+  Use `git ls-files --error-unmatch` to check before moving. If tracked: use `git mv` (git
+  handles both the rename and the stage). If untracked: use `mv` and then include the
+  destination path in `git add`.
+
 - **STATUS mode shows all items:** The no-args table lists every item regardless of stage.
   Items in `pending`, `extracting`, `approved`, and `complete` stages all appear in the
-  table. Sort by integer key ascending.
+  table. Sort lexicographically by key. Show `source_path` in the Source column; fall back
+  to `raw/input/{item.filename}` for legacy items missing the `source_path` field.
 
 </notes>
