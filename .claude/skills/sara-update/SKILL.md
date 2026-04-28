@@ -111,11 +111,24 @@ For each artifact in `{extraction_plan}`:
     > "{artifact.source_quote}" — [[{artifact.raised_by}|{stakeholder_name}]]
     ```
 
-    **Wikilink rule:** Anywhere in body text that an entity ID appears (STK-NNN, REQ-NNN,
-    DEC-NNN, ACT-NNN, RISK-NNN, MTG-NNN, etc.), render it as a wikilink `[[ID]]`. This
-    includes IDs mentioned in synthesised summaries, cross-references, and the attribution
-    line. Frontmatter fields (raised-by, related, source, owner) remain plain IDs — wikilinks
-    are for body text only.
+    **Wikilink rule:** Never write a bare entity ID in body prose. When referencing any entity
+    in body text, always use the `[[ID|display text]]` form:
+    - STK entities: display text = the stakeholder's `name` field (read `wiki/stakeholders/{ID}.md`).
+    - REQ / DEC / ACT / RISK entities: display text = the entity's `title` field (read the wiki
+      page or look up the `title` column in `wiki/index.md`).
+    - Ingest IDs (MTG, EML, SLK, DOC): display text = type and date (e.g. `[[MTG-001|Meeting 2026-04-27]]`).
+    - Frontmatter fields (`raised-by`, `related`, `source`, `owner`) remain plain IDs — this rule
+      applies to body text only.
+    - `wiki/index.md` and `wiki/log.md` table rows use bare `[[ID]]` — they are structured tables,
+      not prose.
+    - If a title or name cannot be resolved (page missing), fall back to the bare `[[ID]]`.
+
+    **Prose-first rule:** Write synthesised body sections as natural language. Entity references
+    should support the prose, not replace names or become grammatical subjects. Prefer:
+    "Rajiwath Patel asked Sarah Chen to update the auth token spec
+    ([[ACT-002|Update auth token specification]])."
+    Over: "[[STK-001|Rajiwath Patel]] told [[STK-009|Sarah Chen]] to focus on
+    [[ACT-002|Update auth token specification]]."
 
     For every section, synthesise content if the source document or discussion notes contain
     relevant material. If nothing relevant is available for a section, leave it empty (heading
