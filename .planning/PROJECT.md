@@ -128,4 +128,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-28 after Phase 5 completion — artifact summaries, grep-extract pattern, sara-lint skill added*
+*Last updated: 2026-04-28 after Phase 6 completion — specialist agent dispatch pipeline, sorter deduplication, narrowed sara-discuss, agent distribution in install.sh. All v1.0 phases complete.*
