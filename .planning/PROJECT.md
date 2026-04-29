@@ -132,4 +132,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-29 after Phase 8 completion — modal-verb anchored requirement extraction, MoSCoW priority + six-type classification inline, v2.0 requirement schema (7-section body, section matrix), sara-init templates updated, sara-update writes v2.0 pages. All v2.0 milestone phases complete.*
+*Last updated: 2026-04-29 after Phase 9 completion — two-signal decision detection (COMMITMENT/MISALIGNMENT) in sara-extract, six-type dec_type taxonomy, five-section v2.0 decision body (Source Quote, Context, Decision, Alternatives Considered, Rationale), sara-init and sara-update updated to v2.0 schema. Full v2.0 milestone complete across requirements and decisions.*
