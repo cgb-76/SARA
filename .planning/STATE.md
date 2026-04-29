@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: milestone
-status: milestone_complete
-stopped_at: Phase 8 context gathered
-last_updated: "2026-04-29T07:39:33.446Z"
+status: completed
+stopped_at: Phase 9 context gathered
+last_updated: "2026-04-29T10:26:17.220Z"
 progress:
-  total_phases: 8
+  total_phases: 9
   completed_phases: 8
   total_plans: 31
-  completed_plans: 28
+  completed_plans: 31
   percent: 100
 ---
 
@@ -63,11 +63,12 @@ See: .planning/ROADMAP.md
 - Phase 8 added: Semantic wiki deduplication for the sorter using sqlite-vec
 - Phase 8 removed: semantic-wiki-deduplication-for-the-sorter-using-sqlite-vec
 - Phase 8 added: refine-requirements
+- Phase 9 added: refine-decisions
 
 ## Open Items
 
 (None yet)
 
-**Stopped at:** Phase 8 context gathered
+**Stopped at:** Phase 9 context gathered
 
 **Planned Phase:** 8 (refine-requirements) — 3 plans — 2026-04-29T07:38:27.517Z
