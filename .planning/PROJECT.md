@@ -110,6 +110,9 @@ Meetings also include: **→ minutes**
 | `schema_version` quoted as string '1.0' | Prevents Obsidian YAML float parse of bare 1.0 | Validated — Phase 1 |
 | `stage=complete` written only after git commit | Prevents permanent item strand on commit failure | Validated — Phase 2 |
 | Extraction uses four inline passes, not specialist agents | Token efficiency: source document stays in context; only small merged artifact array passed to sorter | Validated — Phase 7 |
+| Requirements extraction anchored on modal verbs (must/shall/should/could/won't) | Eliminates false positives (observations, aspirations, background context) that the old catch-all pass produced | Validated — Phase 8 |
+| Requirement pages use v2.0 schema (7-section body, section matrix, type + priority fields) | Structured sections enable consistent cross-requirement comparison; section matrix keeps pages lean by type | Validated — Phase 8 |
+| schema_version '2.0' uses single quotes | Prevents YAML float parse of "2.0" across all parsers (Obsidian, Python, etc.) | Validated — Phase 8 |
 
 ## Evolution
 
@@ -129,4 +132,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-28 after Phase 6 completion — specialist agent dispatch pipeline, sorter deduplication, narrowed sara-discuss, agent distribution in install.sh. All v1.0 phases complete.*
+*Last updated: 2026-04-29 after Phase 8 completion — modal-verb anchored requirement extraction, MoSCoW priority + six-type classification inline, v2.0 requirement schema (7-section body, section matrix), sara-init templates updated, sara-update writes v2.0 pages. All v2.0 milestone phases complete.*
