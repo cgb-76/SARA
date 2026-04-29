@@ -262,7 +262,7 @@ For each artifact in `{extraction_plan}`:
     **action:**
     ```
     ## Description
-    > "{artifact.source_quote}" — {stakeholder_name}
+    > "{artifact.source_quote}" — [[{artifact.raised_by}|{stakeholder_name}]]
 
     {synthesised summary of what needs to be done, who is responsible, and any relevant
      deadlines or dependencies resolved during /sara-discuss}
@@ -283,7 +283,7 @@ For each artifact in `{extraction_plan}`:
     **risk:**
     ```
     ## Description
-    > "{artifact.source_quote}" — {stakeholder_name}
+    > "{artifact.source_quote}" — [[{artifact.raised_by}|{stakeholder_name}]]
 
     {synthesised summary of the risk, its likelihood/impact context, and any relevant
      triggers or conditions identified during /sara-discuss}
