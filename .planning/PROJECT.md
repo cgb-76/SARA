@@ -36,6 +36,10 @@ Every meeting, email thread, Slack conversation, and document gets permanently i
 - Embedding-based search — `index.md` sufficient at v1 scale; `qmd` or similar is v2
 - External integrations (Jira, Linear, email send) — v2
 
+## Current State
+
+Phase 11 complete (2026-04-29) — full v2.0 risk pipeline implemented across sara-extract, sara-init, and sara-update. All 11 phases of milestone v2.0 complete.
+
 ## Context
 
 **Inspiration:** Andrej Karpathy's llm-wiki pattern — the insight that LLMs maintaining a persistent wiki outperforms RAG because knowledge is compiled once and kept current, not re-derived on every query. Obsidian as the IDE, LLM as the programmer, wiki as the codebase.
