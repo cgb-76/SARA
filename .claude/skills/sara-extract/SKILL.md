@@ -137,11 +137,37 @@ Collect results as `{dec_artifacts}` (JSON array; empty array if none found).
 
 **Actions pass**
 
-Extract every passage that describes an action item — a concrete task or follow-up with an implied or explicit owner (something that must be done, not a general statement of intent). For each action found:
-- Extract the exact verbatim passage as `source_quote` (MANDATORY)
-- Write a short (≤10 words) imperative-phrase `title` (e.g. "Send updated proposal to client")
-- Set `raised_by` to the STK-NNN ID of the person who will own the action if identifiable; otherwise `"STK-NNN"` placeholder
+A passage IS an action if it describes any work that needs to happen — a concrete task,
+follow-up, or deliverable that someone is expected to do. Cast the broadest possible net:
+extract passages with or without a named owner, with or without a due date, with or without
+explicit assignment language. The existing sorter handles cross-type disambiguation.
+
+  INCLUDE — these passages ARE actions (extract them):
+  - Explicit assignment: "Alice will send the updated proposal by Friday"
+  - Implicit task: "someone needs to chase the sign-off on this"
+  - Deliverable commitment: "we need a revised spec before next sprint"
+  - Follow-up required: "Bob to confirm the budget allocation"
+  - Unowned task: "this needs to be documented" (no owner named — still an action)
+
+  EXCLUDE — these passages are NOT actions (do NOT extract them):
+  - Background context: "historically we have used vendor X" (describes past, not future work)
+  - Risk mitigations: passages that describe a contingency plan — these are captured by the Risks pass
+  - Requirements: passages with modal verbs describing system capabilities ("the system must support…") — captured by the Requirements pass
+  - Decisions: passages describing a concluded choice — captured by the Decisions pass
+
+For each action found, classify it into one of two `act_type` values inline:
+  - `deliverable` — a concrete output or artefact to produce (report, document, implementation, fix)
+  - `follow-up`   — a check-in, response, or update required from someone (confirm, reply, chase, update)
+
+For each action found:
+- Extract the exact verbatim passage as `source_quote` (MANDATORY — skip any action without a quotable passage)
+- Write a short (≤10 words) imperative-phrase `title` (e.g. "Send updated proposal to client", "Confirm budget allocation with finance")
+- Set `act_type` to `"deliverable"` or `"follow-up"` (see classification above)
+- Set `owner` to the STK-NNN ID of the person assigned to do the work if identifiable from source or discussion_notes; if a name is mentioned but not yet in the stakeholder registry, write the raw name string (e.g. `"Alice"`); if no person is identified, set to `""`
+- Set `raised_by` to the STK-NNN ID of the person who surfaced or mentioned this action (may be the same as owner); otherwise use `"STK-NNN"` placeholder
+- Set `due_date` to the raw string from the source if a due date or deadline is mentioned (e.g. `"by Friday"`, `"EOW"`, `"before next sprint"`); otherwise set to `""`
 - Set `action` = `"create"`, `type` = `"action"`, `id_to_assign` = `"ACT-NNN"`, `related` = `[]`, `change_summary` = `""`
+- Do NOT extract Description or Context — these are synthesised by sara-update from the full source document, not extracted here
 
 Collect results as `{act_artifacts}` (JSON array; empty array if none found).
 
