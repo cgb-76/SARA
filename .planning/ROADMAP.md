@@ -2,7 +2,7 @@
 
 **Milestone:** v1 — Core Knowledge Pipeline
 **Requirements:** 20 v1 requirements
-**Generated:** 2026-04-27
+**Generated:** 2008-04-27
 
 ---
 
@@ -187,26 +187,3 @@ Plans:
 - [x] 07-01-PLAN.md — Rewrite sara-extract Step 3 with sequential inline extraction passes
 - [x] 07-02-PLAN.md — Delete specialist agent files; update install.sh AGENTS array
 - [x] 07-03-PLAN.md — End-to-end verification checkpoint
-
-### Phase 8: Semantic wiki deduplication for the sorter using sqlite-vec
-
-**Goal:** [To be planned]
-**Requirements**: TBD
-**Depends on:** Phase 7
-**Plans:** 0 plans
-
-Plans:
-- [ ] TBD (run /gsd-plan-phase 8 to break down)
-
----
-
-## Progress
-
-| Phase | Status | Completed |
-|-------|--------|-----------|
-| 1. Foundation & Schema | Done | - |
-| 2. Ingest Pipeline | Done | - |
-| 3. Meeting Specialisation | Done | 2026-04-27 |
-| 4. Make Installable | In Progress | - |
-| 5. Artifact Summaries | Planned | - |
-| 6. Refine Entity Extraction | Planned | - |
