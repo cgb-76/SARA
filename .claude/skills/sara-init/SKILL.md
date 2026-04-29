@@ -213,28 +213,40 @@ see `.sara/templates/requirement.md` for the section matrix and rationale.
 ---
 id: DEC-000
 title: ""
-status: proposed  # proposed | accepted | rejected | superseded
-summary: ""  # DEC: options considered, chosen option/recommendation, status, decision date
-context: ""
-decision: ""
-rationale: ""
-alternatives-considered: ""
-date: ""          # ISO 8601 (e.g. 2026-04-27)
+status: accepted  # accepted | open | rejected | superseded
+summary: ""  # DEC: options considered, chosen option, status, decision date
+type: architectural  # architectural | process | tooling | data | business-rule | organisational
+date: ""          # ISO 8601 (e.g. 2026-04-29)
 deciders: []      # stakeholder IDs (e.g. [STK-001, STK-002])
 supersedes: ""    # DEC-NNN or empty
-schema_version: "1.0"
+source: []        # ingest IDs (e.g. [MTG-001])
+schema_version: '2.0'
 tags: []
 related: []
 ---
 
+## Source Quote
+> [exact verbatim passage from source document] — [[STK-NNN|Stakeholder Name]]
+
 ## Context
+
+[Synthesised by sara-update: why this decision was needed, background]
 
 ## Decision
 
-## Rationale
+[The chosen option — or "No decision reached — alignment required." for open decisions]
 
 ## Alternatives Considered
+
+[List of alternatives; for open decisions, list competing positions]
+
+## Rationale
+
+[Synthesised by sara-update: why this option was chosen]
 ```
+
+Body follows the v2.0 structured section format (Source Quote, Context, Decision, Alternatives
+Considered, Rationale).
 
 ### Action
 
