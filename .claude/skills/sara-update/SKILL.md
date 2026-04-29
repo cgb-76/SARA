@@ -313,6 +313,7 @@ After all artifact files are written successfully:
 ```bash
 printf '%s\n' "| [[{assigned_id}]] | {artifact.title} | open | {artifact.type} | [] | {today YYYY-MM-DD} |" >> wiki/index.md
 ```
+Note: The `Type` column always holds the entity class (`requirement`, `decision`, `action`, or `risk`) — never the `req_type` sub-classification (e.g. `functional`). This ensures homogeneity across all entity types in the index.
 
 **Index — UPDATE artifacts:** If any artifacts have `action == "update"`, read `wiki/index.md` once using the Read tool, then use the Edit tool to update the `Last Updated` column in each affected row (find the row by `{artifact.existing_id}`, replace only the date cell). Perform all UPDATE row edits before proceeding. If no UPDATE artifacts exist, skip this read entirely.
 
