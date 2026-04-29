@@ -81,7 +81,7 @@ For each artifact in `{extraction_plan}`:
     Construct the wiki page content by substituting all fields from the artifact into the template frontmatter and body:
     - `id` = `{assigned_id}`
     - `title` = `artifact.title`
-    - `source` = `{item.id}` (e.g. `MTG-001`)
+    - `source` = `[{item.id}]` (single-element YAML list, e.g. `[MTG-001]`)
     - `raised-by` = `artifact.raised_by` (note: template field is `raised-by`; artifact schema field is `raised_by`)
     - `related` = `artifact.related` (array of entity IDs)
     - `schema_version` = `"1.0"` for decision, action, and risk artifacts (always double-quoted); `schema_version` = `'2.0'` for requirement artifacts (single-quoted — prevents YAML float parsing)
@@ -264,7 +264,7 @@ For each artifact in `{extraction_plan}`:
       Output: `"Cannot update {artifact.existing_id}: file not found at {wiki_dir}{artifact.existing_id}.md"`
       Append `{wiki_dir}{artifact.existing_id}.md` to `failed_files`.
       Output the partial failure report and STOP.
-    Apply `artifact.change_summary` to the relevant field(s) in the frontmatter or body. Update the `source` field to include `{item.id}` in addition to any existing source value. Update the `related` field by merging `artifact.related` with the existing related array (deduplicating by entity ID).
+    Apply `artifact.change_summary` to the relevant field(s) in the frontmatter or body. Update the `source` field: if it is currently a scalar string, convert it to a single-element YAML list. Append `{item.id}` to the list if not already present. Result format: `source: [MTG-001, MTG-003]`. Update the `related` field by merging `artifact.related` with the existing related array (deduplicating by entity ID).
     Regenerate the `summary` field: read `summary_max_words` from pipeline-state.json (already in memory; default 50 if absent). Generate a fresh summary prose string using the same type-specific content rules as the create branch — REQ: title/status/description; DEC: options/chosen option/status/date; ACT: owner/due-date/status; RSK: likelihood/impact/mitigation/status; STK: vertical/department/role. Replace the existing `summary` value in the frontmatter with the newly generated string.
     For requirement artifacts (`artifact.type == "requirement"`): after applying the change_summary
     to frontmatter fields and regenerating the summary, also update the frontmatter to include

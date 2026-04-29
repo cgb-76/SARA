@@ -194,7 +194,7 @@ summary: ""  # REQ: title, status, one-line description of what is required
 status: open  # open | accepted | rejected | superseded
 type: functional  # functional | non-functional | regulatory | integration | business-rule | data
 priority: must-have  # must-have | should-have | could-have | wont-have
-source: ""     # ingest ID (e.g. MTG-001)
+source: []     # list of ingest IDs (e.g. [MTG-001, MTG-003])
 raised-by: ""  # stakeholder ID (e.g. STK-001)
 owner: ""      # stakeholder ID (e.g. STK-001)
 schema_version: '2.0'
@@ -246,7 +246,7 @@ status: open  # open | in-progress | done | cancelled
 summary: ""  # ACT: owner, due-date, status (open/in-progress/done/cancelled)
 owner: ""      # stakeholder ID (e.g. STK-001)
 due-date: ""   # ISO 8601
-source: ""     # ingest ID (e.g. MTG-001)
+source: []     # list of ingest IDs (e.g. [MTG-001, MTG-003])
 schema_version: "1.0"
 tags: []
 related: []
@@ -269,7 +269,7 @@ likelihood: ""  # low | medium | high
 impact: ""      # low | medium | high
 owner: ""       # stakeholder ID (e.g. STK-001)
 mitigation: ""
-source: ""      # ingest ID (e.g. MTG-001)
+source: []      # list of ingest IDs (e.g. [MTG-001, MTG-003])
 schema_version: "1.0"
 tags: []
 related: []
@@ -361,7 +361,7 @@ summary: ""  # REQ: title, status, one-line description of what is required
 status: open  # open | accepted | rejected | superseded
 type: functional  # functional | non-functional | regulatory | integration | business-rule | data
 priority: must-have  # must-have | should-have | could-have | wont-have
-source: ""     # ingest ID (e.g. MTG-001)
+source: []     # list of ingest IDs (e.g. [MTG-001, MTG-003])
 raised-by: ""  # stakeholder ID (e.g. STK-001)
 owner: ""      # stakeholder ID (e.g. STK-001)
 schema_version: '2.0'
@@ -456,7 +456,7 @@ status: open  # open | in-progress | done | cancelled
 summary: ""  # ACT: owner, due-date, status (open/in-progress/done/cancelled)
 owner: ""      # stakeholder ID (e.g. STK-001)
 due-date: ""   # ISO 8601
-source: ""     # ingest ID (e.g. MTG-001)
+source: []     # list of ingest IDs (e.g. [MTG-001, MTG-003])
 schema_version: "1.0"
 tags: []
 related: []
@@ -479,7 +479,7 @@ likelihood: ""  # low | medium | high
 impact: ""      # low | medium | high
 owner: ""       # stakeholder ID (e.g. STK-001)
 mitigation: ""
-source: ""      # ingest ID (e.g. MTG-001)
+source: []      # list of ingest IDs (e.g. [MTG-001, MTG-003])
 schema_version: "1.0"
 tags: []
 related: []
