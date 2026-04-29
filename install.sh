@@ -120,10 +120,6 @@ done
 
 # Known agent files — fixed set for this release
 AGENTS=(
-  sara-requirement-extractor
-  sara-decision-extractor
-  sara-action-extractor
-  sara-risk-extractor
   sara-artifact-sorter
 )
 
