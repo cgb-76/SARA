@@ -229,8 +229,9 @@ For each artifact in `{extraction_plan}`:
 
     ## Decision
     {If artifact.status == "accepted": write artifact.chosen_option content — the option
-     or approach the team selected. If artifact.chosen_option is an empty string, synthesise
-     the decision from artifact.title and {discussion_notes}.
+     or approach the team selected. If artifact.chosen_option is an empty string, write:
+     "[Option not captured — review source document and update manually.]"
+     Do not synthesise a decision that is not grounded in source_doc or discussion_notes.
      If artifact.status == "open": write exactly "No decision reached — alignment required."}
 
     ## Alternatives Considered
@@ -248,6 +249,14 @@ For each artifact in `{extraction_plan}`:
      this option was chosen over the alternatives. For open decisions, why alignment has
      not been reached (what is blocking agreement). Leave empty (heading only) if nothing
      relevant is available — never fabricate.}
+
+    ## Cross Links
+    {Generate one wiki link per entry in artifact.related. Resolve display text per wikilink rule:
+     - STK entities: [[STK-NNN|name]] — read wiki/stakeholders/{ID}.md for the name field
+     - REQ/DEC/ACT/RSK entities: [[ID|ID Title]] — read wiki/index.md for the title
+     - If title/name cannot be resolved: fall back to bare [[ID]]
+     Write each link on its own line. If artifact.related is empty, write this heading with no
+     content (heading-only — consistent with the established empty-section pattern for this skill).}
     ```
 
     **action:**
@@ -261,6 +270,14 @@ For each artifact in `{extraction_plan}`:
     ## Notes
     {synthesised blockers, dependencies, follow-up context, or related items from discussion
      notes — leave empty if none available}
+
+    ## Cross Links
+    {Generate one wiki link per entry in artifact.related. Resolve display text per wikilink rule:
+     - STK entities: [[STK-NNN|name]] — read wiki/stakeholders/{ID}.md for the name field
+     - REQ/DEC/ACT/RSK entities: [[ID|ID Title]] — read wiki/index.md for the title
+     - If title/name cannot be resolved: fall back to bare [[ID]]
+     Write each link on its own line. If artifact.related is empty, write this heading with no
+     content (heading-only — consistent with the established empty-section pattern for this skill).}
     ```
 
     **risk:**
@@ -278,6 +295,14 @@ For each artifact in `{extraction_plan}`:
     ## Notes
     {synthesised monitoring notes, triggers, owners, or related context from discussion
      notes — leave empty if none available}
+
+    ## Cross Links
+    {Generate one wiki link per entry in artifact.related. Resolve display text per wikilink rule:
+     - STK entities: [[STK-NNN|name]] — read wiki/stakeholders/{ID}.md for the name field
+     - REQ/DEC/ACT/RSK entities: [[ID|ID Title]] — read wiki/index.md for the title
+     - If title/name cannot be resolved: fall back to bare [[ID]]
+     Write each link on its own line. If artifact.related is empty, write this heading with no
+     content (heading-only — consistent with the established empty-section pattern for this skill).}
     ```
 
     Use the Write tool to create `{wiki_dir}{assigned_id}.md`.
@@ -333,6 +358,9 @@ For each artifact in `{extraction_plan}`:
 
     ## Decision
     {If artifact.status == "accepted": write artifact.chosen_option content.
+     If artifact.chosen_option is an empty string, write:
+     "[Option not captured — review source document and update manually.]"
+     Do not synthesise a decision that is not grounded in source_doc or discussion_notes.
      If artifact.status == "open": write "No decision reached — alignment required."}
 
     ## Alternatives Considered
