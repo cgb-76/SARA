@@ -57,6 +57,7 @@ from the INCLUDE list below. Passages lacking these signals are NOT requirements
   INCLUDE — these passages ARE requirements (extract them):
   - "must", "shall", "has to", "required to", "need to" → priority: must-have
   - "will" (as a commitment to future behaviour, not narrating past events) → priority: must-have
+    NOTE: "we will use [technology]" is more naturally a DECISION (technology choice) than a requirement. If the passage names a specific tool or platform, prefer the decisions pass. Only extract as a requirement if the passage describes a system behaviour obligation.
   - "should" → priority: should-have
   - "could", "may" → priority: could-have
   - "will not", "won't", "out of scope", "we won't" → priority: wont-have
