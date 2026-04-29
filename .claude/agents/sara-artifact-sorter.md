@@ -19,7 +19,7 @@ Agent receives via prompt:
 - `<merged_artifacts>` — JSON array: concatenation of all four specialist agent outputs (may contain duplicates, always action="create")
 - `<grep_summaries>` — output of:
   ```bash
-  grep -rh "^summary:" wiki/requirements/ wiki/decisions/ wiki/actions/ wiki/risks/ wiki/stakeholders/ 2>/dev/null
+  grep -rh "^summary:" wiki/requirements/ wiki/decisions/ wiki/actions/ wiki/risks/ 2>/dev/null
   ```
 - `<wiki_index>` — full content of wiki/index.md (the existing entity catalog)
 </input>

@@ -128,7 +128,7 @@ If `{merged}` is empty (all four passes returned []):
 
 Load grep summaries using the Bash tool:
 ```bash
-grep -rh "^summary:" wiki/requirements/ wiki/decisions/ wiki/actions/ wiki/risks/ wiki/stakeholders/ 2>/dev/null
+grep -rh "^summary:" wiki/requirements/ wiki/decisions/ wiki/actions/ wiki/risks/ 2>/dev/null
 ```
 
 Spawn sorter:
