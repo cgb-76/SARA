@@ -242,6 +242,10 @@ Initialize `approved_artifacts = []`.
 
 For each artifact in the list, at index `{artifact_index}` (starting at 1):
 
+  If `artifact.type == "action"` AND (`artifact.owner == ""` OR `artifact.owner` does not match the pattern `STK-\d{3}`):
+    Output as plain text:
+    ⚠ Owner not resolved — assign manually after /sara-update, or run /sara-add-stakeholder first.
+
   Present the artifact as plain text before the AskUserQuestion call:
   ```
   --- Artifact {artifact_index} ---
