@@ -89,8 +89,8 @@ For each artifact in `{extraction_plan}`:
     - `priority` = `artifact.priority` for requirement artifacts (one of: must-have, should-have, could-have, wont-have)
     - For decision artifacts: set `status` = `"proposed"`, `date` = today's ISO date
     - For requirement artifacts: set `status` = `"open"`; do not set `description` (v1.0 field — not present in v2.0 frontmatter)
-    - For action artifacts: set `status` = `"open"`, `owner` = `artifact.raised_by`
-    - For risk artifacts: set `status` = `"open"`, `owner` = `artifact.raised_by`
+    - For action artifacts: set `status` = `"open"`, `owner` = `artifact.raised_by` if it is a resolved STK ID (e.g. `"STK-001"`); otherwise set `owner` = `""` (empty — leave unassigned; do not write a placeholder ID)
+    - For risk artifacts: set `status` = `"open"`, `owner` = `artifact.raised_by` if it is a resolved STK ID (e.g. `"STK-001"`); otherwise set `owner` = `""` (empty — leave unassigned; do not write a placeholder ID)
     - All other fields not supplied by the artifact: use the template default value (empty string `""` or empty array `[]`)
     - Read `summary_max_words` from the already-loaded pipeline-state.json (field: `summary_max_words`). If the field is absent, use 50 as the default.
     - `summary` = LLM-generated prose string within `summary_max_words` words. Write type-appropriate content:
