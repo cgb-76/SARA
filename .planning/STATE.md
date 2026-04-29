@@ -60,6 +60,7 @@ See: .planning/ROADMAP.md
 - Phase 5 added: artifact-summaries
 - Phase 6 added: refine-entity-extraction
 - Phase 7 added: adjust-agent-workflow
+- Phase 8 added: Semantic wiki deduplication for the sorter using sqlite-vec
 
 ## Open Items
 

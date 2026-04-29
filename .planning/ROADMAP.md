@@ -188,6 +188,16 @@ Plans:
 - [x] 07-02-PLAN.md — Delete specialist agent files; update install.sh AGENTS array
 - [x] 07-03-PLAN.md — End-to-end verification checkpoint
 
+### Phase 8: Semantic wiki deduplication for the sorter using sqlite-vec
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 7
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 8 to break down)
+
 ---
 
 ## Progress
