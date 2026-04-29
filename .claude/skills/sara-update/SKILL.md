@@ -39,7 +39,8 @@ Store `{item}` = `items["{N}"]`.
 Store `{extraction_plan}` = `items["{N}"].extraction_plan`.
 
 If `{extraction_plan}` is empty or null:
-  Output: `"Extraction plan for item {N} is empty. Re-run /sara-extract {N} to generate an approved plan."` and STOP.
+  Output: `"Extraction plan for item {N} is empty — no wiki files to write."`
+  Proceed directly to Step 4 (commit pipeline-state.json stage advance only).
 
 **Step 1b — Load source document and discussion notes**
 
