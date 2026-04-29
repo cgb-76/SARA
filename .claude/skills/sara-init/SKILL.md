@@ -190,22 +190,22 @@ All SARA pipeline commands that read or write wiki pages must follow the rules b
 ---
 id: REQ-000
 title: ""
-status: open  # open | accepted | rejected | superseded
 summary: ""  # REQ: title, status, one-line description of what is required
+status: open  # open | accepted | rejected | superseded
+type: functional  # functional | non-functional | regulatory | integration | business-rule | data
+priority: must-have  # must-have | should-have | could-have | wont-have
 source: ""     # ingest ID (e.g. MTG-001)
 raised-by: ""  # stakeholder ID (e.g. STK-001)
 owner: ""      # stakeholder ID (e.g. STK-001)
-schema_version: "1.0"
+schema_version: '2.0'
 tags: []
 related: []    # entity IDs (e.g. [DEC-001, ACT-002])
 ---
-
-## Description
-
-## Acceptance Criteria
-
-## Notes
 ```
+
+Body follows the structured section format (Source Quote, Statement, User Story, Acceptance Criteria,
+BDD Criteria, Context, Cross Links). Which sections are required/optional/omitted depends on `type` —
+see `.sara/templates/requirement.md` for the section matrix and rationale.
 
 ### Decision
 
@@ -357,21 +357,64 @@ file as a separate Write call.
 ---
 id: REQ-000
 title: ""
-status: open  # open | accepted | rejected | superseded
 summary: ""  # REQ: title, status, one-line description of what is required
+status: open  # open | accepted | rejected | superseded
+type: functional  # functional | non-functional | regulatory | integration | business-rule | data
+priority: must-have  # must-have | should-have | could-have | wont-have
 source: ""     # ingest ID (e.g. MTG-001)
 raised-by: ""  # stakeholder ID (e.g. STK-001)
 owner: ""      # stakeholder ID (e.g. STK-001)
-schema_version: "1.0"
+schema_version: '2.0'
 tags: []
 related: []    # entity IDs (e.g. [DEC-001, ACT-002])
 ---
 
-## Description
+## Source Quote
+> [exact stakeholder words from source document]
+
+## Statement
+The [subject] shall [verb phrase].
+
+<!-- Section matrix — which sections are required (✓), optional (opt), or omitted (—) per requirement type:
+
+| Section             | Functional | Non-functional | Regulatory | Integration | Business rule | Data |
+|---------------------|:----------:|:--------------:|:----------:|:-----------:|:-------------:|:----:|
+| Source Quote        |     ✓      |       ✓        |     ✓      |      ✓      |       ✓       |  ✓   |
+| Statement           |     ✓      |       ✓        |     ✓      |      ✓      |       ✓       |  ✓   |
+| User Story          |     ✓      |      opt       |     —      |     opt     |       —       |  —   |
+| Acceptance Criteria |     ✓      |       ✓        |     ✓      |      ✓      |       ✓       |  ✓   |
+| BDD Criteria        |     ✓      |       —        |     —      |     opt     |       ✓       |  —   |
+| Context             |    opt     |       ✓        |     ✓      |      ✓      |       ✓       |  ✓   |
+| Cross Links         |     ✓      |       ✓        |     ✓      |      ✓      |       ✓       |  ✓   |
+
+Rationale:
+- User Story on Non-functional: optional — usability NFRs have a natural user role, but performance/security/reliability NFRs usually don't map to a role/benefit framing.
+- User Story on Integration: optional — integration requirements can have a user-facing perspective (e.g. a developer consuming an API) but often don't.
+- User Story omitted on Regulatory/Business rule/Data: compliance mandates and policy rules are not user goals; forcing a user story produces artificial framing.
+- BDD on Business rule: required — business rules are where Gherkin is most natural ("Given an invoice is unapproved, When payment is attempted, Then reject with error").
+- BDD on Integration: optional — can work well for API contract verification but not always natural (e.g. authentication handshake sequences).
+- BDD omitted on Non-functional/Regulatory/Data: non-functionals are measured, not triggered by user actions; regulatory and data requirements are compliance checklists, not behaviour scenarios.
+- Context on Functional: optional — usually self-evident from Source Quote + Statement; include only when there is non-obvious rationale or design constraint.
+- Context required on all other types: why a quality target, mandate, integration contract, domain rule, or data policy exists is rarely obvious from the statement alone; downstream readers need the rationale.
+-->
+
+## User Story
+As a [role], I want [capability], so that [benefit].
 
 ## Acceptance Criteria
+- [ ] [plain language condition]
 
-## Notes
+## BDD Criteria
+**Scenario: [name]**
+Given [context]
+When [action]
+Then [outcome]
+
+## Context
+[Rationale, background, constraints not captured elsewhere]
+
+## Cross Links
+[One wiki link per related[] entry — see wikilink rule in sara-update SKILL.md]
 ```
 
 `.sara/templates/decision.md`:
