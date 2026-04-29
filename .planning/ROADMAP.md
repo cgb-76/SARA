@@ -112,6 +112,16 @@ Plans:
 
 **Dependencies:** Phase 2
 
+### Phase 8: refine-requirements
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 7
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 8 to break down)
+
 ---
 
 ### Phase 4: Make Installable
