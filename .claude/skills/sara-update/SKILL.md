@@ -96,14 +96,15 @@ For each artifact in `{extraction_plan}`:
     - `related` = `artifact.related` (array of entity IDs)
     - `schema_version` = `'2.0'` for decision artifacts (single-quoted — prevents YAML float parsing; consistent with requirement schema established in Phase 8)
     - For requirement artifacts: set `schema_version` = `'2.0'` (single-quoted — same convention as decisions)
-    - `schema_version` = `"1.0"` for action and risk artifacts (always double-quoted)
+    - `schema_version` = `'2.0'` for action artifacts (single-quoted — matches requirement and decision convention; prevents YAML float parsing)
+    - `schema_version` = `"1.0"` for risk artifacts (unchanged)
     - `type` = `artifact.req_type` for requirement artifacts (one of: functional, non-functional, regulatory, integration, business-rule, data)
     - `type` = `artifact.dec_type` for decision artifacts (one of: architectural, process, tooling, data, business-rule, organisational)
     - `priority` = `artifact.priority` for requirement artifacts (one of: must-have, should-have, could-have, wont-have)
     - For decision artifacts: set `status` = `artifact.status` (either `"accepted"` or `"open"` from the extraction pass — NEVER hardcode `"proposed"`), `date` = today's ISO date
     - For decision artifacts: do NOT write `context`, `decision`, `rationale`, or `alternatives-considered` frontmatter fields — these are v1.0 fields removed in schema v2.0
     - For requirement artifacts: set `status` = `"open"`; do not set `description` (v1.0 field — not present in v2.0 frontmatter)
-    - For action artifacts: set `status` = `"open"`, `owner` = `artifact.raised_by` if it is a resolved STK ID (e.g. `"STK-001"`); otherwise set `owner` = `""` (empty — leave unassigned; do not write a placeholder ID)
+    - For action artifacts: set `status` = `"open"`, `type` = `artifact.act_type` (one of: `deliverable`, `follow-up`), `owner` = `artifact.owner` (STK-NNN or raw name string or `""`), `due-date` = `artifact.due_date` (raw string or `""`)
     - For risk artifacts: set `status` = `"open"`, `owner` = `artifact.raised_by` if it is a resolved STK ID (e.g. `"STK-001"`); otherwise set `owner` = `""` (empty — leave unassigned; do not write a placeholder ID)
     - All other fields not supplied by the artifact: use the template default value (empty string `""` or empty array `[]`)
     - Read `summary_max_words` from the already-loaded pipeline-state.json (field: `summary_max_words`). If the field is absent, use 50 as the default.
@@ -111,7 +112,7 @@ For each artifact in `{extraction_plan}`:
       - REQ: title, status, one-line description of what is required
       - DEC (status=accepted): options considered, chosen option, status: accepted, decision date
       - DEC (status=open): competing options/positions, alignment not reached, status: open, decision date
-      - ACT: owner, due-date, status (open/in-progress/done/cancelled)
+      - ACT: owner, due-date, type, status
       - RSK: likelihood, impact, mitigation approach, status
       - STK: vertical, department, role — enough to distinguish from other stakeholders
       Generate the summary from the artifact fields already set (title, status, owner, etc.) and `{discussion_notes}`. Write it as a single prose string — not a list, not bullet points.
@@ -261,15 +262,29 @@ For each artifact in `{extraction_plan}`:
 
     **action:**
     ```
-    ## Description
+    ## Source Quote
     > "{artifact.source_quote}" — [[{artifact.raised_by}|{stakeholder_name}]]
 
-    {synthesised summary of what needs to be done, who is responsible, and any relevant
-     deadlines or dependencies resolved during /sara-discuss}
+    ## Description
+    {Synthesised from {source_doc} and {discussion_notes}: 2–4 sentences describing what needs
+     to be done. Ground the description in the source quote. Leave empty (heading only) if
+     nothing relevant is available — never fabricate.}
 
-    ## Notes
-    {synthesised blockers, dependencies, follow-up context, or related items from discussion
-     notes — leave empty if none available}
+    ## Context
+    {Synthesised from {source_doc} and {discussion_notes}: why this action was raised —
+     triggering event, dependency, or decision it relates to. Leave empty (heading only)
+     if nothing relevant is available — never fabricate.}
+
+    ## Owner
+    {Written from artifact.owner — NOT synthesised:
+     - If artifact.owner is a valid STK-NNN ID (matches pattern STK-\d{3}): write "[[STK-NNN|Stakeholder Name]]" — read wiki/stakeholders/{artifact.owner}.md to resolve the name.
+     - If artifact.owner is a raw name string (not empty, not STK-NNN): write it as-is with note "(not yet registered — run /sara-add-stakeholder)"
+     - If artifact.owner is empty ("" or absent): write "Not assigned — set manually."}
+
+    ## Due Date
+    {Written from artifact.due_date — NOT synthesised:
+     - If artifact.due_date is non-empty: write the raw string as-is (e.g. "by Friday", "EOW")
+     - If artifact.due_date is empty ("" or absent): write "Not specified — set manually."}
 
     ## Cross Links
     {Generate one wiki link per entry in artifact.related. Resolve display text per wikilink rule:
