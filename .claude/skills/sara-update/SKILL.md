@@ -300,6 +300,37 @@ For each artifact in `{extraction_plan}`:
     STK → [[STK-NNN|name]], REQ/DEC/ACT/RSK → [[ID|ID Title]], fallback to [[ID]] if
     title/name cannot be resolved. Write each link on its own line. Write heading only if
     artifact.related is empty after merge.
+
+    For decision artifacts (`artifact.type == "decision"`): after applying the change_summary
+    to frontmatter fields and regenerating the summary, also update the frontmatter to include
+    the v2.0 fields from the artifact object:
+    - Set `type` = `artifact.dec_type` (one of: architectural, process, tooling, data, business-rule, organisational)
+    - Set `status` = `artifact.status` (either `"accepted"` or `"open"` from the artifact — do NOT keep any existing `"proposed"` value if present in the existing page)
+    - Set `schema_version` = `'2.0'` (single-quoted string — prevents YAML float parsing)
+    - Remove the following v1.0 frontmatter fields if present: `context`, `decision`, `rationale`, `alternatives-considered`
+    - Add `source: [{item.id}]` if not already present (convert scalar source field to list following existing update branch source-field rule)
+
+    Then rewrite the full body to the v2.0 structured section format using the same synthesis
+    rules as the create branch:
+    ## Source Quote
+    > "{artifact.source_quote}" — [[{artifact.raised_by}|{stakeholder_name}]]
+
+    ## Context
+    {Synthesised from {source_doc}, {discussion_notes}, and artifact.change_summary: updated
+     background for why this decision exists. Never fabricate.}
+
+    ## Decision
+    {If artifact.status == "accepted": write artifact.chosen_option content.
+     If artifact.status == "open": write "No decision reached — alignment required."}
+
+    ## Alternatives Considered
+    {If artifact.status == "accepted": list from artifact.alternatives (non-empty) or heading-only.
+     If artifact.status == "open": list competing positions from source.}
+
+    ## Rationale
+    {Synthesised from {source_doc} and {discussion_notes}: why this option was chosen or
+     why alignment was not reached. Leave empty (heading only) if nothing relevant — never fabricate.}
+
     Use the Write tool to overwrite `{wiki_dir}{artifact.existing_id}.md` with the updated content.
     If write succeeds: append `{wiki_dir}{artifact.existing_id}.md` to `written_files`.
     If write fails: append `{wiki_dir}{artifact.existing_id}.md` to `failed_files`. Output the partial failure report (see format below). STOP.
