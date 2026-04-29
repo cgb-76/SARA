@@ -88,11 +88,49 @@ Collect results as `{req_artifacts}` (JSON array; empty array if none found).
 
 **Decisions pass**
 
-Extract every passage that describes a decision — a deliberate choice made by the team that was concluded, not just discussed ("we will use X" is a decision; "we could use X" is not). For each decision found:
-- Extract the exact verbatim passage as `source_quote` (MANDATORY)
+A passage IS a decision if it contains commitment language OR misalignment language from the
+signal lists below. Passages lacking both signals are NOT decisions regardless of topic.
+
+  COMMITMENT language — these passages ARE decisions → status: accepted
+  - "we decided to", "we decided on"
+  - "we chose", "we have chosen"
+  - "we agreed on", "we agreed to"
+  - "we went with"
+  - "we will use" (as a settled commitment, not hypothetical)
+  - "the approach is", "our approach is"
+  - "we have decided"
+  - Similar definitive past- or present-tense alignment phrases where the team is unified
+
+  MISALIGNMENT language — these passages ARE decisions → status: open
+  - Explicit disagreement: "Alice prefers X, but Bob argues Y"
+  - Unresolved choice: "we need to decide between A and B"
+  - Competing preferences: "there are two camps — those who want X vs those who want Y"
+  - "we haven't agreed on", "still open", "not yet decided"
+  - Documented tension without resolution
+
+  EXCLUDE — these passages are NOT decisions (do NOT extract them):
+  - Option exploration: "we could use X or Y" (exploring options, not choosing)
+  - Aspiration/wish: "it would be good to have Z" (desire, no concluded choice or tension)
+  - Requirement/obligation: "the system must support A" (system obligation, not a team choice)
+
+For each decision found, classify it into one of six types inline based on what the decision is about:
+  - `architectural`   — system structure, technology choices, component relationships
+  - `process`         — how the team works, workflow, ceremonies, practices
+  - `tooling`         — software tools, libraries, platforms selected
+  - `data`            — data model, storage, retention, ownership rules
+  - `business-rule`   — domain logic, policy decisions
+  - `organisational`  — team structure, ownership, roles, responsibilities
+
+For each decision found:
+- Extract the exact verbatim passage as `source_quote` (MANDATORY — skip any decision without a quotable passage)
 - Write a short (≤10 words) noun-phrase `title`
-- Set `raised_by` to the STK-NNN ID if identifiable; otherwise `"STK-NNN"` placeholder
+- Set `raised_by` to the STK-NNN ID if identifiable from the source or discussion_notes; otherwise use `"STK-NNN"` placeholder
+- Set `status` to `"accepted"` if commitment language was detected; `"open"` if misalignment language was detected
+- Set `dec_type` to one of the six types above (use `dec_type` — not `type` — to avoid collision with the envelope `type: "decision"` field)
+- Set `chosen_option` to the selected option text for commitment-language decisions; set to `""` for open/misalignment decisions
+- Set `alternatives` to an array of alternatives mentioned in the source (strings); set to `[]` if none are mentioned
 - Set `action` = `"create"`, `type` = `"decision"`, `id_to_assign` = `"DEC-NNN"`, `related` = `[]`, `change_summary` = `""`
+- Do NOT extract `context` or `rationale` — these are synthesised by sara-update from the full source document, not extracted here
 
 Collect results as `{dec_artifacts}` (JSON array; empty array if none found).
 
