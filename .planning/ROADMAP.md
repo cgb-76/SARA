@@ -185,6 +185,19 @@ Plans:
 3. Running `/sara-update N` on an approved risk artifact produces a wiki page with v2.0 frontmatter (type from risk_type, owner from artifact.owner, likelihood/impact/status from extraction, schema_version '2.0', no mitigation frontmatter field) and a four-section body (Source Quote, Risk IF/THEN, Mitigation, Cross Links)
 4. Risk and Mitigation body sections are synthesised by sara-update from the source document and discussion notes; IF/THEN statement uses IF and THEN in caps
 
+### Phase 12: vertical-awareness
+
+**Goal:** Rename `vertical` → `segment` across all SARA skills and agents; add `segments: []` array field to all four artifact types with extraction inference (STK-attribution, keyword matching, empty fallback) and wiki write
+**Requirements:** No formal requirement IDs — see D-01 through D-10 in 12-CONTEXT.md
+**Depends on:** Phase 11
+**Plans:** 4 plans
+
+Plans:
+- [ ] 12-01-PLAN.md — Rename vertical → segment in sara-add-stakeholder and sara-lint
+- [ ] 12-02-PLAN.md — Add segments field to sara-extract (config read + 4 pass inference) and sara-artifact-sorter (passthrough rule)
+- [ ] 12-03-PLAN.md — Rename vertical → segment in sara-init (5 locations) + add segments: [] to 4 entity templates and 4 CLAUDE.md schema blocks
+- [ ] 12-04-PLAN.md — Rename vertical → segment in sara-update (STK rule + notes) + add segments write rule to all 8 entity branches
+
 ---
 
 ### Phase 4: Make Installable
