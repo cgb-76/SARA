@@ -76,7 +76,7 @@ Agent receives via prompt:
    - For stakeholder IDs (STK-): include the person's name from wiki/index.md — e.g. `STK-006 "Alice Wang"` not just `STK-006`
    If the name cannot be found, write the ID with a `(name unknown)` suffix rather than leaving it bare.
 
-6. Build the `cleaned_artifacts` array: the deduplicated, type-resolved list with create-vs-update set and related fields populated. Exclude duplicates that the human will resolve via questions — those will be re-added after resolution.
+6. Build the `cleaned_artifacts` array: the deduplicated, type-resolved list with create-vs-update set and related fields populated. For type-ambiguity pairs: include BOTH artifacts in `cleaned_artifacts` — do not exclude either. The resolution question tells sara-extract which one to remove. Without both present, the removal logic in sara-extract cannot operate correctly.
 </process>
 
 <output_format>
