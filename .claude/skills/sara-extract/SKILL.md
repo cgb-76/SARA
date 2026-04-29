@@ -256,5 +256,4 @@ If zero artifacts were accepted: still write the empty `extraction_plan: []` and
 - Extraction architecture: sara-extract runs four inline sequential passes (requirement → decision → action → risk) against the already-in-context source document. No specialist Task() agents are used for extraction. Only the merged artifact array is passed to the sorter Task(). The sorter agent (sara-artifact-sorter) receives the merged output plus grep summaries and wiki/index.md. All extraction passes always return action="create"; the sorter resolves create-vs-update.
 - Sorter questions are presented to the human BEFORE the approval loop starts (Step 4). Never present sorter questions inside the artifact loop (Pitfall 4 guard).
 - If a specialist agent returns an empty array [], merge it as zero elements — skip silently, do not generate a question about the absent type.
-- The `discussion_notes` string MUST be passed explicitly in each specialist Task() prompt. Agents start cold and have no implicit access to pipeline-state.json. An empty discussion_notes string is valid — pass it as an empty string, not omitted. (Pitfall 1 guard.)
 </notes>
