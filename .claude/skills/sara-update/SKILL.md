@@ -342,7 +342,7 @@ For each artifact in `{extraction_plan}`:
     to frontmatter fields and regenerating the summary, also update the frontmatter to include
     the v2.0 fields from the artifact object:
     - Set `type` = `artifact.dec_type` (one of: architectural, process, tooling, data, business-rule, organisational)
-    - Set `status` = `artifact.status` (either `"accepted"` or `"open"` from the artifact — do NOT keep any existing `"proposed"` value if present in the existing page)
+    - Set `status` = `artifact.status`. Valid values: `"accepted"` or `"open"` only. Do NOT keep any existing `"proposed"` value from the existing page. If `artifact.status` is `"proposed"` or any other unexpected value, default to `"open"` and log a warning: `"Artifact {title} had invalid status '{value}' — defaulted to 'open'."`
     - Set `schema_version` = `'2.0'` (single-quoted string — prevents YAML float parsing)
     - Remove the following v1.0 frontmatter fields if present: `context`, `decision`, `rationale`, `alternatives-considered`
     - Add `source: [{item.id}]` if not already present (convert scalar source field to list following existing update branch source-field rule)
