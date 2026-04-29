@@ -132,4 +132,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-29 after Phase 9 completion — two-signal decision detection (COMMITMENT/MISALIGNMENT) in sara-extract, six-type dec_type taxonomy, five-section v2.0 decision body (Source Quote, Context, Decision, Alternatives Considered, Rationale), sara-init and sara-update updated to v2.0 schema. Full v2.0 milestone complete across requirements and decisions.*
+*Last updated: 2026-04-29 after Phase 10 completion — action artifact pipeline fully updated to v2.0 schema across all four components: sara-extract (structured action pass with act_type/owner/due_date fields and owner-not-resolved warning), sara-init (v2.0 action schema block and template with six-section body), sara-update (v2.0 action create and update branches consuming artifact.owner and artifact.act_type), sara-artifact-sorter (action field pass-through documentation). Full v2.0 milestone complete across requirements, decisions, and actions.*
