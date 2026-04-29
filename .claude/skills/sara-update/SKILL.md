@@ -114,7 +114,7 @@ For each artifact in `{extraction_plan}`:
       - DEC (status=accepted): options considered, chosen option, status: accepted, decision date
       - DEC (status=open): competing options/positions, alignment not reached, status: open, decision date
       - ACT: owner, due-date, type, status
-      - RSK: likelihood, impact, mitigation approach, status
+      - RSK: likelihood, impact, type, status, mitigation approach
       - STK: vertical, department, role — enough to distinguish from other stakeholders
       Generate the summary from the artifact fields already set (title, status, owner, etc.) and `{discussion_notes}`. Write it as a single prose string — not a list, not bullet points.
 
