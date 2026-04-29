@@ -167,6 +167,24 @@ Plans:
 3. Running `/sara-update N` on an approved action artifact produces a wiki page with v2.0 frontmatter (type from act_type, owner from artifact.owner, due-date from artifact.due_date, schema_version '2.0') and a six-section body (Source Quote, Description, Context, Owner, Due Date, Cross Links)
 4. Description and Context sections are synthesised; Owner and Due Date sections are written from extracted fields (not synthesised)
 
+### Phase 11: refine-risks
+
+**Goal:** Refine the risk artifact across two tracks: (1) rewrite the sara-extract risk extraction pass with a tightened signal definition, six-type risk_type classification, owner as a distinct field from raised_by, likelihood/impact extracted inline when source signals are present, and signal-based initial status assignment; (2) restructure the wiki risk page to schema v2.0 with a four-section body (Source Quote, Risk IF/THEN, Mitigation, Cross Links), remove mitigation from frontmatter, and add type, owner, likelihood, impact, status fields; wire sara-update risk create and update branches for v2.0; extend approval loop owner warning to risk artifacts; update sara-init risk schema and template
+**Requirements:** WIKI-04
+**Depends on:** Phase 10
+**Plans:** 3 plans
+
+Plans:
+- [ ] 11-01-PLAN.md — Rewrite sara-extract risk pass (signal definition, risk_type, owner, likelihood, impact, status) + extend Step 4 owner warning to risk artifacts
+- [ ] 11-02-PLAN.md — Update sara-init: risk schema block in CLAUDE.md (Step 9) and risk.md template (Step 12) to v2.0 (four-section body, type field, schema_version '2.0')
+- [ ] 11-03-PLAN.md — Rewrite sara-update risk create + update branches for v2.0 frontmatter and body structure
+
+**Success Criteria:**
+1. Running `/sara-extract N` on a source document extracts risks based on uncertain future events with potential negative effect; confirmed problems already happening are not extracted as risks
+2. Every extracted risk in the approval loop shows a `risk_type` field (one of six types), `owner` (distinct from raised_by), `likelihood`, `impact` (extracted or empty), and `status` (signal-based; default open); unresolved owners show the warning line before the artifact block
+3. Running `/sara-update N` on an approved risk artifact produces a wiki page with v2.0 frontmatter (type from risk_type, owner from artifact.owner, likelihood/impact/status from extraction, schema_version '2.0', no mitigation frontmatter field) and a four-section body (Source Quote, Risk IF/THEN, Mitigation, Cross Links)
+4. Risk and Mitigation body sections are synthesised by sara-update from the source document and discussion notes; IF/THEN statement uses IF and THEN in caps
+
 ---
 
 ### Phase 4: Make Installable
