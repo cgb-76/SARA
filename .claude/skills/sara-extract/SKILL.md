@@ -202,7 +202,10 @@ If `{sorter_questions}` is non-empty:
       - If the question contains "appears to relate to": cross-reference resolution
           A: add the referenced entity ID to the artifact's related array
           B: no change to the artifact's related array
-    If user replies anything else: re-present the same question with the note "Please reply A, B, or C." and wait again — do not advance to the next question.
+    If user replies anything else:
+      - If the question contains "appears to relate to": re-present with the note "Please reply A or B." and wait again.
+      - All other question types: re-present with the note "Please reply A, B, or C." and wait again.
+      Do not advance to the next question.
 
 Proceed to Step 4 with `{cleaned_artifacts}` as the artifact list. All sorter questions are now resolved.
 
