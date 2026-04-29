@@ -215,7 +215,9 @@ id: DEC-000
 title: ""
 status: accepted  # accepted | open | rejected | superseded
 summary: ""  # DEC: options considered, chosen option, status, decision date
-type: architectural  # architectural | process | tooling | data | business-rule | organisational
+type: architectural  # wiki page field; artifact schema uses dec_type to avoid collision with
+                     # envelope type: "decision" — sara-update maps dec_type → type on write
+                     # valid values: architectural | process | tooling | data | business-rule | organisational
 date: ""          # ISO 8601 (e.g. 2026-04-29)
 deciders: []      # stakeholder IDs (e.g. [STK-001, STK-002])
 supersedes: ""    # DEC-NNN or empty
