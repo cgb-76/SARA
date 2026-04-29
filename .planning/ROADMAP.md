@@ -121,9 +121,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 08-01-PLAN.md — Rewrite sara-extract requirements pass (modal-verb signal, MoSCoW, type classification) + fix sara-artifact-sorter output schema for priority/req_type passthrough
-- [ ] 08-02-PLAN.md — Update sara-init: requirement.md template v2.0 (type, priority, schema_version '2.0', seven-section body, section matrix) + CLAUDE.md Requirement schema block
-- [ ] 08-03-PLAN.md — Rewrite sara-update requirement create + update branches for v2.0 body structure and Cross Links generation
+- [x] 08-01-PLAN.md — Rewrite sara-extract requirements pass (modal-verb signal, MoSCoW, type classification) + fix sara-artifact-sorter output schema for priority/req_type passthrough
+- [x] 08-02-PLAN.md — Update sara-init: requirement.md template v2.0 (type, priority, schema_version '2.0', seven-section body, section matrix) + CLAUDE.md Requirement schema block
+- [x] 08-03-PLAN.md — Rewrite sara-update requirement create + update branches for v2.0 body structure and Cross Links generation
 
 **Success Criteria:**
 1. Running `/sara-extract N` on a source document extracts only passages containing modal verbs (must/shall/should/will/could/may); observations and aspirations are not extracted
