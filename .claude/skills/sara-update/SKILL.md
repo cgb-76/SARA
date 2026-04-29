@@ -84,10 +84,12 @@ For each artifact in `{extraction_plan}`:
     - `source` = `[{item.id}]` (single-element YAML list, e.g. `[MTG-001]`)
     - `raised-by` = `artifact.raised_by` (note: template field is `raised-by`; artifact schema field is `raised_by`)
     - `related` = `artifact.related` (array of entity IDs)
-    - `schema_version` = `"1.0"` for decision, action, and risk artifacts (always double-quoted); `schema_version` = `'2.0'` for requirement artifacts (single-quoted — prevents YAML float parsing)
+    - `schema_version` = `'2.0'` for decision artifacts (single-quoted — prevents YAML float parsing; consistent with requirement schema established in Phase 8); `schema_version` = `"1.0"` for action and risk artifacts (always double-quoted)
     - `type` = `artifact.req_type` for requirement artifacts (one of: functional, non-functional, regulatory, integration, business-rule, data)
+    - `type` = `artifact.dec_type` for decision artifacts (one of: architectural, process, tooling, data, business-rule, organisational)
     - `priority` = `artifact.priority` for requirement artifacts (one of: must-have, should-have, could-have, wont-have)
-    - For decision artifacts: set `status` = `"proposed"`, `date` = today's ISO date
+    - For decision artifacts: set `status` = `artifact.status` (either `"accepted"` or `"open"` from the extraction pass — NEVER hardcode `"proposed"`), `date` = today's ISO date
+    - For decision artifacts: do NOT write `context`, `decision`, `rationale`, or `alternatives-considered` frontmatter fields — these are v1.0 fields removed in schema v2.0
     - For requirement artifacts: set `status` = `"open"`; do not set `description` (v1.0 field — not present in v2.0 frontmatter)
     - For action artifacts: set `status` = `"open"`, `owner` = `artifact.raised_by` if it is a resolved STK ID (e.g. `"STK-001"`); otherwise set `owner` = `""` (empty — leave unassigned; do not write a placeholder ID)
     - For risk artifacts: set `status` = `"open"`, `owner` = `artifact.raised_by` if it is a resolved STK ID (e.g. `"STK-001"`); otherwise set `owner` = `""` (empty — leave unassigned; do not write a placeholder ID)
@@ -95,7 +97,8 @@ For each artifact in `{extraction_plan}`:
     - Read `summary_max_words` from the already-loaded pipeline-state.json (field: `summary_max_words`). If the field is absent, use 50 as the default.
     - `summary` = LLM-generated prose string within `summary_max_words` words. Write type-appropriate content:
       - REQ: title, status, one-line description of what is required
-      - DEC: options considered, chosen option/recommendation, status, decision date
+      - DEC (status=accepted): options considered, chosen option, status: accepted, decision date
+      - DEC (status=open): competing options/positions, alignment not reached, status: open, decision date
       - ACT: owner, due-date, status (open/in-progress/done/cancelled)
       - RSK: likelihood, impact, mitigation approach, status
       - STK: vertical, department, role — enough to distinguish from other stakeholders
@@ -204,23 +207,35 @@ For each artifact in `{extraction_plan}`:
 
     **decision:**
     ```
-    ## Context
-    > "{artifact.source_quote}" — {stakeholder_name}
+    ## Source Quote
+    > "{artifact.source_quote}" — [[{artifact.raised_by}|{stakeholder_name}]]
 
-    {synthesised summary of the situation or problem that prompted this decision, drawn from
-     the source document and discussion notes}
+    ## Context
+    {Synthesised from {source_doc} and {discussion_notes}: why this decision was needed,
+     what problem or situation prompted it, relevant background. Leave empty (heading only)
+     if nothing relevant is available — never fabricate.}
 
     ## Decision
-    {synthesised statement of what was decided, drawn from the artifact title and any
-     resolution captured in discussion notes — leave empty if not clearly stated}
-
-    ## Rationale
-    {synthesised explanation of why this decision was made, drawn from discussion notes and
-     source context — leave empty if not available}
+    {If artifact.status == "accepted": write artifact.chosen_option content — the option
+     or approach the team selected. If artifact.chosen_option is an empty string, synthesise
+     the decision from artifact.title and {discussion_notes}.
+     If artifact.status == "open": write exactly "No decision reached — alignment required."}
 
     ## Alternatives Considered
-    {synthesised list of alternatives mentioned in the source or discussion notes — leave
-     empty if none were discussed}
+    {If artifact.status == "accepted": if artifact.alternatives is a non-empty array, list
+     each alternative on its own line with a dash prefix, then expand with synthesis if
+     the source document or discussion notes mention why each alternative was not chosen.
+     If artifact.alternatives is [], write this heading with no content (heading only).
+     If artifact.status == "open": list the competing positions detected in the source.
+     Each position on its own line with a dash prefix. Example:
+     - Position A: [view expressed by stakeholder or group]
+     - Position B: [opposing view]}
+
+    ## Rationale
+    {Synthesised from {source_doc} and {discussion_notes}: for accepted decisions, why
+     this option was chosen over the alternatives. For open decisions, why alignment has
+     not been reached (what is blocking agreement). Leave empty (heading only) if nothing
+     relevant is available — never fabricate.}
     ```
 
     **action:**
