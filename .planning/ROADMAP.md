@@ -172,12 +172,12 @@ Plans:
 **Goal:** Refine the risk artifact across two tracks: (1) rewrite the sara-extract risk extraction pass with a tightened signal definition, six-type risk_type classification, owner as a distinct field from raised_by, likelihood/impact extracted inline when source signals are present, and signal-based initial status assignment; (2) restructure the wiki risk page to schema v2.0 with a four-section body (Source Quote, Risk IF/THEN, Mitigation, Cross Links), remove mitigation from frontmatter, and add type, owner, likelihood, impact, status fields; wire sara-update risk create and update branches for v2.0; extend approval loop owner warning to risk artifacts; update sara-init risk schema and template
 **Requirements:** WIKI-04
 **Depends on:** Phase 10
-**Plans:** 3 plans
+**Plans:** 3/3 plans complete
 
 Plans:
-- [ ] 11-01-PLAN.md — Rewrite sara-extract risk pass (signal definition, risk_type, owner, likelihood, impact, status) + extend Step 4 owner warning to risk artifacts
-- [ ] 11-02-PLAN.md — Update sara-init: risk schema block in CLAUDE.md (Step 9) and risk.md template (Step 12) to v2.0 (four-section body, type field, schema_version '2.0')
-- [ ] 11-03-PLAN.md — Rewrite sara-update risk create + update branches for v2.0 frontmatter and body structure
+- [x] 11-01-PLAN.md — Rewrite sara-extract risk pass (signal definition, risk_type, owner, likelihood, impact, status) + extend Step 4 owner warning to risk artifacts
+- [x] 11-02-PLAN.md — Update sara-init: risk schema block in CLAUDE.md (Step 9) and risk.md template (Step 12) to v2.0 (four-section body, type field, schema_version '2.0')
+- [x] 11-03-PLAN.md — Rewrite sara-update risk create + update branches for v2.0 frontmatter and body structure
 
 **Success Criteria:**
 1. Running `/sara-extract N` on a source document extracts risks based on uncertain future events with potential negative effect; confirmed problems already happening are not extracted as risks
