@@ -97,7 +97,7 @@ For each artifact in `{extraction_plan}`:
     - `schema_version` = `'2.0'` for decision artifacts (single-quoted — prevents YAML float parsing; consistent with requirement schema established in Phase 8)
     - For requirement artifacts: set `schema_version` = `'2.0'` (single-quoted — same convention as decisions)
     - `schema_version` = `'2.0'` for action artifacts (single-quoted — matches requirement and decision convention; prevents YAML float parsing)
-    - `schema_version` = `"1.0"` for risk artifacts (unchanged)
+    - `schema_version` = `'2.0'` for risk artifacts (single-quoted — prevents YAML float parsing; consistent with requirement, decision, action convention)
     - `type` = `artifact.req_type` for requirement artifacts (one of: functional, non-functional, regulatory, integration, business-rule, data)
     - `type` = `artifact.dec_type` for decision artifacts (one of: architectural, process, tooling, data, business-rule, organisational)
     - `priority` = `artifact.priority` for requirement artifacts (one of: must-have, should-have, could-have, wont-have)
@@ -106,7 +106,7 @@ For each artifact in `{extraction_plan}`:
     - For decision artifacts: leave `deciders` = `[]` (the template default) — the pipeline does not populate this field. Users must fill it in manually after the page is created.
     - For requirement artifacts: set `status` = `"open"`; do not set `description` (v1.0 field — not present in v2.0 frontmatter)
     - For action artifacts: set `status` = `"open"`, `type` = `artifact.act_type` (one of: `deliverable`, `follow-up`), `owner` = `artifact.owner` (STK-NNN or raw name string or `""`), `due-date` = `artifact.due_date` (raw string or `""`)
-    - For risk artifacts: set `status` = `"open"`, `owner` = `artifact.raised_by` if it is a resolved STK ID (e.g. `"STK-001"`); otherwise set `owner` = `""` (empty — leave unassigned; do not write a placeholder ID)
+    - For risk artifacts: set `type` = `artifact.risk_type` (one of: technical, financial, schedule, quality, compliance, people); set `owner` = `artifact.owner` (STK-NNN or raw name string or `""`); set `raised-by` = `artifact.raised_by` (note: template field is `raised-by`; artifact schema field is `raised_by`); set `likelihood` = `artifact.likelihood` (`"high"`, `"medium"`, `"low"`, or `""`); set `impact` = `artifact.impact` (`"high"`, `"medium"`, `"low"`, or `""`); set `status` = `artifact.status` (`"open"`, `"mitigated"`, or `"accepted"` — signal-based from extraction; default is `"open"`). Do NOT write a `mitigation:` frontmatter field — it is removed in v2.0.
     - All other fields not supplied by the artifact: use the template default value (empty string `""` or empty array `[]`)
     - Read `summary_max_words` from the already-loaded pipeline-state.json (field: `summary_max_words`). If the field is absent, use 50 as the default.
     - `summary` = LLM-generated prose string within `summary_max_words` words. Write type-appropriate content:
@@ -298,19 +298,27 @@ For each artifact in `{extraction_plan}`:
 
     **risk:**
     ```
-    ## Description
+    ## Source Quote
     > "{artifact.source_quote}" — [[{artifact.raised_by}|{stakeholder_name}]]
 
-    {synthesised summary of the risk, its likelihood/impact context, and any relevant
-     triggers or conditions identified during /sara-discuss}
+    ## Risk
+
+    IF <trigger condition> THEN <adverse event>
+
+    {Synthesised by sara-update from {source_doc} and {discussion_notes}: write the risk as a
+     single IF/THEN statement. IF and THEN are written in caps; the rest is sentence case.
+     The trigger condition (IF clause) describes what must happen or fail for the risk to
+     materialise. The adverse event (THEN clause) describes the negative outcome.
+     Example: IF the integration vendor delays API delivery THEN the go-live milestone slips by 4+ weeks.
+     Ground the statement in the source_quote and surrounding context. Never fabricate conditions
+     not supported by the source.}
 
     ## Mitigation
-    {synthesised mitigation approaches or controls mentioned in the source or discussion
-     notes — leave empty if none were discussed}
 
-    ## Notes
-    {synthesised monitoring notes, triggers, owners, or related context from discussion
-     notes — leave empty if none available}
+    {Synthesised by sara-update from {source_doc} and {discussion_notes}: describe controls,
+     contingencies, or mitigation approaches explicitly mentioned. If nothing was discussed,
+     write exactly: "No mitigation discussed — define action items to address this risk."
+     Never fabricate mitigation that is not grounded in {source_doc} or {discussion_notes}.}
 
     ## Cross Links
     {Generate one wiki link per entry in artifact.related. Resolve display text per wikilink rule:
