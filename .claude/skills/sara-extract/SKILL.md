@@ -51,12 +51,38 @@ The source document is already in context from Step 2. Run four sequential extra
 
 **Requirements pass**
 
-Extract every passage that describes a requirement — a capability, constraint, or rule that the system or project must satisfy. For each requirement found:
+A passage IS a requirement if and only if it contains a commitment modal verb or imperative phrase
+from the INCLUDE list below. Passages lacking these signals are NOT requirements regardless of topic.
+
+  INCLUDE — these passages ARE requirements (extract them):
+  - "must", "shall", "has to", "required to", "need to" → priority: must-have
+  - "will" (as a commitment to future behaviour, not narrating past events) → priority: must-have
+  - "should" → priority: should-have
+  - "could", "may" → priority: could-have
+  - "will not", "won't", "out of scope", "we won't" → priority: wont-have
+
+  EXCLUDE — these passages are NOT requirements (do NOT extract them):
+  - Observation: "Users are currently frustrated with slow load times" (describes a situation, no commitment modal)
+  - Aspiration/wish: "It would be great if the system handled more users" (desire expressed without a modal commitment)
+  - Background context: "The company processes approximately 10,000 invoices per month" (descriptive fact only, no system obligation)
+
+For each requirement found, classify it into one of six types inline based on what the requirement describes:
+  - `functional`     — a capability the system performs
+  - `non-functional` — quality attributes and design constraints (performance, reliability, usability, security, scalability)
+  - `regulatory`     — external law, standards, or mandates (GDPR, PCI-DSS, etc.) — external obligations only, not internal policy
+  - `integration`    — how the system connects to external systems, APIs, or people
+  - `business-rule`  — domain logic or process policy
+  - `data`           — structure, retention, quality, or ownership rules for data
+
+For each requirement found:
 - Extract the exact verbatim passage as `source_quote` (MANDATORY — skip any requirement without a quotable passage)
 - Write a short (≤10 words) noun-phrase `title`
 - Set `raised_by` to the STK-NNN ID if identifiable from the source or discussion_notes; otherwise use `"STK-NNN"` placeholder
+- Set `priority` to the MoSCoW value derived from the commitment modal (see INCLUDE list above)
+- Set `req_type` to one of the six types above
 - Set `action` = `"create"`, `type` = `"requirement"`, `id_to_assign` = `"REQ-NNN"`, `related` = `[]`, `change_summary` = `""`
 - Do NOT resolve create-vs-update — that is the sorter's job
+- Assign `req_type` so sara-update can apply the section matrix (defined in `.sara/templates/requirement.md`) to determine which body sections are required, optional, or omitted for each requirement type
 
 Collect results as `{req_artifacts}` (JSON array; empty array if none found).
 
