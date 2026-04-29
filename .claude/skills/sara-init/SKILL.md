@@ -156,7 +156,7 @@ Use the Write tool to create `CLAUDE.md` with the following content. Substitute
 # SARA Wiki — Schema & Behavioral Rules
 
 **Project:** {project_name}
-**Schema version:** 1.0
+**Schema version:** 2.0
 
 This file is automatically loaded by Claude Code when working in any file under `wiki/`.
 All SARA pipeline commands that read or write wiki pages must follow the rules below.
