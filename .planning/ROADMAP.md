@@ -131,6 +131,24 @@ Plans:
 3. Running `/sara-update N` on an approved requirement artifact produces a wiki page with v2.0 frontmatter (type, priority, schema_version '2.0') and a structured body with Source Quote, Statement, Acceptance Criteria, and Cross Links sections
 4. The BDD Criteria section is present for functional and business-rule requirements; absent for non-functional, regulatory, and data requirements
 
+### Phase 9: refine-decisions
+
+**Goal:** Refine the decision artifact across two tracks: (1) rewrite the sara-extract decisions extraction pass with two-signal detection (commitment language → accepted; misalignment language → open), six-type classification, and chosen_option/alternatives capture inline; (2) restructure the wiki decision page to schema v2.0 with a five-section body and remove narrative frontmatter fields
+**Requirements:** D-01 through D-12 (locked decisions from 09-CONTEXT.md)
+**Depends on:** Phase 8
+**Plans:** 3 plans
+
+Plans:
+- [ ] 09-01-PLAN.md — Rewrite sara-extract decisions pass (two-signal detection, dec_type classification, chosen_option/alternatives) + fix sara-artifact-sorter decision schema for passthrough
+- [ ] 09-02-PLAN.md — Update sara-init: decision schema block in CLAUDE.md (Step 9) and decision.md template (Step 12) to v2.0 (five-section body, type field, schema_version '2.0')
+- [ ] 09-03-PLAN.md — Rewrite sara-update decision create + update branches for v2.0 frontmatter and body structure
+
+**Success Criteria:**
+1. Running `/sara-extract N` on a source document extracts decisions based on commitment language (→ status: accepted) or misalignment language (→ status: open); option explorations, aspirations, and requirements are not extracted as decisions
+2. Every extracted decision in the approval loop shows a `dec_type` field (one of six types), `chosen_option`, `alternatives`, and `status` (accepted or open) derived in the same inline pass
+3. Running `/sara-update N` on an approved decision artifact produces a wiki page with v2.0 frontmatter (type from dec_type, status from extraction, schema_version '2.0', no context/decision/rationale/alternatives-considered fields) and a five-section body (Source Quote, Context, Decision, Alternatives Considered, Rationale)
+4. Open decisions have `## Decision` = "No decision reached — alignment required." and `## Alternatives Considered` lists the competing positions detected in the source
+
 ---
 
 ### Phase 4: Make Installable
