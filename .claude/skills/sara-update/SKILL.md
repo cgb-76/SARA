@@ -341,7 +341,7 @@ For each artifact in `{extraction_plan}`:
       Append `{wiki_dir}{artifact.existing_id}.md` to `failed_files`.
       Output the partial failure report and STOP.
     Apply `artifact.change_summary` to the relevant field(s) in the frontmatter or body. Update the `source` field: if it is currently a scalar string, convert it to a single-element YAML list. Append `{item.id}` to the list if not already present. Result format: `source: [MTG-001, MTG-003]`. Update the `related` field by merging `artifact.related` with the existing related array (deduplicating by entity ID).
-    Regenerate the `summary` field: read `summary_max_words` from pipeline-state.json (already in memory; default 50 if absent). Generate a fresh summary prose string using the same type-specific content rules as the create branch — REQ: title/status/description; DEC: options/chosen option/status/date; ACT: owner/due-date/type/status; RSK: likelihood/impact/mitigation/status; STK: vertical/department/role. Replace the existing `summary` value in the frontmatter with the newly generated string.
+    Regenerate the `summary` field: read `summary_max_words` from pipeline-state.json (already in memory; default 50 if absent). Generate a fresh summary prose string using the same type-specific content rules as the create branch — REQ: title/status/description; DEC: options/chosen option/status/date; ACT: owner/due-date/type/status; RSK: likelihood, impact, type, status, mitigation approach; STK: vertical/department/role. Replace the existing `summary` value in the frontmatter with the newly generated string.
     For requirement artifacts (`artifact.type == "requirement"`): after applying the change_summary
     to frontmatter fields and regenerating the summary, also update the frontmatter to include
     the v2.0 fields from the artifact object:
@@ -449,27 +449,34 @@ For each artifact in `{extraction_plan}`:
     For risk artifacts (`artifact.type == "risk"`): after applying the change_summary
     to frontmatter fields and regenerating the summary, also update the frontmatter to include
     the v2.0 fields from the artifact object:
-    - Set `schema_version` = `"1.0"` (unchanged from risk schema)
+    - Set `type` = `artifact.risk_type` (one of: technical, financial, schedule, quality, compliance, people) — add if absent
+    - Set `owner` = `artifact.owner` (STK-NNN or raw name string or `""`) — REPLACE any existing value; do NOT use `artifact.raised_by`
+    - Set `raised-by` = `artifact.raised_by` — add if absent (note: template field is `raised-by`; artifact field is `raised_by`)
+    - Set `likelihood` = `artifact.likelihood` (`"high"`, `"medium"`, `"low"`, or `""`) — add or replace
+    - Set `impact` = `artifact.impact` (`"high"`, `"medium"`, `"low"`, or `""`) — add or replace
+    - Set `status` = `artifact.status` (`"open"`, `"mitigated"`, or `"accepted"`) — replace any existing value
+    - Set `schema_version` = `'2.0'` (single-quoted string — prevents YAML float parsing)
+    - Remove the `mitigation` frontmatter field if present (it is a v1.0 field removed in schema v2.0)
 
-    Then rewrite the full body to the v2.0 structured section format (Description, Mitigation,
-    Notes, Cross Links) using the same synthesis rules as the create branch.
+    Then rewrite the full body to the v2.0 structured section format (Source Quote, Risk, Mitigation,
+    Cross Links) using the same synthesis rules as the create branch:
 
-    ## Description
+    ## Source Quote
     > "{artifact.source_quote}" — [[{artifact.raised_by}|{stakeholder_name}]]
 
+    ## Risk
+
+    IF <trigger condition> THEN <adverse event>
+
     {Synthesised from {source_doc}, {discussion_notes}, and artifact.change_summary: updated
-     summary of the risk, its likelihood/impact context, and any relevant triggers or conditions.
-     Ground in source quote. Never fabricate.}
+     IF/THEN risk statement with IF and THEN in caps. Revise the trigger condition and adverse
+     event based on any new information from change_summary. Never fabricate conditions not
+     grounded in {source_doc} or {discussion_notes}.}
 
     ## Mitigation
-    {Synthesised from {source_doc}, {discussion_notes}, and artifact.change_summary: updated
-     mitigation approaches or controls. Leave empty (heading only) if nothing relevant — never
-     fabricate.}
 
-    ## Notes
     {Synthesised from {source_doc}, {discussion_notes}, and artifact.change_summary: updated
-     monitoring notes, triggers, owners, or related context. Leave empty (heading only) if
-     nothing relevant — never fabricate.}
+     controls, contingencies, or mitigation approaches. If nothing relevant: "No mitigation discussed — define action items to address this risk." Never fabricate.}
 
     ## Cross Links
     {Generate one wiki link per entry in artifact.related (after merging with the existing
@@ -572,7 +579,7 @@ Check the exit code from the `echo "EXIT:$?"` output.
 - The N argument is the full pipeline item ID (e.g. `MTG-001`). The JSON key in `items` is that same ID string. For `/sara-update MTG-001`, look up `items["MTG-001"]`. The `item.id` field equals the key — it appears in the commit message, the `source` field of written pages, and the log entry.
 - Source file location: the source file was moved to its permanent path by `/sara-ingest` and committed at that time. Use `{item.source_path}` (stored in `pipeline-state.json`) to read it. Do NOT look in `raw/input/` — the file is no longer there.
 - Do NOT auto-rollback on partial failure (D-14). The user has full git history. Report which files were written and which were not; let the user decide whether to `git reset` or re-run `/sara-update {N}` after fixing the root cause. The written files are uncommitted changes — no commit was made.
-- `schema_version` must be quoted to prevent Obsidian's YAML parser from treating it as a float. Current values: requirement/decision/action → `'2.0'` (single-quoted); risk → `"1.0"` (double-quoted).
+- `schema_version` must be quoted to prevent Obsidian's YAML parser from treating it as a float. All artifact types (requirement, decision, action, risk) → `'2.0'` (single-quoted).
 - `related` fields must use entity IDs only (e.g. `REQ-001`, `DEC-003`) — never file paths, relative links, or Obsidian `[[wiki-links]]`. This is a Phase 1 behavioral rule carried forward.
 - The `raised_by` field in the artifact schema (written by `/sara-extract`) maps to the `raised-by` field in wiki page frontmatter (defined in the entity templates). The hyphen vs underscore difference is intentional: `raised_by` is the JSON field name in `pipeline-state.json`; `raised-by` is the YAML field name in wiki pages. Apply the mapping in Step 2 when substituting template fields.
 - `vertical` and `department` are always separate fields in stakeholder pages — never merged. This is a locked domain constraint.
