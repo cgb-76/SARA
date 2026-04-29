@@ -1,6 +1,6 @@
 ---
 name: sara-extract
-description: "Present planned wiki artifacts for per-artifact approval before any wiki writes"
+description: "Extract wiki artifacts from the source document via inline sequential passes, resolve with sorter, then run the per-artifact approval loop"
 argument-hint: "<ID>"
 allowed-tools:
   - Read
@@ -11,7 +11,7 @@ version: 1.0.0
 ---
 
 <objective>
-This skill reads the source document and discussion notes for pipeline item N, dispatches four specialist extraction agents (one per entity type) via Task() in parallel, passes their merged output to a sorter agent that deduplicates and resolves create-vs-update decisions, presents the sorter's ambiguity questions to the user, and then runs the per-artifact Accept/Reject/Discuss loop on the cleaned artifact list. Approved artifacts are written to `extraction_plan` in `pipeline-state.json` and the item stage advances to `approved`; no wiki files are created or modified by this skill.
+This skill reads the source document and discussion notes for pipeline item N, runs four sequential inline extraction passes (requirement → decision → action → risk) against the already-in-context source document, passes the merged output to a sorter agent that deduplicates and resolves create-vs-update decisions, presents the sorter's ambiguity questions to the user, and then runs the per-artifact Accept/Reject/Discuss loop on the cleaned artifact list. Approved artifacts are written to `extraction_plan` in `pipeline-state.json` and the item stage advances to `approved`; no wiki files are created or modified by this skill.
 </objective>
 
 <process>
@@ -45,36 +45,58 @@ Read `{item.source_path}` using the Read tool. This is the source document.
 
 Read `wiki/index.md` HERE using the Read tool. Reading the index at this step (not at skill entry) ensures it is fresh — it may have been updated by `/sara-add-stakeholder` during the preceding `/sara-discuss` session. (See notes — Pitfall 4 guard.)
 
-**Step 3 — Dispatch specialist agents and sorter**
+**Step 3 — Inline extraction passes and sorter**
 
-Spawn four specialist agents via Task() in parallel, passing the source document content and discussion_notes string explicitly in each prompt. Agents start cold and have no implicit access to pipeline-state.json or the wiki.
+The source document is already in context from Step 2. Run four sequential extraction passes — one per artifact type. Do NOT use Task() for extraction; each pass is an inline LLM prompt against the already-in-context source.
 
-Task prompt template for each specialist:
-```
-You are {agent-name}. Extract {type} artifacts only.
+**Requirements pass**
 
-<source_document>
-{full content of source file read in Step 2}
-</source_document>
+Extract every passage that describes a requirement — a capability, constraint, or rule that the system or project must satisfy. For each requirement found:
+- Extract the exact verbatim passage as `source_quote` (MANDATORY — skip any requirement without a quotable passage)
+- Write a short (≤10 words) noun-phrase `title`
+- Set `raised_by` to the STK-NNN ID if identifiable from the source or discussion_notes; otherwise use `"STK-NNN"` placeholder
+- Set `action` = `"create"`, `type` = `"requirement"`, `id_to_assign` = `"REQ-NNN"`, `related` = `[]`, `change_summary` = `""`
+- Do NOT resolve create-vs-update — that is the sorter's job
 
-<discussion_notes>
-{discussion_notes string from pipeline-state.json, or empty string if not set}
-</discussion_notes>
+Collect results as `{req_artifacts}` (JSON array; empty array if none found).
 
-Return a JSON array of {type} artifacts. Each artifact must include a source_quote.
-```
+**Decisions pass**
 
-Spawn all four in parallel (or sequentially if context window is a concern):
-- Task(`sara-requirement-extractor`, prompt=source+discussion_notes) → `{req_artifacts}` (JSON array)
-- Task(`sara-decision-extractor`, prompt=source+discussion_notes) → `{dec_artifacts}` (JSON array)
-- Task(`sara-action-extractor`, prompt=source+discussion_notes) → `{act_artifacts}` (JSON array)
-- Task(`sara-risk-extractor`, prompt=source+discussion_notes) → `{risk_artifacts}` (JSON array)
+Extract every passage that describes a decision — a deliberate choice made by the team that was concluded, not just discussed ("we will use X" is a decision; "we could use X" is not). For each decision found:
+- Extract the exact verbatim passage as `source_quote` (MANDATORY)
+- Write a short (≤10 words) noun-phrase `title`
+- Set `raised_by` to the STK-NNN ID if identifiable; otherwise `"STK-NNN"` placeholder
+- Set `action` = `"create"`, `type` = `"decision"`, `id_to_assign` = `"DEC-NNN"`, `related` = `[]`, `change_summary` = `""`
+
+Collect results as `{dec_artifacts}` (JSON array; empty array if none found).
+
+**Actions pass**
+
+Extract every passage that describes an action item — a concrete task or follow-up with an implied or explicit owner (something that must be done, not a general statement of intent). For each action found:
+- Extract the exact verbatim passage as `source_quote` (MANDATORY)
+- Write a short (≤10 words) imperative-phrase `title` (e.g. "Send updated proposal to client")
+- Set `raised_by` to the STK-NNN ID of the person who will own the action if identifiable; otherwise `"STK-NNN"` placeholder
+- Set `action` = `"create"`, `type` = `"action"`, `id_to_assign` = `"ACT-NNN"`, `related` = `[]`, `change_summary` = `""`
+
+Collect results as `{act_artifacts}` (JSON array; empty array if none found).
+
+**Risks pass**
+
+Extract every passage that describes a risk — an uncertain event or condition with a potential negative effect (threat, concern, or "what if" scenario). A confirmed problem is an action item, not a risk. For each risk found:
+- Extract the exact verbatim passage as `source_quote` (MANDATORY)
+- Write a short (≤10 words) noun-phrase `title` (e.g. "Budget overrun on infrastructure")
+- Set `raised_by` to the STK-NNN ID if identifiable; otherwise `"STK-NNN"` placeholder
+- Set `action` = `"create"`, `type` = `"risk"`, `id_to_assign` = `"RSK-NNN"`, `related` = `[]`, `change_summary` = `""`
+
+Collect results as `{risk_artifacts}` (JSON array; empty array if none found).
+
+**Merge and sorter dispatch**
 
 Merge all four arrays:
 `{merged}` = req_artifacts + dec_artifacts + act_artifacts + risk_artifacts
 
-If `{merged}` is empty (all four specialists returned []):
-  Output: `"No artifacts found in source document. All specialist agents returned empty results."`
+If `{merged}` is empty (all four passes returned []):
+  Output: `"No artifacts found in source document. All extraction passes returned empty results."`
   Output: `"Proceeding to Step 4 with empty artifact list. You may reject this result or re-run /sara-discuss {N} to add discussion notes."`
   Set `{cleaned_artifacts}` = [] and skip the sorter dispatch and sorter question loop. Proceed directly to Step 4.
 
@@ -190,6 +212,7 @@ If zero artifacts were accepted: still write the empty `extraction_plan: []` and
 
 <notes>
 - `source_quote` is MANDATORY for every artifact. An artifact without a source quote must not be generated or accepted. This is the evidence trail that ensures every wiki change can be traced back to a specific passage in the source document.
+- Extraction runs as four sequential inline passes against the already-in-context source document — no specialist Task() agents are used. The source document is NOT passed to any Task() call; it is read once in Step 2 and remains in context for all four passes. Only the merged artifact array (which is small) is passed to the sorter Task().
 - `wiki/index.md` is re-read at Step 2 (the dedup step), not at skill entry. This ensures the index is fresh even if `/sara-add-stakeholder` updated it during the preceding `/sara-discuss` session (Pitfall 4 guard). Reading it at entry would miss any STK pages added to the index mid-session.
 - AskUserQuestion header hard limit is 12 characters. Use `"Artifact {N}"` for N = 1–9 (10 chars — safe). Use `"Item {N}"` for N = 10 or more (7 chars — safe). Never exceed 12 chars in the header field.
 - When user selects "Discuss": output a plain-text question and wait for the user's freeform reply. Do NOT use another AskUserQuestion call. The freeform rule applies because the user wants to explain the correction in their own words — structured options would constrain that. Resume AskUserQuestion only after incorporating the correction and re-presenting the updated artifact.
@@ -199,7 +222,7 @@ If zero artifacts were accepted: still write the empty `extraction_plan: []` and
 - Topics matching existing wiki entities MUST produce UPDATE artifacts (action=update), not duplicate CREATE artifacts. The dedup check at Step 3 is required for every topic — not optional.
 - pipeline-state.json is written using Read + Write tools only — never Bash shell text-processing tools.
 - NOTE: The canonical artifact schema field `raised_by` (defined in the plan interfaces) contains the letter sequence "sed" as a substring of "raised". The grep check `grep "jq\|sed\|awk"` will match this field name. This is a false positive — no shell text-processing tools are referenced in this skill. The field name is non-negotiable: it is the canonical schema consumed by `/sara-update`.
-- Agent dispatch: sara-extract spawns four specialist agents (sara-requirement-extractor, sara-decision-extractor, sara-action-extractor, sara-risk-extractor) via Task() in parallel. Each receives only the raw source content and discussion_notes — no wiki state (D-03, D-04). The sorter agent (sara-artifact-sorter) receives the merged output plus grep summaries and wiki/index.md (D-07). Specialist agents always return action="create"; the sorter resolves create-vs-update (D-06).
+- Extraction architecture: sara-extract runs four inline sequential passes (requirement → decision → action → risk) against the already-in-context source document. No specialist Task() agents are used for extraction. Only the merged artifact array is passed to the sorter Task(). The sorter agent (sara-artifact-sorter) receives the merged output plus grep summaries and wiki/index.md. All extraction passes always return action="create"; the sorter resolves create-vs-update.
 - Sorter questions are presented to the human BEFORE the approval loop starts (Step 4). Never present sorter questions inside the artifact loop (Pitfall 4 guard).
 - If a specialist agent returns an empty array [], merge it as zero elements — skip silently, do not generate a question about the absent type.
 - The `discussion_notes` string MUST be passed explicitly in each specialist Task() prompt. Agents start cold and have no implicit access to pipeline-state.json. An empty discussion_notes string is valid — pass it as an empty string, not omitted. (Pitfall 1 guard.)
