@@ -114,6 +114,7 @@ for skill_name in "${SKILLS[@]}"; do
 
   mkdir -p "${dest_skill_dir}"
   mv "${tmp_file}" "${dest_file}"
+  tmp_file=""   # prevent stale reference in EXIT trap
 
   INSTALLED+=("${skill_name}")
 done
@@ -155,7 +156,9 @@ for agent_name in "${AGENTS[@]}"; do
     cp "${dest_file}" "${dest_file}.bak"
   fi
 
+  mkdir -p "$(dirname "${dest_file}")"
   mv "${tmp_file}" "${dest_file}"
+  tmp_file=""   # prevent stale reference in EXIT trap
   INSTALLED+=("${agent_name}")
 done
 
