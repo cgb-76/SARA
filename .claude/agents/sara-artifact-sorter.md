@@ -165,7 +165,7 @@ Rules:
 - The sorter owns all wiki-state reasoning — specialist agents are intentionally isolated from wiki state. Do not assume specialists have resolved dedup or cross-refs.
 - When a specialist returns [] (empty array), skip silently — do not generate a question about the absent type.
 - The `cleaned_artifacts` array feeds directly into the per-artifact Accept/Reject/Discuss loop in sara-extract — every object must conform to the frozen artifact schema.
-- The human resolves `questions` BEFORE the approval loop starts. Do not include unresolved ambiguities in `cleaned_artifacts` — flag them in `questions` instead.
+- The human resolves `questions` BEFORE the approval loop starts. For type-ambiguity pairs, BOTH artifacts remain in `cleaned_artifacts` — sara-extract removes the rejected one after the human answers. For likely-duplicate questions, the unresolved artifact remains in `cleaned_artifacts` with `action=create`; sara-extract changes it to `action=update` after resolution.
 - Preserve `source_quote` exactly as received from specialist agents. Do not paraphrase or trim.
 - For create-vs-update: prefer "update" when the semantic match is clear (same topic, same entity type). When the match is uncertain, generate a question rather than asserting "update".
 </notes>
