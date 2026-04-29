@@ -114,13 +114,22 @@ Plans:
 
 ### Phase 8: refine-requirements
 
-**Goal:** [To be planned]
-**Requirements**: TBD
+**Goal:** Refine the requirements artifact across two tracks: (1) rewrite the sara-extract requirements extraction pass with modal-verb anchoring, MoSCoW priority mapping, and six-type classification inline; (2) restructure the wiki requirement page to schema v2.0 with a multi-section body and section matrix, and wire sara-update to write Cross Links from related[]
+
+**Requirements:** D-01 through D-12 (locked decisions from 08-CONTEXT.md)
 **Depends on:** Phase 7
-**Plans:** 0 plans
+**Plans:** 3 plans
 
 Plans:
-- [ ] TBD (run /gsd-plan-phase 8 to break down)
+- [ ] 08-01-PLAN.md — Rewrite sara-extract requirements pass (modal-verb signal, MoSCoW, type classification) + fix sara-artifact-sorter output schema for priority/req_type passthrough
+- [ ] 08-02-PLAN.md — Update sara-init: requirement.md template v2.0 (type, priority, schema_version '2.0', seven-section body, section matrix) + CLAUDE.md Requirement schema block
+- [ ] 08-03-PLAN.md — Rewrite sara-update requirement create + update branches for v2.0 body structure and Cross Links generation
+
+**Success Criteria:**
+1. Running `/sara-extract N` on a source document extracts only passages containing modal verbs (must/shall/should/will/could/may); observations and aspirations are not extracted
+2. Every extracted requirement in the approval loop shows a `priority` field (MoSCoW) and a `req_type` field (one of six types) derived in the same pass
+3. Running `/sara-update N` on an approved requirement artifact produces a wiki page with v2.0 frontmatter (type, priority, schema_version '2.0') and a structured body with Source Quote, Statement, Acceptance Criteria, and Cross Links sections
+4. The BDD Criteria section is present for functional and business-rule requirements; absent for non-functional, regulatory, and data requirements
 
 ---
 
