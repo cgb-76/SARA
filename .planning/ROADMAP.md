@@ -175,6 +175,19 @@ Plans:
 2. Running `/sara-discuss N` produces a blocker list with Priority 1 (unknown stakeholders) and Priority 2 (source comprehension) only — no entity type classification questions
 3. Running `install.sh` in a target project copies both the nine skill files AND all five agent files to the correct `.claude/` subdirectories
 
+### Phase 7: adjust-agent-workflow
+
+**Goal:** Replace the four specialist Task() extraction agents in sara-extract with sequential inline extraction passes; delete the four agent files; update install.sh to distribute only the sorter agent
+
+**Requirements:** No formal requirement IDs — this phase refactors extraction architecture for token efficiency
+**Depends on:** Phase 6
+**Plans:** 3 plans
+
+Plans:
+- [x] 07-01-PLAN.md — Rewrite sara-extract Step 3 with sequential inline extraction passes
+- [x] 07-02-PLAN.md — Delete specialist agent files; update install.sh AGENTS array
+- [x] 07-03-PLAN.md — End-to-end verification checkpoint
+
 ---
 
 ## Progress
