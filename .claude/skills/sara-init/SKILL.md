@@ -278,24 +278,23 @@ document and discussion notes. Owner and Due Date are written from extracted art
 ---
 id: RSK-000
 title: ""
-status: open  # open | mitigated | accepted | closed
-summary: ""  # RSK: likelihood, impact, mitigation approach, status
-likelihood: ""  # low | medium | high
-impact: ""      # low | medium | high
-owner: ""       # stakeholder ID (e.g. STK-001)
-mitigation: ""
-source: []      # list of ingest IDs (e.g. [MTG-001, MTG-003])
-schema_version: "1.0"
+status: open  # open | mitigated | accepted
+summary: ""   # RSK: likelihood, impact, type, status, mitigation approach
+type: technical  # technical | financial | schedule | quality | compliance | people
+likelihood: ""   # low | medium | high (extracted from source, or empty)
+impact: ""       # low | medium | high (extracted from source, or empty)
+owner: ""        # STK-NNN or raw name string
+raised-by: ""    # STK-NNN or raw name string
+source: []       # ingest IDs (e.g. [MTG-001])
+schema_version: '2.0'
 tags: []
 related: []
 ---
-
-## Description
-
-## Mitigation
-
-## Notes
 ```
+
+Body follows the v2.0 structured section format (Source Quote, Risk IF/THEN, Mitigation, Cross Links).
+The Risk section uses `IF <trigger condition> THEN <adverse event>` with IF and THEN in caps.
+Mitigation and Risk sections are synthesised by sara-update from the source document and discussion notes.
 
 ### Stakeholder
 
