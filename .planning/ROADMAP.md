@@ -139,9 +139,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 09-01-PLAN.md — Rewrite sara-extract decisions pass (two-signal detection, dec_type classification, chosen_option/alternatives) + fix sara-artifact-sorter decision schema for passthrough
-- [ ] 09-02-PLAN.md — Update sara-init: decision schema block in CLAUDE.md (Step 9) and decision.md template (Step 12) to v2.0 (five-section body, type field, schema_version '2.0')
-- [ ] 09-03-PLAN.md — Rewrite sara-update decision create + update branches for v2.0 frontmatter and body structure
+- [x] 09-01-PLAN.md — Rewrite sara-extract decisions pass (two-signal detection, dec_type classification, chosen_option/alternatives) + fix sara-artifact-sorter decision schema for passthrough
+- [x] 09-02-PLAN.md — Update sara-init: decision schema block in CLAUDE.md (Step 9) and decision.md template (Step 12) to v2.0 (five-section body, type field, schema_version '2.0')
+- [x] 09-03-PLAN.md — Rewrite sara-update decision create + update branches for v2.0 frontmatter and body structure
 
 **Success Criteria:**
 1. Running `/sara-extract N` on a source document extracts decisions based on commitment language (→ status: accepted) or misalignment language (→ status: open); option explorations, aspirations, and requirements are not extracted as decisions
