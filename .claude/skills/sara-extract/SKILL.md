@@ -174,6 +174,9 @@ For each artifact in the list, at index `{artifact_index}` (starting at 1):
     Re-present the updated artifact as plain text using the same format shown above.
     Loop back to the AskUserQuestion call for this artifact.
     Repeat the Accept/Reject/Discuss cycle for this artifact until the user selects "Accept" or "Reject".
+    After 5 Discuss cycles on the same artifact without an Accept or Reject, present a plain-text warning:
+    "This artifact has been discussed {N} times. Please select Accept or Reject to proceed, or Reject to skip it."
+    Continue presenting the AskUserQuestion until the user selects "Accept" or "Reject".
 
 After all artifacts have been resolved to "Accept" or "Reject": proceed to Step 5.
 
@@ -188,6 +191,8 @@ Update `items["{N}"]` in memory:
   - Set `extraction_plan` = the `approved_artifacts` array (may be empty if all artifacts were rejected)
 
 Write the modified JSON back to `.sara/pipeline-state.json` using the Write tool.
+
+Step 5 ALWAYS writes the full `approved_artifacts` array to `extraction_plan`, replacing any previously stored value. Do NOT read or merge a pre-existing `extraction_plan` — overwrite it unconditionally.
 
 Do NOT use Bash shell text-processing tools — use Read and Write tools only.
 
