@@ -437,6 +437,41 @@ For each artifact in `{extraction_plan}`:
     If write succeeds: append `{wiki_dir}{artifact.existing_id}.md` to `written_files`.
     If write fails: append `{wiki_dir}{artifact.existing_id}.md` to `failed_files`. Output the partial failure report (see format below). STOP.
 
+    For risk artifacts (`artifact.type == "risk"`): after applying the change_summary
+    to frontmatter fields and regenerating the summary, also update the frontmatter to include
+    the v2.0 fields from the artifact object:
+    - Set `schema_version` = `"1.0"` (unchanged from risk schema)
+
+    Then rewrite the full body to the v2.0 structured section format (Description, Mitigation,
+    Notes, Cross Links) using the same synthesis rules as the create branch.
+
+    ## Description
+    > "{artifact.source_quote}" — [[{artifact.raised_by}|{stakeholder_name}]]
+
+    {Synthesised from {source_doc}, {discussion_notes}, and artifact.change_summary: updated
+     summary of the risk, its likelihood/impact context, and any relevant triggers or conditions.
+     Ground in source quote. Never fabricate.}
+
+    ## Mitigation
+    {Synthesised from {source_doc}, {discussion_notes}, and artifact.change_summary: updated
+     mitigation approaches or controls. Leave empty (heading only) if nothing relevant — never
+     fabricate.}
+
+    ## Notes
+    {Synthesised from {source_doc}, {discussion_notes}, and artifact.change_summary: updated
+     monitoring notes, triggers, owners, or related context. Leave empty (heading only) if
+     nothing relevant — never fabricate.}
+
+    ## Cross Links
+    {Generate one wiki link per entry in artifact.related (after merging with the existing
+     related[] array). Use the wikilink rule: STK → [[STK-NNN|name]], REQ/DEC/ACT/RSK →
+     [[ID|ID Title]], fallback to [[ID]] if title/name cannot be resolved.
+     Write each link on its own line. Write heading only if artifact.related is empty after merge.}
+
+    Use the Write tool to overwrite `{wiki_dir}{artifact.existing_id}.md` with the updated content.
+    If write succeeds: append `{wiki_dir}{artifact.existing_id}.md` to `written_files`.
+    If write fails: append `{wiki_dir}{artifact.existing_id}.md` to `failed_files`. Output the partial failure report (see format below). STOP.
+
 **Partial failure report format** (output and STOP if any write fails before commit):
 
 ```
