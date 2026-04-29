@@ -259,6 +259,8 @@ After all artifacts have been resolved to "Accept" or "Reject": proceed to Step 
 
 If `/sara-extract N` is re-run on an item that is still in `extracting` stage (possible if a previous session was interrupted): re-run the full loop with freshly generated artifacts. The wiki has not been written yet; it is safe to re-run the full extraction loop.
 
+NOTE: Re-running `/sara-extract {N}` always re-runs the full extraction and sorter pipeline from the beginning. Previously answered sorter questions are not preserved between sessions. The user will be presented with all sorter questions again on re-run. This is by design — the fresh extraction may produce a different artifact set than the interrupted session.
+
 **Step 5 — Write extraction plan and advance stage**
 
 Read `.sara/pipeline-state.json` using the Read tool.
