@@ -87,7 +87,7 @@ For each artifact in `{extraction_plan}`:
     - `schema_version` = `"1.0"` for decision, action, and risk artifacts (always double-quoted); `schema_version` = `'2.0'` for requirement artifacts (single-quoted — prevents YAML float parsing)
     - `type` = `artifact.req_type` for requirement artifacts (one of: functional, non-functional, regulatory, integration, business-rule, data)
     - `priority` = `artifact.priority` for requirement artifacts (one of: must-have, should-have, could-have, wont-have)
-    - For decision artifacts: set `status` = the initial decision status (see template — the first valid status value), `date` = today's ISO date
+    - For decision artifacts: set `status` = `"proposed"`, `date` = today's ISO date
     - For requirement artifacts: set `status` = `"open"`; do not set `description` (v1.0 field — not present in v2.0 frontmatter)
     - For action artifacts: set `status` = `"open"`, `owner` = `artifact.raised_by`
     - For risk artifacts: set `status` = `"open"`, `owner` = `artifact.raised_by`
