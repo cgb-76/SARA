@@ -517,23 +517,38 @@ related: []
 ---
 id: RSK-000
 title: ""
-status: open  # open | mitigated | accepted | closed
-summary: ""  # RSK: likelihood, impact, mitigation approach, status
-likelihood: ""  # low | medium | high
-impact: ""      # low | medium | high
-owner: ""       # stakeholder ID (e.g. STK-001)
-mitigation: ""
-source: []      # list of ingest IDs (e.g. [MTG-001, MTG-003])
-schema_version: "1.0"
+status: open  # open | mitigated | accepted
+summary: ""   # RSK: likelihood, impact, type, status, mitigation approach
+type: technical  # technical | financial | schedule | quality | compliance | people
+likelihood: ""   # low | medium | high (extracted from source, or empty)
+impact: ""       # low | medium | high (extracted from source, or empty)
+owner: ""        # STK-NNN or raw name string
+raised-by: ""    # STK-NNN or raw name string
+source: []       # ingest IDs (e.g. [MTG-001])
+schema_version: '2.0'
 tags: []
 related: []
 ---
 
-## Description
+## Source Quote
+> [exact verbatim passage from source document] — [[STK-NNN|Stakeholder Name]]
+
+## Risk
+
+IF <trigger condition> THEN <adverse event>
+
+[Synthesised by sara-update: the IF/THEN statement is the primary risk description.
+IF and THEN are written in caps. The rest of the statement is sentence case.
+Example: IF the integration vendor delays API delivery THEN the go-live milestone slips by 4+ weeks.]
 
 ## Mitigation
 
-## Notes
+[Synthesised by sara-update from source doc + discussion notes: controls, contingencies, or
+mitigation approaches mentioned. If nothing was discussed: "No mitigation discussed — define
+action items to address this risk."]
+
+## Cross Links
+[One wiki link per related[] entry — see wikilink rule in sara-update SKILL.md]
 ```
 
 `.sara/templates/stakeholder.md` (frontmatter ONLY — no body sections):
