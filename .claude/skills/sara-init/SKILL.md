@@ -257,19 +257,20 @@ Considered, Rationale).
 id: ACT-000
 title: ""
 status: open  # open | in-progress | done | cancelled
-summary: ""  # ACT: owner, due-date, status (open/in-progress/done/cancelled)
-owner: ""      # stakeholder ID (e.g. STK-001)
-due-date: ""   # ISO 8601
-source: []     # list of ingest IDs (e.g. [MTG-001, MTG-003])
-schema_version: "1.0"
+summary: ""   # ACT: owner, due-date, type, status
+type: deliverable  # deliverable | follow-up
+owner: ""     # STK-NNN or raw name string
+due-date: ""  # raw string from source (e.g. "by Friday") or ISO date once resolved
+source: []    # ingest IDs (e.g. [MTG-001])
+schema_version: '2.0'
 tags: []
 related: []
 ---
-
-## Description
-
-## Notes
 ```
+
+Body follows the v2.0 structured section format (Source Quote, Description, Context, Owner,
+Due Date, Cross Links). Description and Context are synthesised by sara-update from the source
+document and discussion notes. Owner and Due Date are written from extracted artifact fields.
 
 ### Risk
 
