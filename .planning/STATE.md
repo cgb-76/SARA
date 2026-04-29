@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: milestone
-status: milestone_complete
-stopped_at: Phase 10 context gathered
-last_updated: "2026-04-29T12:14:47.710Z"
+status: completed
+stopped_at: Phase 11 context gathered
+last_updated: "2026-04-29T13:08:29.657Z"
 progress:
-  total_phases: 10
+  total_phases: 11
   completed_phases: 10
   total_plans: 37
-  completed_plans: 34
+  completed_plans: 37
   percent: 100
 ---
 
@@ -65,11 +65,12 @@ See: .planning/ROADMAP.md
 - Phase 8 added: refine-requirements
 - Phase 9 added: refine-decisions
 - Phase 10 added: refine-actions
+- Phase 11 added: refine-risks
 
 ## Open Items
 
 (None yet)
 
-**Stopped at:** Phase 10 context gathered
+**Stopped at:** Phase 11 context gathered
 
 **Planned Phase:** 10 (refine-actions) — 3 plans — 2026-04-29T12:11:20.010Z
