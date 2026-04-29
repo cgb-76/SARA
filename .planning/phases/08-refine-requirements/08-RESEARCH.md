@@ -452,7 +452,7 @@ cross_links_body = "\n".join(cross_links_lines)  # one link per line
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Update branch body structure**
    - What we know: D-06 says v2.0 applies to pages "written or updated after this phase"
