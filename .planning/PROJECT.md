@@ -109,6 +109,7 @@ Meetings also include: **→ minutes**
 | Stakeholder schema includes nickname field | Dual-field matching in `/sara-discuss` requires a short-form alias alongside full name | Validated — Phase 2 |
 | `schema_version` quoted as string '1.0' | Prevents Obsidian YAML float parse of bare 1.0 | Validated — Phase 1 |
 | `stage=complete` written only after git commit | Prevents permanent item strand on commit failure | Validated — Phase 2 |
+| Extraction uses four inline passes, not specialist agents | Token efficiency: source document stays in context; only small merged artifact array passed to sorter | Validated — Phase 7 |
 
 ## Evolution
 
