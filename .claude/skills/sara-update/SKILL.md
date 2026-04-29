@@ -395,6 +395,12 @@ For each artifact in `{extraction_plan}`:
     {Synthesised from {source_doc} and {discussion_notes}: why this option was chosen or
      why alignment was not reached. Leave empty (heading only) if nothing relevant — never fabricate.}
 
+    ## Cross Links
+    {Generate one wiki link per entry in artifact.related (after merging with the existing
+     related[] array). Use the wikilink rule: STK → [[STK-NNN|name]], REQ/DEC/ACT/RSK →
+     [[ID|ID Title]], fallback to [[ID]] if title/name cannot be resolved.
+     Write each link on its own line. Write heading only if artifact.related is empty after merge.}
+
     Use the Write tool to overwrite `{wiki_dir}{artifact.existing_id}.md` with the updated content.
     If write succeeds: append `{wiki_dir}{artifact.existing_id}.md` to `written_files`.
     If write fails: append `{wiki_dir}{artifact.existing_id}.md` to `failed_files`. Output the partial failure report (see format below). STOP.
