@@ -332,7 +332,7 @@ For each artifact in `{extraction_plan}`:
       Append `{wiki_dir}{artifact.existing_id}.md` to `failed_files`.
       Output the partial failure report and STOP.
     Apply `artifact.change_summary` to the relevant field(s) in the frontmatter or body. Update the `source` field: if it is currently a scalar string, convert it to a single-element YAML list. Append `{item.id}` to the list if not already present. Result format: `source: [MTG-001, MTG-003]`. Update the `related` field by merging `artifact.related` with the existing related array (deduplicating by entity ID).
-    Regenerate the `summary` field: read `summary_max_words` from pipeline-state.json (already in memory; default 50 if absent). Generate a fresh summary prose string using the same type-specific content rules as the create branch — REQ: title/status/description; DEC: options/chosen option/status/date; ACT: owner/due-date/status; RSK: likelihood/impact/mitigation/status; STK: vertical/department/role. Replace the existing `summary` value in the frontmatter with the newly generated string.
+    Regenerate the `summary` field: read `summary_max_words` from pipeline-state.json (already in memory; default 50 if absent). Generate a fresh summary prose string using the same type-specific content rules as the create branch — REQ: title/status/description; DEC: options/chosen option/status/date; ACT: owner/due-date/type/status; RSK: likelihood/impact/mitigation/status; STK: vertical/department/role. Replace the existing `summary` value in the frontmatter with the newly generated string.
     For requirement artifacts (`artifact.type == "requirement"`): after applying the change_summary
     to frontmatter fields and regenerating the summary, also update the frontmatter to include
     the v2.0 fields from the artifact object:
@@ -385,6 +385,53 @@ For each artifact in `{extraction_plan}`:
     ## Rationale
     {Synthesised from {source_doc} and {discussion_notes}: why this option was chosen or
      why alignment was not reached. Leave empty (heading only) if nothing relevant — never fabricate.}
+
+    Use the Write tool to overwrite `{wiki_dir}{artifact.existing_id}.md` with the updated content.
+    If write succeeds: append `{wiki_dir}{artifact.existing_id}.md` to `written_files`.
+    If write fails: append `{wiki_dir}{artifact.existing_id}.md` to `failed_files`. Output the partial failure report (see format below). STOP.
+
+    For action artifacts (`artifact.type == "action"`): after applying the change_summary
+    to frontmatter fields and regenerating the summary, also update the frontmatter to include
+    the v2.0 fields from the artifact object:
+    - Set `type` = `artifact.act_type` (one of: `deliverable`, `follow-up`) — add if absent
+    - Set `owner` = `artifact.owner` (STK-NNN or raw name string or `""`) — REPLACE any existing value; do NOT use `artifact.raised_by`
+    - Set `due-date` = `artifact.due_date` (raw string or `""`) — add if absent
+    - Set `schema_version` = `'2.0'` (single-quoted string — prevents YAML float parsing)
+
+    Then rewrite the full body to the v2.0 structured section format (Source Quote, Description,
+    Context, Owner, Due Date, Cross Links) using the same synthesis rules as the create branch.
+    Synthesise Description and Context from the updated frontmatter, artifact.source_quote,
+    artifact.change_summary, and {discussion_notes}. Write Owner and Due Date from artifact
+    fields — do NOT synthesise these sections.
+
+    ## Source Quote
+    > "{artifact.source_quote}" — [[{artifact.raised_by}|{stakeholder_name}]]
+
+    ## Description
+    {Synthesised from {source_doc}, {discussion_notes}, and artifact.change_summary: updated
+     summary of what needs to be done. Ground in source quote. Never fabricate.}
+
+    ## Context
+    {Synthesised from {source_doc}, {discussion_notes}: why this action was raised, including
+     any new context from artifact.change_summary. Leave empty (heading only) if nothing
+     relevant — never fabricate.}
+
+    ## Owner
+    {Written from artifact.owner — NOT synthesised:
+     - If valid STK-NNN ID: write "[[STK-NNN|Stakeholder Name]]"
+     - If raw name string: write as-is with "(not yet registered — run /sara-add-stakeholder)"
+     - If empty: write "Not assigned — set manually."}
+
+    ## Due Date
+    {Written from artifact.due_date — NOT synthesised:
+     - If non-empty: write the raw string as-is
+     - If empty: write "Not specified — set manually."}
+
+    ## Cross Links
+    {Generate one wiki link per entry in artifact.related (after merging with the existing
+     related[] array). Use the wikilink rule: STK → [[STK-NNN|name]], REQ/DEC/ACT/RSK →
+     [[ID|ID Title]], fallback to [[ID]] if title/name cannot be resolved.
+     Write each link on its own line. Write heading only if artifact.related is empty after merge.}
 
     Use the Write tool to overwrite `{wiki_dir}{artifact.existing_id}.md` with the updated content.
     If write succeeds: append `{wiki_dir}{artifact.existing_id}.md` to `written_files`.
