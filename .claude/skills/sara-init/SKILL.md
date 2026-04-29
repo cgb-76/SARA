@@ -477,18 +477,39 @@ related: []
 id: ACT-000
 title: ""
 status: open  # open | in-progress | done | cancelled
-summary: ""  # ACT: owner, due-date, status (open/in-progress/done/cancelled)
-owner: ""      # stakeholder ID (e.g. STK-001)
-due-date: ""   # ISO 8601
-source: []     # list of ingest IDs (e.g. [MTG-001, MTG-003])
-schema_version: "1.0"
+summary: ""   # ACT: owner, due-date, type, status
+type: deliverable  # deliverable | follow-up
+owner: ""     # STK-NNN or raw name string
+due-date: ""  # raw string from source (e.g. "by Friday") or ISO date once resolved
+source: []    # ingest IDs (e.g. [MTG-001])
+schema_version: '2.0'
 tags: []
 related: []
 ---
 
+## Source Quote
+> [exact verbatim passage from source document] — [[STK-NNN|Stakeholder Name]]
+
 ## Description
 
-## Notes
+[Synthesised by sara-update: 2–4 sentences describing what needs to be done, grounded in
+ source quote and discussion notes]
+
+## Context
+
+[Synthesised by sara-update: why this action was raised — triggering event, dependency, or
+ decision it relates to]
+
+## Owner
+
+[Written from artifact.owner — who is responsible. If empty: "Not assigned — set manually."]
+
+## Due Date
+
+[Raw due date string from extraction, or "Not specified — set manually." if empty]
+
+## Cross Links
+[One wiki link per related[] entry — see wikilink rule in sara-update SKILL.md]
 ```
 
 `.sara/templates/risk.md`:
