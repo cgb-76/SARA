@@ -88,7 +88,9 @@ Return a raw JSON object (no markdown fences, no prose):
       "source_quote": "Exact verbatim text from source document",
       "raised_by": "STK-NNN",
       "related": [],
-      "change_summary": ""
+      "change_summary": "",
+      "priority": "must-have",
+      "req_type": "functional"
     },
     {
       "action": "update",
@@ -112,6 +114,7 @@ Rules:
 - `questions` is [] when there are no ambiguities, likely duplicates, or cross-reference opportunities
 - Do NOT write any files — return JSON only
 - `source_quote` must be preserved verbatim from the specialist agent output — do not modify quotes
+- For requirement artifacts, preserve `priority` and `req_type` exactly as received from the extraction pass. Do not modify, reclassify, or drop these fields. Pass them through unchanged to `cleaned_artifacts`.
 </output_format>
 
 <notes>
