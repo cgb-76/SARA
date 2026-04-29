@@ -40,7 +40,17 @@ Store `{extraction_plan}` = `items["{N}"].extraction_plan`.
 
 If `{extraction_plan}` is empty or null:
   Output: `"Extraction plan for item {N} is empty — no wiki files to write."`
-  Proceed directly to Step 4 (commit pipeline-state.json stage advance only).
+  Set `written_files = []` and `count = 0`.
+  Update `items["{N}"].stage` = `"complete"` in memory.
+  Write the updated `.sara/pipeline-state.json` using the Write tool.
+  Run:
+  ```bash
+  git add .sara/pipeline-state.json
+  git commit -m "feat(sara): wiki {N} — 0 artifacts (empty plan)"
+  echo "EXIT:$?"
+  ```
+  Output: `"Item {N} stage advanced to complete. No artifacts were written."`
+  STOP.
 
 **Step 1b — Load source document and discussion notes**
 
