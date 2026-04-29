@@ -83,9 +83,11 @@ For each artifact in `{extraction_plan}`:
     - `source` = `{item.id}` (e.g. `MTG-001`)
     - `raised-by` = `artifact.raised_by` (note: template field is `raised-by`; artifact schema field is `raised_by`)
     - `related` = `artifact.related` (array of entity IDs)
-    - `schema_version` = `"1.0"` (always quoted)
+    - `schema_version` = `"1.0"` for decision, action, and risk artifacts (always double-quoted); `schema_version` = `'2.0'` for requirement artifacts (single-quoted — prevents YAML float parsing)
+    - `type` = `artifact.req_type` for requirement artifacts (one of: functional, non-functional, regulatory, integration, business-rule, data)
+    - `priority` = `artifact.priority` for requirement artifacts (one of: must-have, should-have, could-have, wont-have)
     - For decision artifacts: set `status` = the initial decision status (see template — the first valid status value), `date` = today's ISO date
-    - For requirement artifacts: set `status` = `"open"`
+    - For requirement artifacts: set `status` = `"open"`; do not set `description` (v1.0 field — not present in v2.0 frontmatter)
     - For action artifacts: set `status` = `"open"`, `owner` = `artifact.raised_by`
     - For risk artifacts: set `status` = `"open"`, `owner` = `artifact.raised_by`
     - All other fields not supplied by the artifact: use the template default value (empty string `""` or empty array `[]`)
@@ -144,22 +146,59 @@ For each artifact in `{extraction_plan}`:
 
     **requirement:**
     ```
-    ## Description
-    > "{artifact.source_quote}" — {stakeholder_name}
+    ## Source Quote
+    > "{artifact.source_quote}" — [[{artifact.raised_by}|{stakeholder_name}]]
 
-    {synthesised summary of what this requirement captures, why it matters, and any constraints
-     resolved during /sara-discuss}
+    ## Statement
+    {Synthesise a precise "The [subject] shall [verb phrase]." statement from the source_quote and
+     discussion_notes. Use the commitment modal from the source to determine the statement's strength.
+     Write one sentence in the form: "The [system/role] shall [action/behaviour/constraint]."}
+
+    ## User Story
+    {Apply the section matrix for artifact.req_type:
+     - functional → REQUIRED: write "As a [role], I want [capability], so that [benefit]."
+     - non-functional → OPTIONAL: write only if a user-facing perspective is natural (e.g. usability NFR).
+       If not natural, omit this section header entirely — do not write an empty heading.
+     - integration → OPTIONAL: write only if a developer or end-user perspective is clear.
+       If not natural, omit this section header entirely — do not write an empty heading.
+     - regulatory, business-rule, data → OMIT: do not write this section header at all.}
 
     ## Acceptance Criteria
-    {REQUIRED — derive at least one testable criterion directly from the requirement text,
-     even if the source does not state it explicitly. Infer what "done" looks like for this
-     requirement based on its title and source_quote. Format as a markdown checklist:
+    {REQUIRED for all types — derive at least one testable criterion directly from the source_quote.
+     Infer what "done" looks like from the title and source_quote. Format as a markdown checklist:
      - [ ] {criterion}
-     Add further criteria for any conditions or constraints found in source or discussion notes.}
+     Add further criteria for any conditions or constraints from source or discussion_notes.}
 
-    ## Notes
-    {synthesised caveats, dependencies, open questions, or related context from discussion
-     notes — leave empty if none available}
+    ## BDD Criteria
+    {Apply the section matrix for artifact.req_type:
+     - functional → REQUIRED: write one happy-path Gherkin scenario.
+     - business-rule → REQUIRED: write one happy-path Gherkin scenario (Gherkin is most natural here).
+     - integration → OPTIONAL: write if an API contract scenario is natural for this requirement.
+     - non-functional, regulatory, data → OMIT: do not write this section header at all.
+     Add additional scenarios ONLY when the requirement explicitly has distinct, named edge cases.
+     Format:
+     **Scenario: [name]**
+     Given [context]
+     When [action]
+     Then [outcome]
+     If omitting, leave this section header absent entirely — do not write an empty heading.}
+
+    ## Context
+    {Apply the section matrix for artifact.req_type:
+     - functional → OPTIONAL: include only when there is non-obvious rationale or design constraint
+       not captured in Statement or Source Quote. If nothing relevant, leave empty (heading only).
+     - non-functional, regulatory, integration, business-rule, data → REQUIRED: write rationale,
+       background, or constraints not captured in Statement or Source Quote. Why this quality target,
+       mandate, integration contract, domain rule, or data policy exists. Leave empty (heading only)
+       if nothing is available from source or discussion_notes — never fabricate.}
+
+    ## Cross Links
+    {Generate one wiki link per entry in artifact.related. Resolve display text per wikilink rule:
+     - STK entities: [[STK-NNN|name]] — read wiki/stakeholders/{ID}.md for the name field
+     - REQ/DEC/ACT/RSK entities: [[ID|ID Title]] — read wiki/index.md for the title
+     - If title/name cannot be resolved: fall back to bare [[ID]]
+     Write each link on its own line. If artifact.related is empty, write this heading with no
+     content (heading-only — consistent with the established empty-section pattern for this skill).}
     ```
 
     **decision:**
@@ -226,6 +265,25 @@ For each artifact in `{extraction_plan}`:
       Output the partial failure report and STOP.
     Apply `artifact.change_summary` to the relevant field(s) in the frontmatter or body. Update the `source` field to include `{item.id}` in addition to any existing source value. Update the `related` field by merging `artifact.related` with the existing related array (deduplicating by entity ID).
     Regenerate the `summary` field: read `summary_max_words` from pipeline-state.json (already in memory; default 50 if absent). Generate a fresh summary prose string using the same type-specific content rules as the create branch — REQ: title/status/description; DEC: options/chosen option/status/date; ACT: owner/due-date/status; RSK: likelihood/impact/mitigation/status; STK: vertical/department/role. Replace the existing `summary` value in the frontmatter with the newly generated string.
+    For requirement artifacts (`artifact.type == "requirement"`): after applying the change_summary
+    to frontmatter fields and regenerating the summary, also update the frontmatter to include
+    the v2.0 fields from the artifact object:
+    - Set `type` = `artifact.req_type` (one of: functional, non-functional, regulatory, integration, business-rule, data)
+    - Set `priority` = `artifact.priority` (one of: must-have, should-have, could-have, wont-have)
+    - Set `schema_version` = `'2.0'` (single-quoted string — prevents YAML float parsing)
+    - Remove the `description` field from the frontmatter if present (it is a v1.0 field)
+
+    Then rewrite the full body to the v2.0 structured section format (Source Quote, Statement,
+    User Story, Acceptance Criteria, BDD Criteria, Context, Cross Links) using the same synthesis
+    rules as the create branch. Synthesise section content from the updated frontmatter,
+    artifact.source_quote, artifact.change_summary, and {discussion_notes}. Apply the section
+    matrix (per artifact.req_type) to determine which sections to include and which to omit.
+
+    The Cross Links section is always written last. Generate one wiki link per entry in
+    artifact.related (after merging with the existing related[] array). Use the wikilink rule:
+    STK → [[STK-NNN|name]], REQ/DEC/ACT/RSK → [[ID|ID Title]], fallback to [[ID]] if
+    title/name cannot be resolved. Write each link on its own line. Write heading only if
+    artifact.related is empty after merge.
     Use the Write tool to overwrite `{wiki_dir}{artifact.existing_id}.md` with the updated content.
     If write succeeds: append `{wiki_dir}{artifact.existing_id}.md` to `written_files`.
     If write fails: append `{wiki_dir}{artifact.existing_id}.md` to `failed_files`. Output the partial failure report (see format below). STOP.
