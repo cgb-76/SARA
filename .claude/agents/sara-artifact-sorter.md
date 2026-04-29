@@ -152,6 +152,7 @@ Rules:
 - For requirement update artifacts (`action=update`, `type=requirement`), `priority` and `req_type` MUST be present — copy them from the incoming create artifact unchanged. sara-update reads these fields for all requirement artifacts regardless of action.
 - For decision artifacts, preserve `status`, `dec_type`, `chosen_option`, and `alternatives` exactly as received from the extraction pass. Do not modify, reclassify, or drop these fields. Pass them through unchanged to `cleaned_artifacts`.
 - For decision update artifacts (`action=update`, `type=decision`), `status`, `dec_type`, `chosen_option`, and `alternatives` MUST be present — copy them from the incoming create artifact unchanged. sara-update reads these fields for all decision artifacts regardless of action.
+- For decision artifacts in `cleaned_artifacts`: before returning, validate that `status`, `dec_type`, `chosen_option`, and `alternatives` are all present and non-null. If any required field is absent or null, surface a question: "Decision artifact '{title}' is missing required field '{field}'. The extraction pass may have failed. Accept with empty value (A), skip this artifact (B), or flag for manual review (C)?" Do not silently pass through a corrupt artifact.
 </output_format>
 
 <notes>
