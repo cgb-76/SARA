@@ -132,6 +132,7 @@ For each decision found:
 - Set `alternatives` to an array of alternatives mentioned in the source (strings); set to `[]` if none are mentioned
 - Set `action` = `"create"`, `type` = `"decision"`, `id_to_assign` = `"DEC-NNN"`, `related` = `[]`, `change_summary` = `""`
 - Do NOT extract `context` or `rationale` — these are synthesised by sara-update from the full source document, not extracted here
+- Do NOT set a `deciders` field — the `deciders` frontmatter field on decision pages is intentionally left as `[]` by the pipeline and must be filled in manually after wiki pages are created
 
 Collect results as `{dec_artifacts}` (JSON array; empty array if none found).
 

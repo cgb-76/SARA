@@ -103,6 +103,7 @@ For each artifact in `{extraction_plan}`:
     - `priority` = `artifact.priority` for requirement artifacts (one of: must-have, should-have, could-have, wont-have)
     - For decision artifacts: set `status` = `artifact.status` (either `"accepted"` or `"open"` from the extraction pass — NEVER hardcode `"proposed"`), `date` = today's ISO date
     - For decision artifacts: do NOT write `context`, `decision`, `rationale`, or `alternatives-considered` frontmatter fields — these are v1.0 fields removed in schema v2.0
+    - For decision artifacts: leave `deciders` = `[]` (the template default) — the pipeline does not populate this field. Users must fill it in manually after the page is created.
     - For requirement artifacts: set `status` = `"open"`; do not set `description` (v1.0 field — not present in v2.0 frontmatter)
     - For action artifacts: set `status` = `"open"`, `type` = `artifact.act_type` (one of: `deliverable`, `follow-up`), `owner` = `artifact.owner` (STK-NNN or raw name string or `""`), `due-date` = `artifact.due_date` (raw string or `""`)
     - For risk artifacts: set `status` = `"open"`, `owner` = `artifact.raised_by` if it is a resolved STK ID (e.g. `"STK-001"`); otherwise set `owner` = `""` (empty — leave unassigned; do not write a placeholder ID)
