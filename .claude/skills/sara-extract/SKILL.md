@@ -174,11 +174,45 @@ Collect results as `{act_artifacts}` (JSON array; empty array if none found).
 
 **Risks pass**
 
-Extract every passage that describes a risk — an uncertain event or condition with a potential negative effect (threat, concern, or "what if" scenario). A confirmed problem is an action item, not a risk. For each risk found:
-- Extract the exact verbatim passage as `source_quote` (MANDATORY)
-- Write a short (≤10 words) noun-phrase `title` (e.g. "Budget overrun on infrastructure")
-- Set `raised_by` to the STK-NNN ID if identifiable; otherwise `"STK-NNN"` placeholder
+A passage IS a risk if it describes an **uncertain future event or condition with a potential
+negative effect** — a threat, concern, "what if" scenario, or exposure that has not yet
+materialised. A confirmed problem already happening is an action item, not a risk.
+
+  INCLUDE — these passages ARE risks (extract them):
+  - Future uncertainty: "we might not get budget approval for the second phase"
+  - Concern or exposure: "there's a risk the integration vendor won't hit the API delivery date"
+  - What-if scenario: "if the key architect leaves, we'd have no one to maintain this"
+  - Dependency risk: "we're dependent on the client's data team being available for testing"
+  - Regulatory exposure: "we haven't confirmed GDPR compliance for the new data store"
+
+  EXCLUDE — these passages are NOT risks (do NOT extract them):
+  - Confirmed problem already happening: "the build pipeline is broken right now" (→ action item)
+  - Background context: "historically the vendor has been slow" (descriptive fact, not an uncertain future event)
+  - Aspiration: "it would be great if the system could handle more load" (desire, not a risk event)
+  - Mitigation or contingency already captured as an action: "Alice will set up redundancy this week"
+
+For each risk found, classify it into one of six `risk_type` values inline:
+  - `technical`    — system, architecture, technology, integration risks
+  - `financial`    — budget, cost, funding, pricing risks
+  - `schedule`     — timeline, deadline, dependency, sequencing risks
+  - `quality`      — accuracy, completeness, reliability, performance risks
+  - `compliance`   — regulatory, legal, policy, contractual risks
+  - `people`       — staffing, skills, availability, stakeholder engagement risks
+
+For each risk found:
+- Extract the exact verbatim passage as `source_quote` (MANDATORY — skip any risk without a quotable passage)
+- Write a short (≤10 words) noun-phrase `title` (e.g. "Budget overrun on infrastructure phase", "Vendor API delivery delay")
+- Set `risk_type` to one of the six values above (use `risk_type` — not `type` — to avoid collision with the envelope `type: "risk"` field)
+- Set `owner` to the STK-NNN ID of the person responsible for tracking and mitigating this risk if identifiable from source or discussion_notes; if a name is mentioned but not yet in the stakeholder registry, write the raw name string (e.g. `"Alice"`); if no person is identified, set to `""`
+- Set `raised_by` to the STK-NNN ID of the person who surfaced or raised this risk in the source (may be the same as owner); otherwise use `"STK-NNN"` placeholder
+- Set `likelihood` to `"high"`, `"medium"`, or `"low"` if the source contains an explicit signal (e.g. "very likely", "low probability", "significant concern", "minor risk"); otherwise set to `""`. Do not invent a likelihood value if none is stated.
+- Set `impact` to `"high"`, `"medium"`, or `"low"` if the source contains an explicit signal (e.g. "catastrophic if it happens", "minor inconvenience", "could derail the project"); otherwise set to `""`. Do not invent an impact value if none is stated.
+- Set `status` based on explicit source language only:
+  - `"mitigated"` — source says "controls already in place", "this is being handled by X", "we've addressed this with Y"
+  - `"accepted"`  — source says "we've accepted this risk", "we're comfortable with this", "no action needed, we'll live with it"
+  - `"open"`      — all other risks (default; do not require explicit language for open)
 - Set `action` = `"create"`, `type` = `"risk"`, `id_to_assign` = `"RSK-NNN"`, `related` = `[]`, `change_summary` = `""`
+- Do NOT extract IF/THEN statement or Mitigation — these are synthesised by sara-update from the full source document, not extracted here
 
 Collect results as `{risk_artifacts}` (JSON array; empty array if none found).
 
