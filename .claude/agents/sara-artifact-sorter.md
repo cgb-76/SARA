@@ -40,7 +40,11 @@ Agent receives via prompt:
 
 4. **Cross-reference detection:** Identify pairs of artifacts (or artifact + existing wiki entity) that are clearly related. Add the existing wiki entity ID to the `related` array of the relevant artifact.
 
-5. **Question generation:** Build a `questions` array. Each question string MUST include labeled A/B/C options so the human can reply with a single letter. Use these templates:
+5. **Question generation:** Build a `questions` array. Each question string MUST include labeled A/B/C options so the human can reply with a single letter.
+
+   **Ordering rule:** Do NOT generate a "likely duplicate" question for any artifact that was already resolved to `action="update"` by the create-vs-update pass in Step 3. Only generate a likely-duplicate question when a semantic match was found but confidence is insufficient to assert `action=update` (i.e. the sorter chose not to flip the artifact in Step 3 due to uncertainty).
+
+   Use these templates:
 
    - **Type ambiguity** (two specialists extracted the same passage as different types):
      ```
