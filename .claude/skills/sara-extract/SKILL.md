@@ -151,11 +151,20 @@ If `{sorter_questions}` is non-empty:
     Sorter question {i} of {total}: {question}
     ```
     Wait for the user's reply using a plain-text wait (freeform — do NOT use AskUserQuestion here).
-    Apply the user's resolution to `{cleaned_artifacts}` using the following logic:
-      If user replies "A": apply resolution A (keep as type1; remove the type2 duplicate from cleaned_artifacts).
-      If user replies "B": apply resolution B (keep as type2; remove the type1 duplicate).
-      If user replies "C": remove both from cleaned_artifacts (skip the passage).
-      If user replies anything else: re-present the same question with the note "Please reply A, B, or C." and wait again — do not advance to the next question.
+    Apply the user's resolution to `{cleaned_artifacts}` using the following logic.
+    First determine the question type from its text:
+      - If the question contains "extracted as both": type-ambiguity resolution
+          A: keep type1 artifact; remove the type2 duplicate from cleaned_artifacts
+          B: keep type2 artifact; remove the type1 duplicate from cleaned_artifacts
+          C: remove both from cleaned_artifacts (skip the passage)
+      - If the question contains "looks similar to": likely-duplicate resolution
+          A: keep action=update for the matched existing entity; remove create duplicate from cleaned_artifacts
+          B: keep action=create (treat as a separate new artifact)
+          C: remove from cleaned_artifacts (skip — not relevant)
+      - If the question contains "appears to relate to": cross-reference resolution
+          A: add the referenced entity ID to the artifact's related array
+          B: no change to the artifact's related array
+    If user replies anything else: re-present the same question with the note "Please reply A, B, or C." and wait again — do not advance to the next question.
 
 Proceed to Step 4 with `{cleaned_artifacts}` as the artifact list. All sorter questions are now resolved.
 
