@@ -149,6 +149,24 @@ Plans:
 3. Running `/sara-update N` on an approved decision artifact produces a wiki page with v2.0 frontmatter (type from dec_type, status from extraction, schema_version '2.0', no context/decision/rationale/alternatives-considered fields) and a five-section body (Source Quote, Context, Decision, Alternatives Considered, Rationale)
 4. Open decisions have `## Decision` = "No decision reached — alignment required." and `## Alternatives Considered` lists the competing positions detected in the source
 
+### Phase 10: refine-actions
+
+**Goal:** Refine the action artifact across two tracks: (1) rewrite the sara-extract action extraction pass with a positive signal definition, two-type act_type classification (deliverable/follow-up), owner as a distinct extracted field separate from raised_by, and due_date capture; (2) restructure the wiki action page to schema v2.0 with a six-section body and add type, owner (from artifact.owner), and due-date frontmatter fields; wire sara-update action create and update branches for v2.0; add owner-not-resolved warning to the approval loop
+**Requirements:** WIKI-03 (action artifact schema)
+**Depends on:** Phase 9
+**Plans:** 3 plans
+
+Plans:
+- [ ] 10-01-PLAN.md — Rewrite sara-extract action pass (signal definition, act_type, owner, due_date fields) + add owner-not-resolved warning to Step 4 approval loop
+- [ ] 10-02-PLAN.md — Update sara-init: action schema block in CLAUDE.md (Step 9) and action.md template (Step 12) to v2.0 (six-section body, type field, schema_version '2.0')
+- [ ] 10-03-PLAN.md — Rewrite sara-update action create + update branches for v2.0 frontmatter and body structure; add action pass-through rule to sara-artifact-sorter
+
+**Success Criteria:**
+1. Running `/sara-extract N` on a source document extracts actions based on any passage implying work needs to happen; background context, risk mitigations already captured by the risks pass, and requirements are not extracted as actions
+2. Every extracted action in the approval loop shows an `act_type` field (deliverable or follow-up), `owner` (distinct from raised_by), and `due_date` (raw string or empty) derived in the same inline pass; unresolved owners show the warning line before the artifact block
+3. Running `/sara-update N` on an approved action artifact produces a wiki page with v2.0 frontmatter (type from act_type, owner from artifact.owner, due-date from artifact.due_date, schema_version '2.0') and a six-section body (Source Quote, Description, Context, Owner, Due Date, Cross Links)
+4. Description and Context sections are synthesised; Owner and Due Date sections are written from extracted fields (not synthesised)
+
 ---
 
 ### Phase 4: Make Installable
