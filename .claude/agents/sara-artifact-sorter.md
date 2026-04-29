@@ -104,7 +104,25 @@ Return a raw JSON object (no markdown fences, no prose):
       "source_quote": "Exact verbatim text from source document motivating this update",
       "raised_by": "STK-NNN",
       "related": ["REQ-005"],
-      "change_summary": "Add new context from this source document"
+      "change_summary": "Add new context from this source document",
+      "status": "accepted",
+      "dec_type": "tooling",
+      "chosen_option": "The selected option",
+      "alternatives": []
+    },
+    {
+      "action": "create",
+      "type": "decision",
+      "id_to_assign": "DEC-NNN",
+      "title": "Short title",
+      "source_quote": "Exact verbatim text from source document",
+      "raised_by": "STK-NNN",
+      "related": [],
+      "change_summary": "",
+      "status": "accepted",
+      "dec_type": "architectural",
+      "chosen_option": "The selected option",
+      "alternatives": ["Alternative A", "Alternative B"]
     },
     {
       "action": "update",
@@ -132,6 +150,8 @@ Rules:
 - `source_quote` must be preserved verbatim from the specialist agent output — do not modify quotes
 - For requirement artifacts, preserve `priority` and `req_type` exactly as received from the extraction pass. Do not modify, reclassify, or drop these fields. Pass them through unchanged to `cleaned_artifacts`.
 - For requirement update artifacts (`action=update`, `type=requirement`), `priority` and `req_type` MUST be present — copy them from the incoming create artifact unchanged. sara-update reads these fields for all requirement artifacts regardless of action.
+- For decision artifacts, preserve `status`, `dec_type`, `chosen_option`, and `alternatives` exactly as received from the extraction pass. Do not modify, reclassify, or drop these fields. Pass them through unchanged to `cleaned_artifacts`.
+- For decision update artifacts (`action=update`, `type=decision`), `status`, `dec_type`, `chosen_option`, and `alternatives` MUST be present — copy them from the incoming create artifact unchanged. sara-update reads these fields for all decision artifacts regardless of action.
 </output_format>
 
 <notes>
