@@ -115,7 +115,7 @@ For each artifact in `{extraction_plan}`:
       - DEC (status=open): competing options/positions, alignment not reached, status: open, decision date
       - ACT: owner, due-date, type, status
       - RSK: likelihood, impact, type, status, mitigation approach
-      - STK: vertical, department, role — enough to distinguish from other stakeholders
+      - STK: segment, department, role — enough to distinguish from other stakeholders
       Generate the summary from the artifact fields already set (title, status, owner, etc.) and `{discussion_notes}`. Write it as a single prose string — not a list, not bullet points.
 
     Populate the body sections below the frontmatter. For each section listed below, synthesise
@@ -341,7 +341,7 @@ For each artifact in `{extraction_plan}`:
       Append `{wiki_dir}{artifact.existing_id}.md` to `failed_files`.
       Output the partial failure report and STOP.
     Apply `artifact.change_summary` to the relevant field(s) in the frontmatter or body. Update the `source` field: if it is currently a scalar string, convert it to a single-element YAML list. Append `{item.id}` to the list if not already present. Result format: `source: [MTG-001, MTG-003]`. Update the `related` field by merging `artifact.related` with the existing related array (deduplicating by entity ID).
-    Regenerate the `summary` field: read `summary_max_words` from pipeline-state.json (already in memory; default 50 if absent). Generate a fresh summary prose string using the same type-specific content rules as the create branch — REQ: title/status/description; DEC: options/chosen option/status/date; ACT: owner/due-date/type/status; RSK: likelihood, impact, type, status, mitigation approach; STK: vertical/department/role. Replace the existing `summary` value in the frontmatter with the newly generated string.
+    Regenerate the `summary` field: read `summary_max_words` from pipeline-state.json (already in memory; default 50 if absent). Generate a fresh summary prose string using the same type-specific content rules as the create branch — REQ: title/status/description; DEC: options/chosen option/status/date; ACT: owner/due-date/type/status; RSK: likelihood, impact, type, status, mitigation approach; STK: segment, department, role. Replace the existing `summary` value in the frontmatter with the newly generated string.
     For requirement artifacts (`artifact.type == "requirement"`): after applying the change_summary
     to frontmatter fields and regenerating the summary, also update the frontmatter to include
     the v2.0 fields from the artifact object:
@@ -588,7 +588,7 @@ Check the exit code from the `echo "EXIT:$?"` output.
 - `schema_version` must be quoted to prevent Obsidian's YAML parser from treating it as a float. All artifact types (requirement, decision, action, risk) → `'2.0'` (single-quoted).
 - `related` fields must use entity IDs only (e.g. `REQ-001`, `DEC-003`) — never file paths, relative links, or Obsidian `[[wiki-links]]`. This is a Phase 1 behavioral rule carried forward.
 - The `raised_by` field in the artifact schema (written by `/sara-extract`) maps to the `raised-by` field in wiki page frontmatter (defined in the entity templates). The hyphen vs underscore difference is intentional: `raised_by` is the JSON field name in `pipeline-state.json`; `raised-by` is the YAML field name in wiki pages. Apply the mapping in Step 2 when substituting template fields.
-- `vertical` and `department` are always separate fields in stakeholder pages — never merged. This is a locked domain constraint.
+- `segment` and `department` are always separate fields in stakeholder pages — never merged. This is a locked domain constraint.
 - `extraction_plan` may be empty (all artifacts rejected during `/sara-extract`). If non-empty check fails at Step 1, stop early with the re-run message. If it passes but the loop produces no writes, the git commit will still include `pipeline-state.json` (stage advance).
 - pipeline-state.json is read and written using Read and Write tools only — never Bash shell text-processing tools.
 - NOTE: The canonical artifact schema field `raised_by` (defined in the plan interfaces and written by `/sara-extract`) contains the letter sequence "sed" as a substring of "raised". Any grep check for `jq\|sed\|awk` will match this field name. This is a false positive — no shell text-processing tools are referenced in this skill. The field name is non-negotiable: it is the canonical schema consumed here from `/sara-extract`.
