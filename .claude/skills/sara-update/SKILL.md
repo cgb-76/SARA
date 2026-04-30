@@ -91,6 +91,12 @@ happen inside the write loop as they always have (Pitfall 1 guard preserved).
 
 **Substitution pass:**
 
+NOTE: The "skip update artifacts" instruction above applies ONLY to the id_map construction
+loop (update artifacts contribute no temp_id key to id_map). The substitution pass below
+applies to ALL artifacts — both create and update. Update artifacts may have temp_ids in
+their related[] arrays (from the full-mesh step in sara-extract) and those must also be
+resolved.
+
   For each artifact in `{extraction_plan}`:
     For each entry `t` in `artifact.related`:
       If `id_map[t]` exists: replace `t` with `id_map[t]`
