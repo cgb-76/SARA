@@ -11,7 +11,7 @@ version: 1.0.0
 ---
 
 <objective>
-Capture a stakeholder's details — name (required), plus optional fields: nickname, vertical,
+Capture a stakeholder's details — name (required), plus optional fields: nickname, segment,
 email, role, and department — write a frontmatter-only STK wiki page, increment the STK counter
 in pipeline-state.json, update wiki/index.md and wiki/log.md, and commit everything in a single
 atomic git commit. This skill operates as a standalone command (`/sara-add-stakeholder`) and is
@@ -35,7 +35,7 @@ Capture the reply as `{name}`. If blank: repeat the prompt once more; if still b
 
 **Step 2 — Collect optional fields via AskUserQuestion**
 
-Read `.sara/config.json` using the Read tool. Store the `verticals` array for the Vertical prompt
+Read `.sara/config.json` using the Read tool. Store the `segments` array for the Segment prompt
 and the `departments` array for the Dept prompt below.
 
 Collect the following fields in order. Each is optional — user may choose Skip:
@@ -50,11 +50,11 @@ Capture reply as `{nickname}`. If "Skip": set `{nickname}` = `""`.
 
 ```
 AskUserQuestion:
-  header: "Vertical"
-  question: "Which market vertical? (leave blank if unknown)"
-  options: [values from .sara/config.json verticals array] + ["Skip"]
+  header: "Segment"
+  question: "Which segment? (leave blank if unknown)"
+  options: [values from .sara/config.json segments array] + ["Skip"]
 ```
-Capture reply as `{vertical}`. If "Skip": set `{vertical}` = `""`.
+Capture reply as `{segment}`. If "Skip": set `{segment}` = `""`.
 
 ```
 AskUserQuestion:
@@ -68,7 +68,7 @@ Capture reply as `{department}`. If "Skip": set `{department}` = `""`.
 
 Re-read `.sara/config.json` using the Read tool (use the already-read copy if still in memory).
 
-If `{vertical}` is non-empty and not already present in `config.verticals`: append `{vertical}` to the `verticals` array and write the updated JSON back to `.sara/config.json` using the Write tool.
+If `{segment}` is non-empty and not already present in `config.segments`: append `{segment}` to the `segments` array and write the updated JSON back to `.sara/config.json` using the Write tool.
 
 If `{department}` is non-empty and not already present in `config.departments`: append `{department}` to the `departments` array and write the updated JSON back to `.sara/config.json` using the Write tool.
 
@@ -112,11 +112,11 @@ Use the Write tool to create `wiki/stakeholders/{new_id}.md` with the following 
 id: {new_id}
 name: "{name}"
 nickname: "{nickname}"  # colloquial name from transcript body text
-vertical: "{vertical}"    # from project config verticals list
+segment: "{segment}"    # from project config segments list
 department: "{department}"  # from project config departments list
 email: "{email}"
 role: "{role}"
-summary: ""  # STK: vertical, department, role — enough to distinguish from other stakeholders
+summary: ""  # STK: segment, department, role — enough to distinguish from other stakeholders
 schema_version: "1.0"
 related: []
 ---
@@ -164,15 +164,15 @@ When this skill is called inline from `/sara-discuss`: the output `{new_id}` is 
 </process>
 
 <notes>
-- `vertical` (market segment) and the functional area field are ALWAYS written as two separate
+- `segment` (market segment) and the functional area field are ALWAYS written as two separate
   YAML fields — never combined. The functional area field name is `department`. This separation
   is a locked domain constraint (project memory).
 - All empty optional fields are stored as `""` (empty string), not null or omitted. This ensures the YAML structure is consistent and parseable in all cases.
 - The STK-NNN ID is assigned BEFORE the page is written (counter increment in Step 3, file write in Step 4). This ensures `counters.entity.STK` in pipeline-state.json is always consistent with written STK pages — even if the Write call for the page fails, the counter reflects the attempt and prevents ID reuse.
 - When called inline from `/sara-discuss`: `/sara-discuss` first reads `.claude/skills/sara-add-stakeholder/SKILL.md`, then executes this skill inline for the current unknown stakeholder. After Step 6 completes, `/sara-discuss` resumes with the returned `{new_id}` added to its resolved-stakeholders context. The caller should continue iterating over remaining unknown stakeholders before moving on to other blocker priorities.
 - `schema_version` must always be quoted: `"1.0"` — unquoted, YAML parsers (including Obsidian) interpret `1.0` as a float, which breaks frontmatter round-trips.
-- AskUserQuestion header lengths: "Nickname" = 8, "Vertical" = 8, "Dept" = 4, "Email" = 5, "Role" = 4 — all within the 12-character hard limit.
-- New verticals and departments entered via "New..." are appended to `.sara/config.json` in Step 2b and committed alongside the STK page in Step 6. This keeps the config in sync so the new value appears as a selectable option in future `/sara-add-stakeholder` runs.
+- AskUserQuestion header lengths: "Nickname" = 8, "Segment" = 7, "Dept" = 4, "Email" = 5, "Role" = 4 — all within the 12-character hard limit.
+- New segments and departments entered are appended to `.sara/config.json` in Step 2b and committed alongside the STK page in Step 6. This keeps the config in sync so the new value appears as a selectable option in future `/sara-add-stakeholder` runs.
 - The git add list in Step 6 uses explicit file paths — never `git add .` or `git add -A`. This ensures only the four expected files are staged and no unintended files are committed.
 - If `$ARGUMENTS` is provided (inline caller supplies the name), Step 1 skips the plain-text prompt entirely and uses the argument directly. The argument is the stakeholder's full formal name as determined by the calling skill.
 </notes>
