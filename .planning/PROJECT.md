@@ -38,7 +38,7 @@ Every meeting, email thread, Slack conversation, and document gets permanently i
 
 ## Current State
 
-Phase 11 complete (2026-04-29) — full v2.0 risk pipeline implemented across sara-extract, sara-init, and sara-update. All 11 phases of milestone v2.0 complete.
+Phase 12 complete (2026-04-30) — vertical→segment rename applied across all SARA skill files; `segments` field added to the full extraction-to-wiki pipeline (sara-extract inference, sara-artifact-sorter passthrough, sara-update write rules, sara-init templates). All 12 phases of milestone v2.0 complete.
 
 ## Context
 
@@ -136,4 +136,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-29 after Phase 10 completion — action artifact pipeline fully updated to v2.0 schema across all four components: sara-extract (structured action pass with act_type/owner/due_date fields and owner-not-resolved warning), sara-init (v2.0 action schema block and template with six-section body), sara-update (v2.0 action create and update branches consuming artifact.owner and artifact.act_type), sara-artifact-sorter (action field pass-through documentation). Full v2.0 milestone complete across requirements, decisions, and actions.*
+*Last updated: 2026-04-30 after Phase 12 completion — vertical→segment rename applied across all SARA skill files; `segments` field added to full extraction pipeline (sara-extract inference, sara-artifact-sorter passthrough, sara-update write rules, sara-init templates). All 12 phases of milestone v2.0 complete.*
