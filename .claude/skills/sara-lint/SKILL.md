@@ -161,6 +161,8 @@ For each file returned: Read the file using the Read tool. Check whether a `## C
 - issue: "`## Cross Links` section absent from {file} (related: [] but section header missing)"
 - proposed_fix: "Add empty `## Cross Links` section header at end of file body."
 
+Note: The `^related: \[\]` grep is a frontmatter scan. Wiki pages follow the convention that `related:` appears only in the YAML frontmatter block. If the Read step confirms the grep match is in body prose rather than frontmatter, skip the finding (false positive).
+
 ---
 
 **Check D-07 — Semantic related[] curation**
