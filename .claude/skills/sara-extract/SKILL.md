@@ -301,7 +301,7 @@ If `{sorter_output}` cannot be parsed as a valid JSON object, or if `cleaned_art
   STOP.
 
 - `{cleaned_artifacts}` = sorter_output.cleaned_artifacts
-- `{sorter_questions}` = sorter_output.questions
+- `{sorter_questions}` = sorter_output.questions if the "questions" key exists, else `[]`
 
 If `{sorter_questions}` is non-empty:
   For each question in `{sorter_questions}`, one at a time:
