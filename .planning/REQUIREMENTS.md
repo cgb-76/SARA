@@ -7,8 +7,8 @@
 
 ### Cross-Reference Pipeline
 
-- [ ] **XREF-01**: sara-extract infers related[] links between artifacts in the same extraction batch
-- [ ] **XREF-02**: sara-update writes related[] to artifact frontmatter on every page it creates or updates
+- [x] **XREF-01**: sara-extract infers related[] links between artifacts in the same extraction batch
+- [x] **XREF-02**: sara-update writes related[] to artifact frontmatter on every page it creates or updates
 
 ### sara-lint Repair
 
@@ -32,8 +32,8 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| XREF-01 | Phase 14 | Pending |
-| XREF-02 | Phase 14 | Pending |
+| XREF-01 | Phase 14 | Complete |
+| XREF-02 | Phase 14 | Complete |
 | XREF-03 | Phase 15 | Pending |
 | XREF-04 | Phase 15 | Pending |
 | XREF-05 | Phase 15 | Pending |

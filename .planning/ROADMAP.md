@@ -30,7 +30,7 @@
 
 **Milestone Goal:** Fix cross-referencing so related[] fields and Cross Links sections are correctly populated on all artifact pages after extraction.
 
-- [ ] **Phase 14: Extraction Pipeline Fix** - Infer and write related[] links during sara-extract and sara-update
+- [x] **Phase 14: Extraction Pipeline Fix** - Infer and write related[] links during sara-extract and sara-update (completed 2026-04-30)
 - [ ] **Phase 15: Lint Repair** - Detect and repair missing related[] and Cross Links on existing wiki pages
 
 ## Phase Details
@@ -46,8 +46,8 @@
 **Plans**: 2 plans
 
 Plans:
-- [ ] 14-01-PLAN.md — Add temp_id to sara-extract Step 3 passes and full-mesh linking to Step 5
-- [ ] 14-02-PLAN.md — Add temp_id→real_id resolution block to sara-update Step 2
+- [x] 14-01-PLAN.md — Add temp_id to sara-extract Step 3 passes and full-mesh linking to Step 5
+- [x] 14-02-PLAN.md — Add temp_id→real_id resolution block to sara-update Step 2
 
 ### Phase 15: Lint Repair
 **Goal**: sara-lint detects missing or stale related[] and Cross Links on existing wiki pages and repairs them without user having to re-run the ingest pipeline
@@ -77,5 +77,5 @@ Plans:
 | 11. Refine Risks | v1.0 | 3/3 | Complete | 2026-04-29 |
 | 12. Vertical Awareness | v1.0 | 4/4 | Complete | 2026-04-30 |
 | 13. Lint Refactor | v1.0 | 2/2 | Complete | 2026-04-30 |
-| 14. Extraction Pipeline Fix | v2.0 | 0/2 | Not started | - |
+| 14. Extraction Pipeline Fix | v2.0 | 2/2 | Complete    | 2026-04-30 |
 | 15. Lint Repair | v2.0 | 0/? | Not started | - |
