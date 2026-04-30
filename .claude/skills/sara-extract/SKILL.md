@@ -87,7 +87,9 @@ For each requirement found:
 - Set `segments` to an array of segment name strings (zero or more):
     1. STK attribution: if `source_quote` ends with `— [[STK-NNN|…]]`, parse the STK-NNN ID
        from the attribution, read `wiki/stakeholders/{STK-NNN}.md`, extract the `segment:` field
-       value, and add it as the first entry in the array.
+       value, and add it as the first entry in the array. If no STK-NNN is found in
+       `source_quote`, also check `discussion_notes` — if it identifies the speaker for this
+       passage and contains a `[[STK-NNN|…]]` reference, extract the STK-NNN ID from there.
     2. Keyword matching: scan the source passage for case-insensitive substrings matching any
        name in `config.segments`; add each matching segment name (deduplicated).
     3. Empty fallback: if neither attribution nor keyword matching resolves any segment name,
@@ -150,7 +152,9 @@ For each decision found:
 - Set `segments` to an array of segment name strings (zero or more):
     1. STK attribution: if `source_quote` ends with `— [[STK-NNN|…]]`, parse the STK-NNN ID
        from the attribution, read `wiki/stakeholders/{STK-NNN}.md`, extract the `segment:` field
-       value, and add it as the first entry in the array.
+       value, and add it as the first entry in the array. If no STK-NNN is found in
+       `source_quote`, also check `discussion_notes` — if it identifies the speaker for this
+       passage and contains a `[[STK-NNN|…]]` reference, extract the STK-NNN ID from there.
     2. Keyword matching: scan the source passage for case-insensitive substrings matching any
        name in `config.segments`; add each matching segment name (deduplicated).
     3. Empty fallback: if neither attribution nor keyword matching resolves any segment name,
@@ -201,7 +205,9 @@ For each action found:
 - Set `segments` to an array of segment name strings (zero or more):
     1. STK attribution: if `source_quote` ends with `— [[STK-NNN|…]]`, parse the STK-NNN ID
        from the attribution, read `wiki/stakeholders/{STK-NNN}.md`, extract the `segment:` field
-       value, and add it as the first entry in the array.
+       value, and add it as the first entry in the array. If no STK-NNN is found in
+       `source_quote`, also check `discussion_notes` — if it identifies the speaker for this
+       passage and contains a `[[STK-NNN|…]]` reference, extract the STK-NNN ID from there.
     2. Keyword matching: scan the source passage for case-insensitive substrings matching any
        name in `config.segments`; add each matching segment name (deduplicated).
     3. Empty fallback: if neither attribution nor keyword matching resolves any segment name,
@@ -259,7 +265,9 @@ For each risk found:
 - Set `segments` to an array of segment name strings (zero or more):
     1. STK attribution: if `source_quote` ends with `— [[STK-NNN|…]]`, parse the STK-NNN ID
        from the attribution, read `wiki/stakeholders/{STK-NNN}.md`, extract the `segment:` field
-       value, and add it as the first entry in the array.
+       value, and add it as the first entry in the array. If no STK-NNN is found in
+       `source_quote`, also check `discussion_notes` — if it identifies the speaker for this
+       passage and contains a `[[STK-NNN|…]]` reference, extract the STK-NNN ID from there.
     2. Keyword matching: scan the source passage for case-insensitive substrings matching any
        name in `config.segments`; add each matching segment name (deduplicated).
     3. Empty fallback: if neither attribution nor keyword matching resolves any segment name,
