@@ -44,27 +44,46 @@ Agent receives via prompt:
 
    **Ordering rule:** Do NOT generate a "likely duplicate" question for any artifact that was already resolved to `action="update"` by the create-vs-update pass in Step 3. Only generate a likely-duplicate question when a semantic match was found but confidence is insufficient to assert `action=update` (i.e. the sorter chose not to flip the artifact in Step 3 due to uncertainty).
 
+   **Duplicate-update detection:** After Step 3, scan `cleaned_artifacts` for cases where two or more artifacts share the same `existing_id` (i.e. both resolved to `action=update` targeting the same wiki entity). For each such collision, generate a **duplicate-update** question (see template below) and keep BOTH artifacts in `cleaned_artifacts` — sara-extract removes the rejected one after the human answers.
+
    Use these templates:
 
    - **Type ambiguity** (two specialists extracted the same passage as different types):
      ```
-     The passage '...' was extracted as both a {type1} and a {type2}. Which is correct?
+     The passage below was extracted as both a {type1} and a {type2}. Which is correct?
+       Source: "{source_quote}"
        A) {TYPE1} — {brief reason}
        B) {TYPE2} — {brief reason}
        C) Neither — skip this passage
      ```
 
-   - **Likely duplicate** (artifact closely matches an existing wiki entity):
+   - **Likely duplicate** (artifact closely matches an existing wiki entity, but confidence was insufficient to assert update):
      ```
-     The new artifact '{title}' looks similar to {ID} "{existing_title}". What should we do?
+     New artifact '{title}' looks similar to existing {ID} "{existing_title}". What should we do?
+       New source: "{source_quote}"
        A) Update {ID} "{existing_title}" with new information from this source
        B) Create as a separate new artifact
        C) Skip — not relevant
      ```
 
+   - **Duplicate update** (two extracted artifacts both resolved to update the same existing wiki entity):
+     ```
+     Two extracted artifacts both want to update {ID} "{existing_title}". Which should be applied?
+       Artifact A — {title_a} (raised by {raised_by_a})
+         Source: "{source_quote_a}"
+         Change: {change_summary_a}
+       Artifact B — {title_b} (raised by {raised_by_b})
+         Source: "{source_quote_b}"
+         Change: {change_summary_b}
+       A) Apply artifact A only
+       B) Apply artifact B only
+       C) Apply both (keep both in the plan)
+     ```
+
    - **Cross-reference confirmation** (artifact relates to an existing wiki entity):
      ```
      The artifact '{title}' appears to relate to {ID} "{existing_title}". Confirm?
+       Source: "{source_quote}"
        A) Yes — add {ID} "{existing_title}" as a cross-link
        B) No — not related
      ```
@@ -94,7 +113,8 @@ Return a raw JSON object (no markdown fences, no prose):
       "related": [],
       "change_summary": "",
       "priority": "must-have",
-      "req_type": "functional"
+      "req_type": "functional",
+      "segments": []
     },
     {
       "action": "update",
@@ -108,7 +128,8 @@ Return a raw JSON object (no markdown fences, no prose):
       "status": "accepted",
       "dec_type": "tooling",
       "chosen_option": "The selected option",
-      "alternatives": []
+      "alternatives": [],
+      "segments": ["Residential"]
     },
     {
       "action": "create",
@@ -122,7 +143,8 @@ Return a raw JSON object (no markdown fences, no prose):
       "status": "accepted",
       "dec_type": "architectural",
       "chosen_option": "The selected option",
-      "alternatives": ["Alternative A", "Alternative B"]
+      "alternatives": ["Alternative A", "Alternative B"],
+      "segments": []
     },
     {
       "action": "update",
@@ -134,7 +156,22 @@ Return a raw JSON object (no markdown fences, no prose):
       "related": [],
       "change_summary": "Add new context from this source document",
       "priority": "must-have",
-      "req_type": "functional"
+      "req_type": "functional",
+      "segments": ["Commercial"]
+    },
+    {
+      "action": "create",
+      "type": "action",
+      "id_to_assign": "ACT-NNN",
+      "title": "Short title",
+      "source_quote": "Exact verbatim text from source document",
+      "raised_by": "STK-NNN",
+      "related": [],
+      "change_summary": "",
+      "act_type": "task",
+      "owner": "STK-NNN",
+      "due_date": "",
+      "segments": []
     }
   ],
   "questions": [
