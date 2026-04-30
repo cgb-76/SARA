@@ -198,6 +198,23 @@ Plans:
 - [x] 12-03-PLAN.md — Rename vertical → segment in sara-init (5 locations) + add segments: [] to 4 entity templates and 4 CLAUDE.md schema blocks
 - [x] 12-04-PLAN.md — Rename vertical → segment in sara-update (STK rule + notes) + add segments write rule to all 8 entity branches
 
+### Phase 13: lint-refactor
+
+**Goal:** Rewrite sara-lint to v2.0 — scan all wiki artifact pages against v2.0 schemas introduced in phases 8–12, identify mechanical gaps, offer per-finding back-fill with inference, and commit each accepted fix atomically
+**Requirements:** No formal requirement IDs — see D-01 through D-09 in 13-CONTEXT.md
+**Depends on:** Phase 12
+**Plans:** 2 plans
+
+Plans:
+- [ ] 13-01-PLAN.md — Rewrite sara-lint/SKILL.md v2.0: five mechanical checks (D-02 missing frontmatter, D-03 broken related[], D-04 orphaned pages, D-05 index sync, D-06 Cross Links sync), per-finding approval loop, atomic per-fix commits
+- [ ] 13-02-PLAN.md — End-to-end verification: prepare test wiki with known gaps, run /sara-lint, human checkpoint
+
+**Success Criteria:**
+1. Running /sara-lint on a wiki with pre-v2.0 pages presents a finding count and loops through each gap individually — no batch confirm
+2. Accepting a missing schema_version finding produces an immediate git commit with message fix(wiki): back-fill schema_version on {ID} via sara-lint
+3. Running /sara-lint twice — with accepted fixes applied — shows fewer findings on the second run
+4. Running /sara-lint outside a wiki/ directory outputs the guard error and stops
+
 ---
 
 ### Phase 4: Make Installable
