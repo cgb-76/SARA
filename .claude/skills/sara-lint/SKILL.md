@@ -349,7 +349,19 @@ For each finding in {all_findings} in order:
   - could-have — could/may language
   - wont-have — explicitly deferred or out of scope
 
-- `segments`: read {config_segments} (already loaded in Step 2). Check the `related:` frontmatter for STK IDs; for each STK ID found, attempt to Read the STK page and get its `segment:` field. Also scan the page body for keyword matches against {config_segments}. If matches found, propose the matching segment(s) as a YAML list. If no match, propose `[]`.
+- `segments`: read {config_segments} (already loaded in Step 2). 
+  - Set `segments` to an array of segment name strings (zero or more):
+      1. STK attribution: if `source_quote` ends with `— [[STK-NNN|…]]`, parse the STK-NNN ID
+        from the attribution, read `wiki/stakeholders/{STK-NNN}.md`, extract the `segment:` field
+        value, and add it as the first entry in the array. If no STK-NNN is found in
+        `source_quote`, also check `discussion_notes` — if it identifies the speaker for this
+        passage and contains a `[[STK-NNN|…]]` reference, extract the STK-NNN ID from there.
+      2. Keyword matching: scan the source passage for case-insensitive substrings matching any
+        name in `config.segments`; add each matching segment name (deduplicated).
+      3. Semantic matching: if the requirement likely covers all segments, add all segment names.
+      4. Empty fallback: if neither attribution nor keyword matching nor semantic matching resolves any segment name,
+        set `segments` = `[]`.
+      Deduplication: each segment name appears at most once in the array.
 
 - `likelihood` / `impact`: scan `## Risk IF/THEN` and `## Mitigation` body sections for the words high, medium, low. If found, use the matching level. If not found, propose `""`.
 

@@ -92,7 +92,8 @@ For each requirement found:
        passage and contains a `[[STK-NNN|…]]` reference, extract the STK-NNN ID from there.
     2. Keyword matching: scan the source passage for case-insensitive substrings matching any
        name in `config.segments`; add each matching segment name (deduplicated).
-    3. Empty fallback: if neither attribution nor keyword matching resolves any segment name,
+    3. Semantic matching: if the requirement likely covers all segments, add all segment names.
+    4. Empty fallback: if neither attribution nor keyword matching nor semantic matching resolves any segment name,
        set `segments` = `[]`.
     Deduplication: each segment name appears at most once in the array.
 - Set `action` = `"create"`, `type` = `"requirement"`, `id_to_assign` = `"REQ-NNN"`, `related` = `[]`, `change_summary` = `""`
