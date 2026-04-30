@@ -103,10 +103,26 @@ For each artifact in `{extraction_plan}`:
     - `priority` = `artifact.priority` for requirement artifacts (one of: must-have, should-have, could-have, wont-have)
     - For decision artifacts: set `status` = `artifact.status` (either `"accepted"` or `"open"` from the extraction pass — NEVER hardcode `"proposed"`), `date` = today's ISO date
     - For decision artifacts: do NOT write `context`, `decision`, `rationale`, or `alternatives-considered` frontmatter fields — these are v1.0 fields removed in schema v2.0
-    - For decision artifacts: leave `deciders` = `[]` (the template default) — the pipeline does not populate this field. Users must fill it in manually after the page is created.
     - For requirement artifacts: set `status` = `"open"`; do not set `description` (v1.0 field — not present in v2.0 frontmatter)
+      - `segments` = `artifact.segments` (array of segment name strings; write as flow-style YAML:
+        `segments: []` for empty, `segments: [Residential]` for one entry,
+        `segments: [Residential, Enterprise]` for two; use block style only if the array has 3+
+        entries — consistent with `tags`, `related`, `source` in existing templates)
+    - For decision artifacts: leave `deciders` = `[]` (the template default) — the pipeline does not populate this field. Users must fill it in manually after the page is created.
+      - `segments` = `artifact.segments` (array of segment name strings; write as flow-style YAML:
+        `segments: []` for empty, `segments: [Residential]` for one entry,
+        `segments: [Residential, Enterprise]` for two; use block style only if the array has 3+
+        entries — consistent with `tags`, `related`, `source` in existing templates)
     - For action artifacts: set `status` = `"open"`, `type` = `artifact.act_type` (one of: `deliverable`, `follow-up`), `owner` = `artifact.owner` (STK-NNN or raw name string or `""`), `due-date` = `artifact.due_date` (raw string or `""`)
+      - `segments` = `artifact.segments` (array of segment name strings; write as flow-style YAML:
+        `segments: []` for empty, `segments: [Residential]` for one entry,
+        `segments: [Residential, Enterprise]` for two; use block style only if the array has 3+
+        entries — consistent with `tags`, `related`, `source` in existing templates)
     - For risk artifacts: set `type` = `artifact.risk_type` (one of: technical, financial, schedule, quality, compliance, people); set `owner` = `artifact.owner` (STK-NNN or raw name string or `""`); set `raised-by` = `artifact.raised_by` (note: template field is `raised-by`; artifact schema field is `raised_by`); set `likelihood` = `artifact.likelihood` (`"high"`, `"medium"`, `"low"`, or `""`); set `impact` = `artifact.impact` (`"high"`, `"medium"`, `"low"`, or `""`); set `status` = `artifact.status` (`"open"`, `"mitigated"`, or `"accepted"` — signal-based from extraction; default is `"open"`). Do NOT write a `mitigation:` frontmatter field — it is removed in v2.0.
+      - `segments` = `artifact.segments` (array of segment name strings; write as flow-style YAML:
+        `segments: []` for empty, `segments: [Residential]` for one entry,
+        `segments: [Residential, Enterprise]` for two; use block style only if the array has 3+
+        entries — consistent with `tags`, `related`, `source` in existing templates)
     - All other fields not supplied by the artifact: use the template default value (empty string `""` or empty array `[]`)
     - Read `summary_max_words` from the already-loaded pipeline-state.json (field: `summary_max_words`). If the field is absent, use 50 as the default.
     - `summary` = LLM-generated prose string within `summary_max_words` words. Write type-appropriate content:
@@ -115,7 +131,7 @@ For each artifact in `{extraction_plan}`:
       - DEC (status=open): competing options/positions, alignment not reached, status: open, decision date
       - ACT: owner, due-date, type, status
       - RSK: likelihood, impact, type, status, mitigation approach
-      - STK: vertical, department, role — enough to distinguish from other stakeholders
+      - STK: segment, department, role — enough to distinguish from other stakeholders
       Generate the summary from the artifact fields already set (title, status, owner, etc.) and `{discussion_notes}`. Write it as a single prose string — not a list, not bullet points.
 
     Populate the body sections below the frontmatter. For each section listed below, synthesise
@@ -341,13 +357,15 @@ For each artifact in `{extraction_plan}`:
       Append `{wiki_dir}{artifact.existing_id}.md` to `failed_files`.
       Output the partial failure report and STOP.
     Apply `artifact.change_summary` to the relevant field(s) in the frontmatter or body. Update the `source` field: if it is currently a scalar string, convert it to a single-element YAML list. Append `{item.id}` to the list if not already present. Result format: `source: [MTG-001, MTG-003]`. Update the `related` field by merging `artifact.related` with the existing related array (deduplicating by entity ID).
-    Regenerate the `summary` field: read `summary_max_words` from pipeline-state.json (already in memory; default 50 if absent). Generate a fresh summary prose string using the same type-specific content rules as the create branch — REQ: title/status/description; DEC: options/chosen option/status/date; ACT: owner/due-date/type/status; RSK: likelihood, impact, type, status, mitigation approach; STK: vertical/department/role. Replace the existing `summary` value in the frontmatter with the newly generated string.
+    Regenerate the `summary` field: read `summary_max_words` from pipeline-state.json (already in memory; default 50 if absent). Generate a fresh summary prose string using the same type-specific content rules as the create branch — REQ: title/status/description; DEC: options/chosen option/status/date; ACT: owner/due-date/type/status; RSK: likelihood, impact, type, status, mitigation approach; STK: segment, department, role. Replace the existing `summary` value in the frontmatter with the newly generated string.
     For requirement artifacts (`artifact.type == "requirement"`): after applying the change_summary
     to frontmatter fields and regenerating the summary, also update the frontmatter to include
     the v2.0 fields from the artifact object:
     - Set `type` = `artifact.req_type` (one of: functional, non-functional, regulatory, integration, business-rule, data)
     - Set `priority` = `artifact.priority` (one of: must-have, should-have, could-have, wont-have)
     - Set `schema_version` = `'2.0'` (single-quoted string — prevents YAML float parsing)
+    - Set `segments` = `artifact.segments` (array; replace existing value if present; write in
+      flow style for 0–2 entries, block style for 3+ — consistent with `tags`, `related`, `source`)
     - Remove the `description` field from the frontmatter if present (it is a v1.0 field)
 
     Then rewrite the full body to the v2.0 structured section format (Source Quote, Statement,
@@ -368,6 +386,8 @@ For each artifact in `{extraction_plan}`:
     - Set `type` = `artifact.dec_type` (one of: architectural, process, tooling, data, business-rule, organisational)
     - Set `status` = `artifact.status`. Valid values: `"accepted"` or `"open"` only. Do NOT keep any existing `"proposed"` value from the existing page. If `artifact.status` is `"proposed"` or any other unexpected value, default to `"open"` and log a warning: `"Artifact {title} had invalid status '{value}' — defaulted to 'open'."`
     - Set `schema_version` = `'2.0'` (single-quoted string — prevents YAML float parsing)
+    - Set `segments` = `artifact.segments` (array; replace existing value if present; write in
+      flow style for 0–2 entries, block style for 3+ — consistent with `tags`, `related`, `source`)
     - Remove the following v1.0 frontmatter fields if present: `context`, `decision`, `rationale`, `alternatives-considered`
     - Add `source: [{item.id}]` if not already present (convert scalar source field to list following existing update branch source-field rule)
 
@@ -412,6 +432,8 @@ For each artifact in `{extraction_plan}`:
     - Set `owner` = `artifact.owner` (STK-NNN or raw name string or `""`) — REPLACE any existing value; do NOT use `artifact.raised_by`
     - Set `due-date` = `artifact.due_date` (raw string or `""`) — add if absent
     - Set `schema_version` = `'2.0'` (single-quoted string — prevents YAML float parsing)
+    - Set `segments` = `artifact.segments` (array; replace existing value if present; write in
+      flow style for 0–2 entries, block style for 3+ — consistent with `tags`, `related`, `source`)
 
     Then rewrite the full body to the v2.0 structured section format (Source Quote, Description,
     Context, Owner, Due Date, Cross Links) using the same synthesis rules as the create branch.
@@ -462,6 +484,8 @@ For each artifact in `{extraction_plan}`:
     - Set `impact` = `artifact.impact` (`"high"`, `"medium"`, `"low"`, or `""`) — add or replace
     - Set `status` = `artifact.status` (`"open"`, `"mitigated"`, or `"accepted"`) — replace any existing value
     - Set `schema_version` = `'2.0'` (single-quoted string — prevents YAML float parsing)
+    - Set `segments` = `artifact.segments` (array; replace existing value if present; write in
+      flow style for 0–2 entries, block style for 3+ — consistent with `tags`, `related`, `source`)
     - Remove the `mitigation` frontmatter field if present (it is a v1.0 field removed in schema v2.0)
 
     Then rewrite the full body to the v2.0 structured section format (Source Quote, Risk, Mitigation,
@@ -588,7 +612,7 @@ Check the exit code from the `echo "EXIT:$?"` output.
 - `schema_version` must be quoted to prevent Obsidian's YAML parser from treating it as a float. All artifact types (requirement, decision, action, risk) → `'2.0'` (single-quoted).
 - `related` fields must use entity IDs only (e.g. `REQ-001`, `DEC-003`) — never file paths, relative links, or Obsidian `[[wiki-links]]`. This is a Phase 1 behavioral rule carried forward.
 - The `raised_by` field in the artifact schema (written by `/sara-extract`) maps to the `raised-by` field in wiki page frontmatter (defined in the entity templates). The hyphen vs underscore difference is intentional: `raised_by` is the JSON field name in `pipeline-state.json`; `raised-by` is the YAML field name in wiki pages. Apply the mapping in Step 2 when substituting template fields.
-- `vertical` and `department` are always separate fields in stakeholder pages — never merged. This is a locked domain constraint.
+- `segment` and `department` are always separate fields in stakeholder pages — never merged. This is a locked domain constraint.
 - `extraction_plan` may be empty (all artifacts rejected during `/sara-extract`). If non-empty check fails at Step 1, stop early with the re-run message. If it passes but the loop produces no writes, the git commit will still include `pipeline-state.json` (stage advance).
 - pipeline-state.json is read and written using Read and Write tools only — never Bash shell text-processing tools.
 - NOTE: The canonical artifact schema field `raised_by` (defined in the plan interfaces and written by `/sara-extract`) contains the letter sequence "sed" as a substring of "raised". Any grep check for `jq\|sed\|awk` will match this field name. This is a false positive — no shell text-processing tools are referenced in this skill. The field name is non-negotiable: it is the canonical schema consumed here from `/sara-extract`.
