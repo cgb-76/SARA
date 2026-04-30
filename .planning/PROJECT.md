@@ -27,7 +27,7 @@ Every meeting, email thread, Slack conversation, and document gets permanently i
 ### Active
 
 - [ ] `/sara-query` answers questions synthesised from wiki content — v2
-- [ ] `/sara-lint` health-checks the wiki (orphans, contradictions, stale content, missing cross-references) — v2
+- [ ] `/sara-lint` health-checks the wiki (orphans, contradictions, stale content, missing cross-references) — v2 (D-02–D-07 complete as of Phase 15)
 
 ### Out of Scope
 
@@ -46,7 +46,7 @@ Every meeting, email thread, Slack conversation, and document gets permanently i
 
 ## Current State
 
-v1.0 shipped 2026-04-30 — complete git-backed LLM knowledgebase with four-stage ingest pipeline, five entity types (v2.0 schema), sara-lint v2.0, and install script. v2.0 started 2026-04-30 targeting cross-reference fixes. Phase 14 complete 2026-04-30 — sara-extract now assigns 8-hex temp_ids in all four Step 3 passes and performs full-mesh related[] linking in Step 5 (merging with sorter-injected real IDs); sara-update now resolves temp_ids to real entity IDs at the start of Step 2 via preview counter simulation before the write loop.
+v1.0 shipped 2026-04-30 — complete git-backed LLM knowledgebase with four-stage ingest pipeline, five entity types (v2.0 schema), sara-lint v2.0, and install script. v2.0 complete 2026-05-01 — Phase 15 reverted Phase 14 over-engineering: sara-extract no longer assigns temp_ids or performs full-mesh linking (artifacts carry related: [] default); sara-update no longer resolves temp_ids and now auto-invokes /sara-lint on every successful run; sara-lint extended to six checks — D-06 two-pass (non-empty divergence + empty header check) and new D-07 semantic curation (grep -rL for absent related: field, LLM inference, approval loop, atomic commit). Related[] is now populated via LLM semantic inference via sara-lint rather than batch co-extraction linking.
 
 ## Context
 
@@ -144,4 +144,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-30 after Phase 13 completion — sara-lint rewritten to v2.0 with five mechanical checks (D-02 through D-06): missing frontmatter fields, broken related[] IDs, orphaned pages, index↔disk sync, Cross Links divergence. All 13 phases of milestone v2.0 complete.*
+*Last updated: 2026-05-01 after Phase 15 completion — Phase 14 temp_id over-engineering reverted; sara-lint extended to six checks (D-07 semantic related[] curation added); sara-update auto-invokes /sara-lint on success. Milestone v2.0 xref-fix complete (15 phases).*
