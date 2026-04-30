@@ -307,7 +307,15 @@ For each finding in {all_findings} in order:
 
     If exit code 0: run `git log --oneline -1` to get {commit_hash}. Output: "Fixed. Commit: {commit_hash}"
 
-    If exit code != 0: output "Fix written but commit failed — resolve git issue and commit manually." Continue to next finding.
+    If exit code != 0: output the following warning and continue to next finding:
+    ```
+    Fix written but commit failed — the file has been updated on disk (related: field is
+    present). Stage and commit it manually with:
+      git add {exact_file_path}
+      git commit -m 'fix(wiki): curate related[] on {ID} via sara-lint D-07'
+    Do NOT run git restore — that would remove the related: field and cause this file to
+    be re-flagged on the next lint run.
+    ```
 
     Increment {fix_number}. Continue to next finding.
 
