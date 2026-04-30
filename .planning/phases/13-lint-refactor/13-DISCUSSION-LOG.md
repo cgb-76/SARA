@@ -5,7 +5,7 @@
 
 **Date:** 2026-04-30
 **Phase:** 13-lint-refactor
-**Areas discussed:** Phase scope, Check scope, Back-fill behavior, Semantic fix flow, Concept page creation, Commit strategy
+**Areas discussed:** Phase scope, Check scope, Back-fill behavior, Semantic fix flow, Concept page creation, Commit strategy, Scope revision
 
 ---
 
@@ -99,12 +99,25 @@
 ## Claude's Discretion
 
 - Exact ordering and grouping of checks within the lint run
-- Threshold for proposing a PGE (how many page mentions before a concept qualifies)
 - Summary count before the per-finding loop vs jumping straight in
 - Exact wording of per-finding prompts
 
+---
+
+## Scope Revision (second session)
+
+**User's decision:** Drop semantic checks and the PGE entity type entirely. Focus Phase 13 on mechanical linting of existing pages only.
+
+| Dropped | Reason |
+|---------|--------|
+| Semantic checks (contradictions, stale claims, missing concept pages, data gaps) | Out of scope — deferred |
+| PGE entity type and mini-interview flow | Out of scope — deferred |
+
+**Retained:** All mechanical checks (D-02 through D-06), back-fill with per-finding approval (D-07–D-09).
+
 ## Deferred Ideas
 
-- `--fix` flag for non-interactive batch apply — future enhancement
-- sara-init update to include `wiki/pages/` and PGE template
-- Full body-text rewrite proposals (body rewrites require user-supplied text in v1)
+- Semantic checks (contradictions, stale claims, missing concept pages, data gaps via LLM reasoning)
+- PGE entity type (`wiki/pages/`, mini-interview creation flow)
+- `--fix` flag for non-interactive batch apply
+- sara-init update for PGE template and `wiki/pages/` directory
