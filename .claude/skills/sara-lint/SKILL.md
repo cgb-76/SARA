@@ -98,7 +98,7 @@ If `{missing_files}` is non-empty:
         - DEC: options considered, chosen option/recommendation, status, decision date
         - ACT: owner, due-date, status (open/in-progress/done/cancelled)
         - RSK: likelihood, impact, mitigation approach, status
-        - STK: vertical, department, role — enough to distinguish from other stakeholders
+        - STK: segment, department, role — enough to distinguish from other stakeholders
       Insert `summary: "{generated_summary}"` into the frontmatter of the file, immediately after the `status:` field (for REQ, DEC, ACT, RSK) or after the `role:` field (for STK).
       Write the file back using the Write tool.
       If write succeeds: append the file path to `written_files`.
