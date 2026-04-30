@@ -62,6 +62,45 @@ These are used in Step 2 to synthesise body section content for each created art
 
 **Step 2 — Write wiki artifact files**
 
+**Temp ID resolution (before write loop)**
+
+Build the `temp_id → real_id` map by simulating the ID assignment sequence without
+incrementing the counters:
+
+  Initialize `id_map` = {} (empty mapping)
+  Initialize `preview_counters` = deep copy of `counters.entity` from the in-memory state
+    (do NOT modify the real counters — these are read-only preview increments)
+
+  For each artifact in `{extraction_plan}` where `artifact.action == "create"`:
+    Determine `{entity_type_key}` from `artifact.type`:
+    - `requirement` → `REQ`
+    - `decision`    → `DEC`
+    - `action`      → `ACT`
+    - `risk`        → `RSK`
+    Increment `preview_counters.{entity_type_key}` by 1
+    Compute `{preview_id}` = `"{entity_type_key}-"` + zero-padded 3-digit preview counter
+    Set `id_map[artifact.temp_id]` = `{preview_id}`
+    (skip artifacts where `artifact.action == "update"` — they have no temp_id)
+
+Do NOT write `preview_counters` to `pipeline-state.json`. The real counter increments
+happen inside the write loop as they always have (Pitfall 1 guard preserved).
+
+**Substitution pass:**
+
+  For each artifact in `{extraction_plan}`:
+    For each entry `t` in `artifact.related`:
+      If `id_map[t]` exists: replace `t` with `id_map[t]`
+      If `id_map[t]` does not exist: leave `t` unchanged (it may already be a real ID
+        from a sorter cross-reference resolution in sara-extract Step 3)
+
+After this pass, all `artifact.related` arrays in the in-memory `extraction_plan` contain
+real entity IDs. Proceed to "Initialize `written_files = []`" and the write loop.
+
+Do NOT write the substituted `extraction_plan` back to `pipeline-state.json` at this
+point — the write loop persists counters on each create-action iteration as before.
+The temp_id fields on artifact objects may be left in `pipeline-state.json` (they are
+inert after resolution) or stripped — either is acceptable.
+
 Initialize `written_files = []` and `failed_files = []`.
 
 For each artifact in `{extraction_plan}`:
