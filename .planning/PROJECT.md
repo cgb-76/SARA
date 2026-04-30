@@ -36,9 +36,17 @@ Every meeting, email thread, Slack conversation, and document gets permanently i
 - Embedding-based search — `index.md` sufficient at v1 scale; `qmd` or similar is v2
 - External integrations (Jira, Linear, email send) — v2
 
+## Current Milestone: v2.0 xref-fix
+
+**Goal:** Fix cross-referencing so related[] fields and Cross Links sections are correctly populated on all artifact pages after extraction.
+
+**Target features:**
+- related[] frontmatter populated on all entity types
+- Cross Links body sections filled out on artifact pages
+
 ## Current State
 
-Phase 12 complete (2026-04-30) — vertical→segment rename applied across all SARA skill files; `segments` field added to the full extraction-to-wiki pipeline (sara-extract inference, sara-artifact-sorter passthrough, sara-update write rules, sara-init templates). All 12 phases of milestone v2.0 complete.
+v1.0 shipped 2026-04-30 — complete git-backed LLM knowledgebase with four-stage ingest pipeline, five entity types (v2.0 schema), sara-lint v2.0, and install script. v2.0 started 2026-04-30 targeting cross-reference fixes.
 
 ## Context
 

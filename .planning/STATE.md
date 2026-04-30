@@ -1,26 +1,26 @@
 ---
 gsd_state_version: 1.0
 milestone: v2.0
-milestone_name: milestone
-status: milestone_complete
-stopped_at: Phase 13 context gathered
-last_updated: "2026-04-30T09:25:16.202Z"
+milestone_name: xref-fix
+status: defining_requirements
+stopped_at: Milestone v2.0 started
+last_updated: "2026-04-30T00:00:00.000Z"
 progress:
-  total_phases: 13
-  completed_phases: 13
-  total_plans: 46
-  completed_plans: 44
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # SARA — Project State
 
 ## Current Status
 
-**Phase:** 13
-**Plan:** Not started
-**Status:** Milestone complete
-**Last updated:** 2026-04-27
+**Phase:** Not started (defining requirements)
+**Plan:** —
+**Status:** Defining requirements
+**Last activity:** 2026-04-30 — Milestone v2.0 xref-fix started
 
 ## Project Reference
 
