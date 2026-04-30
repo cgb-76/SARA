@@ -58,7 +58,12 @@ Plans:
   2. sara-lint reports each artifact page whose Cross Links body section is missing or does not match the current related[] frontmatter
   3. When the user approves a repair, sara-lint writes the corrected related[] and Cross Links to the page and commits the change
   4. After a full lint + repair run, re-running sara-lint reports zero related[]/Cross Links findings
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 15-01-PLAN.md — Revert Phase 14: remove temp_id blocks from sara-extract Step 3 (×4) and Step 5
+- [ ] 15-02-PLAN.md — Revert Phase 14: remove temp_id resolution from sara-update Step 2; add sara-lint auto-invoke
+- [ ] 15-03-PLAN.md — Extend sara-lint: D-06 two-pass + D-07 semantic related[] curation check
 
 ## Progress
 
@@ -78,4 +83,4 @@ Plans:
 | 12. Vertical Awareness | v1.0 | 4/4 | Complete | 2026-04-30 |
 | 13. Lint Refactor | v1.0 | 2/2 | Complete | 2026-04-30 |
 | 14. Extraction Pipeline Fix | v2.0 | 2/2 | Complete    | 2026-04-30 |
-| 15. Lint Repair | v2.0 | 0/? | Not started | - |
+| 15. Lint Repair | v2.0 | 0/3 | Not started | - |
