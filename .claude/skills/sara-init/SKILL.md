@@ -200,6 +200,7 @@ owner: ""      # stakeholder ID (e.g. STK-001)
 schema_version: '2.0'
 tags: []
 related: []    # entity IDs (e.g. [DEC-001, ACT-002])
+segments: []   # segment names from config.segments (e.g. [Residential, Enterprise])
 ---
 ```
 
@@ -225,6 +226,7 @@ source: []        # ingest IDs (e.g. [MTG-001])
 schema_version: '2.0'
 tags: []
 related: []
+segments: []   # segment names from config.segments (e.g. [Residential, Enterprise])
 ---
 
 ## Source Quote
@@ -265,6 +267,7 @@ source: []    # ingest IDs (e.g. [MTG-001])
 schema_version: '2.0'
 tags: []
 related: []
+segments: []   # segment names from config.segments (e.g. [Residential, Enterprise])
 ---
 ```
 
@@ -289,6 +292,7 @@ source: []       # ingest IDs (e.g. [MTG-001])
 schema_version: '2.0'
 tags: []
 related: []
+segments: []   # segment names from config.segments (e.g. [Residential, Enterprise])
 ---
 ```
 
@@ -381,6 +385,7 @@ owner: ""      # stakeholder ID (e.g. STK-001)
 schema_version: '2.0'
 tags: []
 related: []    # entity IDs (e.g. [DEC-001, ACT-002])
+segments: []   # segment names from config.segments (e.g. [Residential, Enterprise])
 ---
 
 ## Source Quote
@@ -447,6 +452,7 @@ source: []        # ingest IDs (e.g. [MTG-001])
 schema_version: '2.0'
 tags: []
 related: []
+segments: []   # segment names from config.segments (e.g. [Residential, Enterprise])
 ---
 
 ## Source Quote
@@ -484,6 +490,7 @@ source: []    # ingest IDs (e.g. [MTG-001])
 schema_version: '2.0'
 tags: []
 related: []
+segments: []   # segment names from config.segments (e.g. [Residential, Enterprise])
 ---
 
 ## Source Quote
@@ -528,6 +535,7 @@ source: []       # ingest IDs (e.g. [MTG-001])
 schema_version: '2.0'
 tags: []
 related: []
+segments: []   # segment names from config.segments (e.g. [Residential, Enterprise])
 ---
 
 ## Source Quote
