@@ -353,10 +353,12 @@ For each artifact in the list, at index `{artifact_index}` (starting at 1):
   --- Artifact {artifact_index} ---
   Type:   {type}
   Title:  {title}
-  Action: CREATE new {TYPE}-NNN  /  UPDATE {existing_id}
+  Action: CREATE new {id_to_assign}        ← if artifact.action == "create"
+  Action: UPDATE {artifact.existing_id}    ← if artifact.action == "update"
   Source: "{source_quote}"
   [If update] Change: {change_summary}
   ```
+  (Show only the applicable Action line — do not display both.)
 
   Then call AskUserQuestion:
   - For `artifact_index` 1–9: use header `"Artifact {artifact_index}"` (10 chars — safe within 12-char hard limit)
