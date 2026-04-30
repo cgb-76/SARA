@@ -49,6 +49,9 @@ Read `wiki/index.md` HERE using the Read tool. Reading the index at this step (n
 
 The source document is already in context from Step 2. Run four sequential extraction passes — one per artifact type. Do NOT use Task() for extraction; each pass is an inline LLM prompt against the already-in-context source.
 
+Read `.sara/config.json` using the Read tool. Store `config.segments` for use in the `segments`
+inference step of each extraction pass below.
+
 **Requirements pass**
 
 A passage IS a requirement if and only if it contains a commitment modal verb or imperative phrase
@@ -81,6 +84,15 @@ For each requirement found:
 - Set `raised_by` to the STK-NNN ID if identifiable from the source or discussion_notes; otherwise use `"STK-NNN"` placeholder
 - Set `priority` to the MoSCoW value derived from the commitment modal (see INCLUDE list above)
 - Set `req_type` to one of the six types above
+- Set `segments` to an array of segment name strings (zero or more):
+    1. STK attribution: if `source_quote` ends with `— [[STK-NNN|…]]`, parse the STK-NNN ID
+       from the attribution, read `wiki/stakeholders/{STK-NNN}.md`, extract the `segment:` field
+       value, and add it as the first entry in the array.
+    2. Keyword matching: scan the source passage for case-insensitive substrings matching any
+       name in `config.segments`; add each matching segment name (deduplicated).
+    3. Empty fallback: if neither attribution nor keyword matching resolves any segment name,
+       set `segments` = `[]`.
+    Deduplication: each segment name appears at most once in the array.
 - Set `action` = `"create"`, `type` = `"requirement"`, `id_to_assign` = `"REQ-NNN"`, `related` = `[]`, `change_summary` = `""`
 - Do NOT resolve create-vs-update — that is the sorter's job
 - Assign `req_type` so sara-update can apply the section matrix (defined in `.sara/templates/requirement.md`) to determine which body sections are required, optional, or omitted for each requirement type
@@ -130,6 +142,15 @@ For each decision found:
 - Set `dec_type` to one of the six types above (use `dec_type` — not `type` — to avoid collision with the envelope `type: "decision"` field)
 - Set `chosen_option` to the selected option text for commitment-language decisions; set to `""` for open/misalignment decisions
 - Set `alternatives` to an array of alternatives mentioned in the source (strings); set to `[]` if none are mentioned
+- Set `segments` to an array of segment name strings (zero or more):
+    1. STK attribution: if `source_quote` ends with `— [[STK-NNN|…]]`, parse the STK-NNN ID
+       from the attribution, read `wiki/stakeholders/{STK-NNN}.md`, extract the `segment:` field
+       value, and add it as the first entry in the array.
+    2. Keyword matching: scan the source passage for case-insensitive substrings matching any
+       name in `config.segments`; add each matching segment name (deduplicated).
+    3. Empty fallback: if neither attribution nor keyword matching resolves any segment name,
+       set `segments` = `[]`.
+    Deduplication: each segment name appears at most once in the array.
 - Set `action` = `"create"`, `type` = `"decision"`, `id_to_assign` = `"DEC-NNN"`, `related` = `[]`, `change_summary` = `""`
 - Do NOT extract `context` or `rationale` — these are synthesised by sara-update from the full source document, not extracted here
 - Do NOT set a `deciders` field — the `deciders` frontmatter field on decision pages is intentionally left as `[]` by the pipeline and must be filled in manually after wiki pages are created
@@ -167,6 +188,15 @@ For each action found:
 - Set `owner` to the STK-NNN ID of the person assigned to do the work if identifiable from source or discussion_notes; if a name is mentioned but not yet in the stakeholder registry, write the raw name string (e.g. `"Alice"`); if no person is identified, set to `""`
 - Set `raised_by` to the STK-NNN ID of the person who surfaced or mentioned this action (may be the same as owner); otherwise use `"STK-NNN"` placeholder
 - Set `due_date` to the raw string from the source if a due date or deadline is mentioned (e.g. `"by Friday"`, `"EOW"`, `"before next sprint"`); otherwise set to `""`
+- Set `segments` to an array of segment name strings (zero or more):
+    1. STK attribution: if `source_quote` ends with `— [[STK-NNN|…]]`, parse the STK-NNN ID
+       from the attribution, read `wiki/stakeholders/{STK-NNN}.md`, extract the `segment:` field
+       value, and add it as the first entry in the array.
+    2. Keyword matching: scan the source passage for case-insensitive substrings matching any
+       name in `config.segments`; add each matching segment name (deduplicated).
+    3. Empty fallback: if neither attribution nor keyword matching resolves any segment name,
+       set `segments` = `[]`.
+    Deduplication: each segment name appears at most once in the array.
 - Set `action` = `"create"`, `type` = `"action"`, `id_to_assign` = `"ACT-NNN"`, `related` = `[]`, `change_summary` = `""`
 - Do NOT extract Description or Context — these are synthesised by sara-update from the full source document, not extracted here
 
@@ -211,6 +241,15 @@ For each risk found:
   - `"mitigated"` — source says "controls already in place", "this is being handled by X", "we've addressed this with Y"
   - `"accepted"`  — source says "we've accepted this risk", "we're comfortable with this", "no action needed, we'll live with it"
   - `"open"`      — all other risks (default; do not require explicit language for open)
+- Set `segments` to an array of segment name strings (zero or more):
+    1. STK attribution: if `source_quote` ends with `— [[STK-NNN|…]]`, parse the STK-NNN ID
+       from the attribution, read `wiki/stakeholders/{STK-NNN}.md`, extract the `segment:` field
+       value, and add it as the first entry in the array.
+    2. Keyword matching: scan the source passage for case-insensitive substrings matching any
+       name in `config.segments`; add each matching segment name (deduplicated).
+    3. Empty fallback: if neither attribution nor keyword matching resolves any segment name,
+       set `segments` = `[]`.
+    Deduplication: each segment name appears at most once in the array.
 - Set `action` = `"create"`, `type` = `"risk"`, `id_to_assign` = `"RSK-NNN"`, `related` = `[]`, `change_summary` = `""`
 - Do NOT extract IF/THEN statement or Mitigation — these are synthesised by sara-update from the full source document, not extracted here
 
