@@ -170,26 +170,38 @@ Note: The `^related: \[\]` grep is a frontmatter scan. Wiki pages follow the con
 
 **Check D-07 — Semantic related[] curation**
 
-Find all wiki artifact pages where `related:` is absent from frontmatter. Pages with `related: []` (explicitly empty list) are treated as already curated and are NOT flagged.
+Perform a holistic semantic pass across all wiki artifact pages to identify missing cross-links.
 
-Rationale: `related: []` written by sara-update is the default empty value from extraction. After LLM curation via D-07, pages where LLM confirmed no relationships retain `related: []` and must not be re-flagged. Only pages that have never been through curation (absent field) need this check. (Implementation choice (a) from CONTEXT.md Claude's Discretion: treat `related: []` as curated.)
+**Load all page summaries:**
 
 Run:
 
 ```bash
-grep -rL "^related:" wiki/requirements/ wiki/decisions/ wiki/actions/ wiki/risks/ 2>/dev/null \
-  | grep "\.md$" | grep -v "\.gitkeep"
+find wiki/requirements wiki/decisions wiki/actions wiki/risks -name "*.md" ! -name ".gitkeep" 2>/dev/null
 ```
 
-For each file returned (absent `related:` field): Read the file using the Read tool.
+For each file returned: Read the file using the Read tool. Extract the frontmatter fields `id:`, `title:`, `summary:`, and current `related:` list (treat absent `related:` as an empty list). Build a page registry mapping each ID to its {file, title, summary, current_related}. Skip any file that lacks a valid artifact ID (`REQ-\d{3}`, `DEC-\d{3}`, `ACT-\d{3}`, or `RSK-\d{3}`).
 
-Determine if this is a wiki artifact page (has a valid `id:` frontmatter field matching `REQ-\d{3}`, `DEC-\d{3}`, `ACT-\d{3}`, or `RSK-\d{3}`). If not, skip.
+**Semantic inference:**
 
-Add a finding per qualifying file:
+Using the page registry (id + title + summary for every artifact), reason across all pages to identify pairs that are semantically related. Relationship criteria:
+- Shared topic: both artifacts concern the same subject matter
+- Addressal: one artifact addresses or responds to the other (e.g. an action mitigates a risk)
+- Consequence: one artifact is a consequence or result of the other
+
+Do NOT flag a pair merely because they were extracted from the same source document.
+
+**Gap detection:**
+
+For each identified related pair (ID_A, ID_B): if ID_B is absent from ID_A's current_related, or ID_A is absent from ID_B's current_related, add one finding:
 - check_id: D-07
-- file: {path}
-- issue: "related[] absent from {ID} ({file}) — not yet curated"
-- proposed_fix: "LLM reads this page and all other wiki artifact pages (or their summaries for large wikis) to infer semantic relationships. Proposes a related: list (may be empty if no relationships found). Writes related: field to frontmatter. Regenerates ## Cross Links section."
+- file_a: path to ID_A's file
+- file_b: path to ID_B's file
+- id_a: ID_A
+- id_b: ID_B
+- rationale: one-sentence explanation of the semantic relationship
+- issue: "{ID_A} ↔ {ID_B}: semantic relationship detected — cross-link missing or incomplete"
+- proposed_fix: "Add {ID_B} to {ID_A}'s related[] and {ID_A} to {ID_B}'s related[]. Regenerate ## Cross Links on both pages."
 
 ---
 
@@ -216,31 +228,6 @@ If {all_findings} is non-empty: output:
 Initialise `{fix_number}` = 1. Set `{total}` = total number of findings.
 
 For each finding in {all_findings} in order:
-
-  **If finding.check_id == D-07:** Run inference BEFORE presenting to the user — the user must see specific proposed IDs, not the generic placeholder from Step 3.
-
-    1. Re-read the target file using the Read tool.
-
-    2. Collect all other wiki artifact pages for context:
-       Run:
-       ```bash
-       find wiki/requirements wiki/decisions wiki/actions wiki/risks -name "*.md" ! -name ".gitkeep" 2>/dev/null
-       ```
-       For each file path returned (excluding the target file itself):
-       - If the wiki has 20 or fewer artifact pages total: Read the full file using the Read tool.
-       - If the wiki has more than 20 artifact pages total: Read the full file using the Read tool, but when reasoning about relationships use only the `id`, `title`, and `summary` frontmatter fields as context — do not consider body section content for non-target pages. This limits reasoning scope to stay within the effective context window for large wikis.
-
-    3. LLM inference pass:
-       Reason semantically about which other artifact pages are related to the target artifact.
-       Relationship criteria:
-       - Shared topic: both artifacts concern the same subject matter
-       - Addressal: one artifact addresses or responds to the other (e.g. an action mitigates a risk)
-       - Consequence: one artifact is a consequence or result of the other
-       Example: RSK-001 and ACT-003 are related if the action sets up a workshop to address the risk — not merely because they were extracted from the same meeting.
-
-    4. Produce the concrete proposed_related list (may be `[]` if no semantic relationships found).
-       Update finding.proposed_fix to include the specific IDs:
-       "Proposed: related: [ACT-003, RSK-001]" or "Proposed: related: [] (no relationships found)"
 
   Present using AskUserQuestion:
   - header: "Lint finding [{fix_number} of {total}]"
@@ -282,14 +269,12 @@ For each finding in {all_findings} in order:
     **D-06, finding.pass == 2 — Absent Cross Links header (empty related[]):**
     The page has `related: []` but is missing the `## Cross Links` section header entirely. Append `\n## Cross Links\n` at the very end of the file body. No link content — heading only. Use the Write tool to write the full file back. This signals the check has run (consistent with the empty-section pattern used across all artifact types when related is empty).
 
-    **D-07 — Semantic related[] curation:**
-       a. Write `related: [ID1, ID2, ...]` (or `related: []`) to the frontmatter `related:` field using the proposed_related list already inferred above.
-       b. If related is non-empty: regenerate the `## Cross Links` section with wikilinks.
-          For each ID in related: look up the page title by reading the corresponding wiki file.
-          Format each link as `[[{ID}|{Title}]]` — one per line.
-          If the `## Cross Links` section exists, replace it. If absent, append it at the end of the file body.
-       c. If related is []: write an empty `## Cross Links` heading only (heading-only, no content beneath it) — same empty-section pattern as all other artifact types when related is empty. If the section exists with stale content, replace it with the heading-only form. If absent, append `\n## Cross Links\n`.
-       d. Use the Write tool to write the full file back.
+    **D-07 — Semantic cross-link:**
+       Re-read `{file_a}` and `{file_b}` using the Read tool (always re-read before writing).
+       a. On `{file_a}`: add `{id_b}` to the `related:` list if not already present. Regenerate the `## Cross Links` section with one `[[{ID}|{Title}]]` wikilink per related ID. If the section exists, replace it; if absent, append it. Use the Write tool to write the file back.
+       b. On `{file_b}`: add `{id_a}` to the `related:` list if not already present. Regenerate the `## Cross Links` section the same way. Use the Write tool to write the file back.
+       Set `{exact_file_path}` = `{file_a} {file_b}`.
+       Set `{commit_message}` = `fix(wiki): cross-link {id_a}↔{id_b} via sara-lint D-07`.
 
     After Write succeeds, commit immediately:
 
@@ -306,7 +291,7 @@ For each finding in {all_findings} in order:
     - D-05 stale row: `fix(wiki): correct index row for {ID} via sara-lint`
     - D-06 cross links (Pass 1): `fix(wiki): regenerate Cross Links on {ID} via sara-lint`
     - D-06 absent header (Pass 2): `fix(wiki): add empty Cross Links header to {ID} via sara-lint`
-    - D-07 curation: `fix(wiki): curate related[] on {ID} via sara-lint D-07`
+    - D-07 cross-link: `fix(wiki): cross-link {id_a}↔{id_b} via sara-lint D-07`
 
     Check the exit code from "EXIT:$?".
 
@@ -314,12 +299,12 @@ For each finding in {all_findings} in order:
 
     If exit code != 0: output the following warning and continue to next finding:
     ```
-    Fix written but commit failed — the file has been updated on disk (related: field is
-    present). Stage and commit it manually with:
-      git add {exact_file_path}
-      git commit -m 'fix(wiki): curate related[] on {ID} via sara-lint D-07'
-    Do NOT run git restore — that would remove the related: field and cause this file to
-    be re-flagged on the next lint run.
+    Fix written but commit failed — both files have been updated on disk. Stage and commit
+    them manually with:
+      git add {file_a} {file_b}
+      git commit -m 'fix(wiki): cross-link {id_a}↔{id_b} via sara-lint D-07'
+    Do NOT run git restore — that would undo the cross-links and cause this pair to be
+    re-flagged on the next lint run.
     ```
 
     Increment {fix_number}. Continue to next finding.
