@@ -136,4 +136,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-30 after Phase 12 completion — vertical→segment rename applied across all SARA skill files; `segments` field added to full extraction pipeline (sara-extract inference, sara-artifact-sorter passthrough, sara-update write rules, sara-init templates). All 12 phases of milestone v2.0 complete.*
+*Last updated: 2026-04-30 after Phase 13 completion — sara-lint rewritten to v2.0 with five mechanical checks (D-02 through D-06): missing frontmatter fields, broken related[] IDs, orphaned pages, index↔disk sync, Cross Links divergence. All 13 phases of milestone v2.0 complete.*
