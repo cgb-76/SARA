@@ -95,11 +95,6 @@ For each requirement found:
     3. Empty fallback: if neither attribution nor keyword matching resolves any segment name,
        set `segments` = `[]`.
     Deduplication: each segment name appears at most once in the array.
-- Set `temp_id` = result of Bash: `python3 -c "import secrets; print(secrets.token_hex(4))"`
-  MANDATORY: use the Bash tool to generate this value. Do NOT generate inline — inline
-  generation is not random and risks collisions. Each artifact gets a unique temp_id.
-  After all four passes complete, verify all temp_ids in `{merged}` are unique. If any
-  duplicates are found, regenerate the duplicate temp_id(s) with a new Bash call.
 - Set `action` = `"create"`, `type` = `"requirement"`, `id_to_assign` = `"REQ-NNN"`, `related` = `[]`, `change_summary` = `""`
 - Do NOT resolve create-vs-update — that is the sorter's job
 - Assign `req_type` so sara-update can apply the section matrix (defined in `.sara/templates/requirement.md`) to determine which body sections are required, optional, or omitted for each requirement type
@@ -160,11 +155,6 @@ For each decision found:
     3. Empty fallback: if neither attribution nor keyword matching resolves any segment name,
        set `segments` = `[]`.
     Deduplication: each segment name appears at most once in the array.
-- Set `temp_id` = result of Bash: `python3 -c "import secrets; print(secrets.token_hex(4))"`
-  MANDATORY: use the Bash tool to generate this value. Do NOT generate inline — inline
-  generation is not random and risks collisions. Each artifact gets a unique temp_id.
-  After all four passes complete, verify all temp_ids in `{merged}` are unique. If any
-  duplicates are found, regenerate the duplicate temp_id(s) with a new Bash call.
 - Set `action` = `"create"`, `type` = `"decision"`, `id_to_assign` = `"DEC-NNN"`, `related` = `[]`, `change_summary` = `""`
 - Do NOT extract `context` or `rationale` — these are synthesised by sara-update from the full source document, not extracted here
 - Do NOT set a `deciders` field — the `deciders` frontmatter field on decision pages is intentionally left as `[]` by the pipeline and must be filled in manually after wiki pages are created
@@ -213,11 +203,6 @@ For each action found:
     3. Empty fallback: if neither attribution nor keyword matching resolves any segment name,
        set `segments` = `[]`.
     Deduplication: each segment name appears at most once in the array.
-- Set `temp_id` = result of Bash: `python3 -c "import secrets; print(secrets.token_hex(4))"`
-  MANDATORY: use the Bash tool to generate this value. Do NOT generate inline — inline
-  generation is not random and risks collisions. Each artifact gets a unique temp_id.
-  After all four passes complete, verify all temp_ids in `{merged}` are unique. If any
-  duplicates are found, regenerate the duplicate temp_id(s) with a new Bash call.
 - Set `action` = `"create"`, `type` = `"action"`, `id_to_assign` = `"ACT-NNN"`, `related` = `[]`, `change_summary` = `""`
 - Do NOT extract Description or Context — these are synthesised by sara-update from the full source document, not extracted here
 
@@ -273,11 +258,6 @@ For each risk found:
     3. Empty fallback: if neither attribution nor keyword matching resolves any segment name,
        set `segments` = `[]`.
     Deduplication: each segment name appears at most once in the array.
-- Set `temp_id` = result of Bash: `python3 -c "import secrets; print(secrets.token_hex(4))"`
-  MANDATORY: use the Bash tool to generate this value. Do NOT generate inline — inline
-  generation is not random and risks collisions. Each artifact gets a unique temp_id.
-  After all four passes complete, verify all temp_ids in `{merged}` are unique. If any
-  duplicates are found, regenerate the duplicate temp_id(s) with a new Bash call.
 - Set `action` = `"create"`, `type` = `"risk"`, `id_to_assign` = `"RSK-NNN"`, `related` = `[]`, `change_summary` = `""`
 - Do NOT extract IF/THEN statement or Mitigation — these are synthesised by sara-update from the full source document, not extracted here
 
@@ -404,31 +384,6 @@ If `/sara-extract N` is re-run on an item that is still in `extracting` stage (p
 NOTE: Re-running `/sara-extract {N}` always re-runs the full extraction and sorter pipeline from the beginning. Previously answered sorter questions are not preserved between sessions. The user will be presented with all sorter questions again on re-run. This is by design — the fresh extraction may produce a different artifact set than the interrupted session.
 
 **Step 5 — Write extraction plan and advance stage**
-
-**Full-mesh related[] linking**
-
-After all artifacts are resolved to "Accept" or "Reject":
-
-Build the full-mesh related[] for all approved artifacts:
-  For each artifact `A` in `approved_artifacts`:
-    # Preserve any real IDs injected by sorter cross-reference resolutions (Step 3 option A answers)
-    existing_real_ids = [entry for entry in A.related if entry does NOT match /^[a-f0-9]{8}$/]
-    new_temp_ids = [B.temp_id for B in approved_artifacts if B.temp_id != A.temp_id]
-    Set `A.related` = deduplicate(existing_real_ids + new_temp_ids)
-
-For a single-artifact batch: `A.related` = `[]` (the other-artifacts set is empty — no special case needed)
-For a zero-artifact batch: skip this step entirely (approved_artifacts is empty)
-
-After the full-mesh step, strip any stale temp_id values from related[] that do not
-correspond to an approved artifact (e.g. a sorter-injected cross-reference to an artifact
-that was subsequently rejected in Step 4):
-  approved_temp_ids = set of all A.temp_id for A in approved_artifacts
-  For each artifact A in approved_artifacts:
-    A.related = [t for t in A.related if t is in approved_temp_ids OR t does NOT match /^[a-f0-9]{8}$/]
-
-This replaces the `related: []` that was set during Step 3. The temp_id values are stable
-cross-reference keys — they persist in extraction_plan until sara-update resolves them to
-real IDs at the start of Step 2.
 
 Read `.sara/pipeline-state.json` using the Read tool.
 
