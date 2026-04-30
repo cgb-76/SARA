@@ -159,6 +159,10 @@ Rules:
 - For action update artifacts (`action=update`, `type=action`), `act_type`, `owner`, and `due_date`
   MUST be present — copy them from the incoming create artifact unchanged. sara-update reads these
   fields for all action artifacts regardless of action.
+- For all artifact types, preserve `segments` exactly as received from the extraction pass. Do not
+  modify, reclassify, or drop this field. Pass it through unchanged to `cleaned_artifacts`.
+- For update artifacts of any type, `segments` MUST be present — copy it from the incoming artifact
+  unchanged. sara-update reads this field for all artifact types regardless of action.
 </output_format>
 
 <notes>
