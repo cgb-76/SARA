@@ -409,6 +409,13 @@ Build the full-mesh related[] for all approved artifacts:
 For a single-artifact batch: `A.related` = `[]` (the other-artifacts set is empty — no special case needed)
 For a zero-artifact batch: skip this step entirely (approved_artifacts is empty)
 
+After the full-mesh step, strip any stale temp_id values from related[] that do not
+correspond to an approved artifact (e.g. a sorter-injected cross-reference to an artifact
+that was subsequently rejected in Step 4):
+  approved_temp_ids = set of all A.temp_id for A in approved_artifacts
+  For each artifact A in approved_artifacts:
+    A.related = [t for t in A.related if t is in approved_temp_ids OR t does NOT match /^[a-f0-9]{8}$/]
+
 This replaces the `related: []` that was set during Step 3. The temp_id values are stable
 cross-reference keys — they persist in extraction_plan until sara-update resolves them to
 real IDs at the start of Step 2.
