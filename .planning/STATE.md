@@ -2,9 +2,10 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: xref-fix
-status: ready_to_plan
-stopped_at: Roadmap created — Phase 14 ready to plan
-last_updated: "2026-04-30T00:00:00.000Z"
+status: planning
+stopped_at: Phase 14 context gathered
+last_updated: "2026-04-30T11:48:24.160Z"
+last_activity: 2026-04-30 — v2.0 roadmap created, phases 14–15 defined
 progress:
   total_phases: 2
   completed_phases: 0
@@ -34,6 +35,7 @@ Progress: [░░░░░░░░░░] 0%
 ## Performance Metrics
 
 **Velocity:**
+
 - Total plans completed: 0 (this milestone)
 - v1.0 reference: 46 plans across 13 phases
 
@@ -73,6 +75,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-30
-Stopped at: Roadmap written — Phase 14 ready to plan
-Resume file: None
+Last session: --stopped-at
+Stopped at: Phase 14 context gathered
+Resume file: --resume-file
