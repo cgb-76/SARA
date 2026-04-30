@@ -397,8 +397,10 @@ After all artifacts are resolved to "Accept" or "Reject":
 
 Build the full-mesh related[] for all approved artifacts:
   For each artifact `A` in `approved_artifacts`:
-    Set `A.related` = array of `temp_id` values of all OTHER artifacts in `approved_artifacts`
-    (i.e. every temp_id in `approved_artifacts` except `A.temp_id` itself)
+    # Preserve any real IDs injected by sorter cross-reference resolutions (Step 3 option A answers)
+    existing_real_ids = [entry for entry in A.related if entry does NOT match /^[a-f0-9]{8}$/]
+    new_temp_ids = [B.temp_id for B in approved_artifacts if B.temp_id != A.temp_id]
+    Set `A.related` = deduplicate(existing_real_ids + new_temp_ids)
 
 For a single-artifact batch: `A.related` = `[]` (the other-artifacts set is empty — no special case needed)
 For a zero-artifact batch: skip this step entirely (approved_artifacts is empty)
