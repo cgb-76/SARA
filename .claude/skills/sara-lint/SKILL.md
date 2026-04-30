@@ -11,7 +11,7 @@ version: 2.0.0
 ---
 
 <objective>
-sara-lint v2.0 scans all wiki artifact pages across five mechanical checks: (1) missing v2.0 frontmatter fields, (2) broken related[] IDs, (3) orphaned wiki pages, (4) index↔disk bidirectional sync, (5) Cross Links↔related[] divergence. Every finding is presented individually for approval. Every accepted fix is committed atomically.
+sara-lint v2.0 scans all wiki artifact pages across six checks: (1) missing v2.0 frontmatter fields, (2) broken related[] IDs, (3) orphaned wiki pages, (4) index↔disk bidirectional sync, (5) Cross Links↔related[] divergence, (6) missing/empty related[] curation. Every finding is presented individually for approval. Every accepted fix is committed atomically.
 </objective>
 
 <process>
@@ -33,9 +33,9 @@ If the directory exists, continue.
 
 Read `.sara/config.json` using the Read tool. Store `config.segments` as `{config_segments}` (a list of segment strings). If the file is absent or the field is missing, set `{config_segments}` to [].
 
-**Step 3 — Run all five checks and collect findings**
+**Step 3 — Run all six checks and collect findings**
 
-Execute all grep scans and file checks upfront. Collect ALL findings from all five checks into a single `{all_findings}` list before presenting any to the user. Each finding in the list has: check_id (D-02 through D-06), file, field_or_id (where applicable), issue description, proposed_fix description.
+Execute all grep scans and file checks upfront. Collect ALL findings from all six checks into a single `{all_findings}` list before presenting any to the user. Each finding in the list has: check_id (D-02 through D-07), file, field_or_id (where applicable), issue description, proposed_fix description.
 
 ---
 
@@ -134,13 +134,57 @@ Note: Do NOT re-add orphaned-page findings already captured in D-04 as separate 
 
 **Check D-06 — Cross Links↔related[] sync**
 
+**Pass 1 — Non-empty related[], check for divergence (existing behaviour):**
+
 Run:
 
 ```bash
-grep -rn "^related:" wiki/requirements/ wiki/decisions/ wiki/actions/ wiki/risks/ 2>/dev/null | grep -v "related: \[\]" | grep "\.md:" | grep -v "\.gitkeep"
+grep -rn "^related:" wiki/requirements/ wiki/decisions/ wiki/actions/ wiki/risks/ 2>/dev/null \
+  | grep -v "related: \[\]" | grep "\.md:" | grep -v "\.gitkeep"
 ```
 
-For each file with a non-empty related: field: Read the file using the Read tool. Compare IDs in the `related:` frontmatter list against the IDs linked under the `## Cross Links` body section. If they differ (any ID present in one but not the other, or the section is absent): add a finding. issue = "Cross Links section in {file} diverges from related[] frontmatter". proposed_fix = "Regenerate ## Cross Links section from related: list."
+For each file with a non-empty related: field: Read the file using the Read tool. Compare IDs in the `related:` frontmatter list against the IDs linked under the `## Cross Links` body section. If they differ (any ID present in one but not the other, or the section is absent): add a finding.
+- issue: "Cross Links section in {file} diverges from related[] frontmatter"
+- proposed_fix: "Regenerate ## Cross Links section from related: list."
+
+**Pass 2 — Empty related[] (`related: []`), check for absent Cross Links header:**
+
+Run:
+
+```bash
+grep -rn "^related: \[\]" wiki/requirements/ wiki/decisions/ wiki/actions/ wiki/risks/ 2>/dev/null \
+  | grep "\.md:" | grep -v "\.gitkeep"
+```
+
+For each file returned: Read the file using the Read tool. Check whether a `## Cross Links` section header exists anywhere in the file body. If absent: add a finding.
+- check_id: D-06
+- issue: "`## Cross Links` section absent from {file} (related: [] but section header missing)"
+- proposed_fix: "Add empty `## Cross Links` section header at end of file body."
+
+---
+
+**Check D-07 — Semantic related[] curation**
+
+Find all wiki artifact pages where `related:` is absent from frontmatter. Pages with `related: []` (explicitly empty list) are treated as already curated and are NOT flagged.
+
+Rationale: `related: []` written by sara-update is the default empty value from extraction. After LLM curation via D-07, pages where LLM confirmed no relationships retain `related: []` and must not be re-flagged. Only pages that have never been through curation (absent field) need this check. (Implementation choice (a) from CONTEXT.md Claude's Discretion: treat `related: []` as curated.)
+
+Run:
+
+```bash
+grep -rL "^related:" wiki/requirements/ wiki/decisions/ wiki/actions/ wiki/risks/ 2>/dev/null \
+  | grep "\.md$" | grep -v "\.gitkeep"
+```
+
+For each file returned (absent `related:` field): Read the file using the Read tool.
+
+Determine if this is a wiki artifact page (has a valid `id:` frontmatter field matching `REQ-\d{3}`, `DEC-\d{3}`, `ACT-\d{3}`, or `RSK-\d{3}`). If not, skip.
+
+Add a finding per qualifying file:
+- check_id: D-07
+- file: {path}
+- issue: "related[] absent from {ID} ({file}) — not yet curated"
+- proposed_fix: "LLM reads this page and all other wiki artifact pages (or their summaries for large wikis) to infer semantic relationships. Proposes a related: list (may be empty if no relationships found). Writes related: field to frontmatter. Regenerates ## Cross Links section."
 
 ---
 
@@ -149,7 +193,7 @@ For each file with a non-empty related: field: Read the file using the Read tool
 If {all_findings} is empty: output a clean summary:
 
 ```
-/sara-lint complete — no issues found across all 5 checks.
+/sara-lint complete — no issues found across all 6 checks.
 ```
 
 STOP.
@@ -202,8 +246,46 @@ For each finding in {all_findings} in order:
     Re-read wiki/index.md using the Read tool. Remove the stale row for the orphan ID. Use the Write tool to write wiki/index.md back.
     Set commit target to wiki/index.md.
 
-    **D-06 — Cross Links mismatch:**
+    **D-06 — Cross Links mismatch (Pass 1 — non-empty related[]):**
     Regenerate the `## Cross Links` body section from the `related:` frontmatter list. For each related ID, look up the page title by reading the corresponding wiki file. Format each link as `[[{ID}|{Title}]]` — one per line. If the `## Cross Links` section exists, replace it. If absent, append it at the end of the file body. Use the Write tool to write the full file back.
+
+    **D-06 — Absent Cross Links header (Pass 2 — empty related[]):**
+    The page has `related: []` but is missing the `## Cross Links` section header entirely. Append `\n## Cross Links\n` at the very end of the file body. No link content — heading only. Use the Write tool to write the full file back. This signals the check has run (consistent with the empty-section pattern used across all artifact types when related is empty).
+
+    **D-07 — Semantic related[] curation:**
+
+    1. Re-read the target file using the Read tool.
+
+    2. Collect all other wiki artifact pages for context:
+       Run:
+       ```bash
+       find wiki/requirements wiki/decisions wiki/actions wiki/risks -name "*.md" ! -name ".gitkeep" 2>/dev/null
+       ```
+       For each file path returned (excluding the target file itself):
+       - If the wiki has 20 or fewer artifact pages total: Read the full file using the Read tool.
+       - If the wiki has more than 20 artifact pages total: Read the file using the Read tool but extract only the frontmatter fields `id`, `title`, and `summary` — use only those fields as context (to stay within context window for large wikis).
+
+    3. LLM inference pass:
+       Reason semantically about which other artifact pages are related to the target artifact.
+       Relationship criteria:
+       - Shared topic: both artifacts concern the same subject matter
+       - Addressal: one artifact addresses or responds to the other (e.g. an action mitigates a risk)
+       - Consequence: one artifact is a consequence or result of the other
+       Example: RSK-001 and ACT-003 are related if the action sets up a workshop to address the risk — not merely because they were extracted from the same meeting.
+
+    4. Propose a `related:` list (may be `[]` if no semantic relationships found).
+       The proposed_fix shown in the AskUserQuestion must include the specific IDs proposed, e.g.:
+       "Proposed: related: [ACT-003, RSK-001]" or "Proposed: related: [] (no relationships found)"
+       (The AskUserQuestion call is already handled by the Step 5 loop — no additional prompt needed here.)
+
+    5. On "Apply":
+       a. Write `related: [ID1, ID2, ...]` (or `related: []`) to the frontmatter `related:` field.
+       b. If related is non-empty: regenerate the `## Cross Links` section with wikilinks.
+          For each ID in related: look up the page title by reading the corresponding wiki file.
+          Format each link as `[[{ID}|{Title}]]` — one per line.
+          If the `## Cross Links` section exists, replace it. If absent, append it at the end of the file body.
+       c. If related is []: write an empty `## Cross Links` heading only (heading-only, no content beneath it) — same empty-section pattern as all other artifact types when related is empty. If the section exists with stale content, replace it with the heading-only form. If absent, append `\n## Cross Links\n`.
+       d. Use the Write tool to write the full file back.
 
     After Write succeeds, commit immediately:
 
@@ -218,7 +300,9 @@ For each finding in {all_findings} in order:
     - D-03 broken ID: `fix(wiki): remove broken related ID {broken_id} from {ID} via sara-lint`
     - D-04 orphaned: `fix(wiki): add {ID} to wiki/index.md via sara-lint`
     - D-05 stale row: `fix(wiki): correct index row for {ID} via sara-lint`
-    - D-06 cross links: `fix(wiki): regenerate Cross Links on {ID} via sara-lint`
+    - D-06 cross links (Pass 1): `fix(wiki): regenerate Cross Links on {ID} via sara-lint`
+    - D-06 absent header (Pass 2): `fix(wiki): add empty Cross Links header to {ID} via sara-lint`
+    - D-07 curation: `fix(wiki): curate related[] on {ID} via sara-lint D-07`
 
     Check the exit code from "EXIT:$?".
 
