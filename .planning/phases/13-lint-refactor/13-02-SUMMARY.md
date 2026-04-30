@@ -3,7 +3,7 @@ phase: 13-lint-refactor
 plan: "02"
 subsystem: sara-lint
 tags: [skill, lint, wiki, v2.0, test-wiki, verification]
-status: checkpoint-pending
+status: complete
 dependency_graph:
   requires: [sara-lint-v2.0]
   provides: [sara-lint-v2.0-verified]
@@ -27,7 +27,7 @@ decisions:
 metrics:
   duration: "~1m"
   completed_date: "2026-04-30"
-  tasks_completed: 1
+  tasks_completed: 2
   tasks_total: 2
   files_modified: 0
 ---
@@ -40,7 +40,7 @@ Test wiki created at /tmp/sara-test-wiki with 9 intentional gaps covering all fi
 
 ## Status
 
-CHECKPOINT PENDING — Task 1 complete, Task 2 (human-verify) not yet executed.
+COMPLETE — Task 1 (test wiki) and Task 2 (human verification) both passed. Human approved 2026-04-30.
 
 ## What Was Built
 
@@ -75,7 +75,7 @@ A minimal git-initialised wiki with 7 files and an initial commit (`6a2e594`).
 | Task | Name | Commit | Files |
 |------|------|--------|-------|
 | 1 | Prepare test wiki with known schema gaps | (see below — /tmp not in repo) | 7 files at /tmp/sara-test-wiki/ |
-| 2 | Human verification of sara-lint v2.0 | PENDING | — |
+| 2 | Human verification of sara-lint v2.0 | approved 2026-04-30 | — |
 
 Note: Task 1 creates files in /tmp (ephemeral). The task commit recorded in this repo is the SUMMARY.md metadata commit.
 
