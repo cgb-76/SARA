@@ -46,7 +46,7 @@ Every meeting, email thread, Slack conversation, and document gets permanently i
 
 ## Current State
 
-v1.0 shipped 2026-04-30 — complete git-backed LLM knowledgebase with four-stage ingest pipeline, five entity types (v2.0 schema), sara-lint v2.0, and install script. v2.0 started 2026-04-30 targeting cross-reference fixes.
+v1.0 shipped 2026-04-30 — complete git-backed LLM knowledgebase with four-stage ingest pipeline, five entity types (v2.0 schema), sara-lint v2.0, and install script. v2.0 started 2026-04-30 targeting cross-reference fixes. Phase 14 complete 2026-04-30 — sara-extract now assigns 8-hex temp_ids in all four Step 3 passes and performs full-mesh related[] linking in Step 5 (merging with sorter-injected real IDs); sara-update now resolves temp_ids to real entity IDs at the start of Step 2 via preview counter simulation before the write loop.
 
 ## Context
 
