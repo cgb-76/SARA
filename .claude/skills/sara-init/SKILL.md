@@ -12,7 +12,7 @@ version: 1.0.0
 
 <objective>
 Initialise a new SARA wiki in the current directory. Creates the full /raw/ and /wiki/ directory
-tree, captures project configuration (name, verticals, departments), writes .sara/config.json and
+tree, captures project configuration (name, segments, departments), writes .sara/config.json and
 .sara/pipeline-state.json, creates the CLAUDE.md schema contract, wiki/index.md and wiki/log.md
 catalog stubs, and five entity page templates in .sara/templates/.
 
@@ -59,13 +59,13 @@ Output the following question as plain text and wait for the user's reply:
 
 Capture the user's reply as `{project_name}`.
 
-**Step 3 — Collect verticals**
+**Step 3 — Collect segments**
 
 Output the following question as plain text and wait for the user's reply:
 
-> Provide all market verticals that apply? (eg. Residential, BE\&G, Wholesale)
+> What segments or customer groups does this project cover? (eg. Residential, BE\&G, Wholesale)
 
-Capture the user's reply, split on commas, trim whitespace, and store as `{verticals_array}`.
+Capture the user's reply, split on commas, trim whitespace, and store as `{segments_array}`.
 
 **Step 4 — Collect departments**
 
@@ -110,13 +110,13 @@ touch \
 **Step 6 — Write .sara/config.json**
 
 Use the Write tool to create `.sara/config.json` with the following content, substituting
-`{project_name}`, `{verticals_array}`, and `{departments_array}` with the values collected in
+`{project_name}`, `{segments_array}`, and `{departments_array}` with the values collected in
 Steps 2–4. Format the arrays as valid JSON arrays (e.g. ["Residential", "Enterprise"]).
 
 ```json
 {
   "project": "{project_name}",
-  "verticals": {verticals_array},
+  "segments": {segments_array},
   "departments": {departments_array},
   "schema_version": "1.0"
 }
@@ -179,7 +179,7 @@ All SARA pipeline commands that read or write wiki pages must follow the rules b
 6. **Summary field:** When writing or updating any wiki artifact, always generate or refresh the
    `summary` field using the type-specific content rules (REQ: title/status/description;
    DEC: options considered/chosen option/status/date; ACT: owner/due-date/status;
-   RSK: likelihood/impact/mitigation/status; STK: vertical/department/role) and the
+   RSK: likelihood/impact/mitigation/status; STK: segment/department/role) and the
    `summary_max_words` limit from `.sara/pipeline-state.json` (default: 50 words if absent).
 
 ## Entity Schemas
@@ -200,6 +200,7 @@ owner: ""      # stakeholder ID (e.g. STK-001)
 schema_version: '2.0'
 tags: []
 related: []    # entity IDs (e.g. [DEC-001, ACT-002])
+segments: []   # segment names from config.segments (e.g. [Residential, Enterprise])
 ---
 ```
 
@@ -225,6 +226,7 @@ source: []        # ingest IDs (e.g. [MTG-001])
 schema_version: '2.0'
 tags: []
 related: []
+segments: []   # segment names from config.segments (e.g. [Residential, Enterprise])
 ---
 
 ## Source Quote
@@ -265,6 +267,7 @@ source: []    # ingest IDs (e.g. [MTG-001])
 schema_version: '2.0'
 tags: []
 related: []
+segments: []   # segment names from config.segments (e.g. [Residential, Enterprise])
 ---
 ```
 
@@ -289,6 +292,7 @@ source: []       # ingest IDs (e.g. [MTG-001])
 schema_version: '2.0'
 tags: []
 related: []
+segments: []   # segment names from config.segments (e.g. [Residential, Enterprise])
 ---
 ```
 
@@ -303,11 +307,11 @@ Mitigation and Risk sections are synthesised by sara-update from the source docu
 id: STK-000
 name: ""
 nickname: ""  # colloquial name used in transcript body text (e.g. "Raj" for "Rajiwath")
-vertical: ""    # from project config verticals list
+segment: ""    # from project config segments list
 department: ""  # from project config departments list
 email: ""
 role: ""
-summary: ""  # STK: vertical, department, role — enough to distinguish from other stakeholders
+summary: ""  # STK: segment, department, role — enough to distinguish from other stakeholders
 schema_version: "1.0"
 related: []
 ---
@@ -381,6 +385,7 @@ owner: ""      # stakeholder ID (e.g. STK-001)
 schema_version: '2.0'
 tags: []
 related: []    # entity IDs (e.g. [DEC-001, ACT-002])
+segments: []   # segment names from config.segments (e.g. [Residential, Enterprise])
 ---
 
 ## Source Quote
@@ -447,6 +452,7 @@ source: []        # ingest IDs (e.g. [MTG-001])
 schema_version: '2.0'
 tags: []
 related: []
+segments: []   # segment names from config.segments (e.g. [Residential, Enterprise])
 ---
 
 ## Source Quote
@@ -484,6 +490,7 @@ source: []    # ingest IDs (e.g. [MTG-001])
 schema_version: '2.0'
 tags: []
 related: []
+segments: []   # segment names from config.segments (e.g. [Residential, Enterprise])
 ---
 
 ## Source Quote
@@ -528,6 +535,7 @@ source: []       # ingest IDs (e.g. [MTG-001])
 schema_version: '2.0'
 tags: []
 related: []
+segments: []   # segment names from config.segments (e.g. [Residential, Enterprise])
 ---
 
 ## Source Quote
@@ -558,17 +566,17 @@ action items to address this risk."]
 id: STK-000
 name: ""
 nickname: ""  # colloquial name used in transcript body text (e.g. "Raj" for "Rajiwath")
-vertical: ""    # from project config verticals list
+segment: ""    # from project config segments list
 department: ""  # from project config departments list
 email: ""
 role: ""
-summary: ""  # STK: vertical, department, role — enough to distinguish from other stakeholders
+summary: ""  # STK: segment, department, role — enough to distinguish from other stakeholders
 schema_version: "1.0"
 related: []
 ---
 ```
 
-CRITICAL: `vertical` and `department` MUST be two separate fields. Never merge them into a
+CRITICAL: `segment` and `department` MUST be two separate fields. Never merge them into a
 combined field. Do not add body section headings to `stakeholder.md`.
 
 **Step 13 — Report success**
@@ -648,6 +656,6 @@ git commit -m "chore: initialise SARA — {project_name}"
   files automatically. Users never need to run git commands manually for SARA operations.
 - Ingest types (meeting, email, slack, document) are hardcoded in SARA skill logic. They are NOT
   stored in .sara/config.json. Do not add an ingest-types key to config (per D-05).
-- Vertical and department are always separate fields in both .sara/config.json and entity templates.
+- Segment and department are always separate fields in both .sara/config.json and entity templates.
   Never merge them into a single field (domain constraint — see project memory).
 </notes>
