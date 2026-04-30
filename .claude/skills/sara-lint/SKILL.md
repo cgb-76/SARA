@@ -144,6 +144,8 @@ grep -rn "^related:" wiki/requirements/ wiki/decisions/ wiki/actions/ wiki/risks
 ```
 
 For each file with a non-empty related: field: Read the file using the Read tool. Compare IDs in the `related:` frontmatter list against the IDs linked under the `## Cross Links` body section. If they differ (any ID present in one but not the other, or the section is absent): add a finding.
+- check_id: D-06
+- pass: 1
 - issue: "Cross Links section in {file} diverges from related[] frontmatter"
 - proposed_fix: "Regenerate ## Cross Links section from related: list."
 
@@ -158,6 +160,7 @@ grep -rn "^related: \[\]" wiki/requirements/ wiki/decisions/ wiki/actions/ wiki/
 
 For each file returned: Read the file using the Read tool. Check whether a `## Cross Links` section header exists anywhere in the file body. If absent: add a finding.
 - check_id: D-06
+- pass: 2
 - issue: "`## Cross Links` section absent from {file} (related: [] but section header missing)"
 - proposed_fix: "Add empty `## Cross Links` section header at end of file body."
 
@@ -273,10 +276,10 @@ For each finding in {all_findings} in order:
     Re-read wiki/index.md using the Read tool. Remove the stale row for the orphan ID. Use the Write tool to write wiki/index.md back.
     Set commit target to wiki/index.md.
 
-    **D-06 — Cross Links mismatch (Pass 1 — non-empty related[]):**
+    **D-06, finding.pass == 1 — Cross Links mismatch (non-empty related[]):**
     Regenerate the `## Cross Links` body section from the `related:` frontmatter list. For each related ID, look up the page title by reading the corresponding wiki file. Format each link as `[[{ID}|{Title}]]` — one per line. If the `## Cross Links` section exists, replace it. If absent, append it at the end of the file body. Use the Write tool to write the full file back.
 
-    **D-06 — Absent Cross Links header (Pass 2 — empty related[]):**
+    **D-06, finding.pass == 2 — Absent Cross Links header (empty related[]):**
     The page has `related: []` but is missing the `## Cross Links` section header entirely. Append `\n## Cross Links\n` at the very end of the file body. No link content — heading only. Use the Write tool to write the full file back. This signals the check has run (consistent with the empty-section pattern used across all artifact types when related is empty).
 
     **D-07 — Semantic related[] curation:**
