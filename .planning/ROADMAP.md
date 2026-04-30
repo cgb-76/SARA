@@ -3,6 +3,7 @@
 ## Milestones
 
 - ✅ **v1.0 Core Knowledge Pipeline** — Phases 1–13 (shipped 2026-04-30) — see [milestones/v1.0-ROADMAP.md](milestones/v1.0-ROADMAP.md)
+- 🚧 **v2.0 xref-fix** — Phases 14–15 (in progress)
 
 ## Phases
 
@@ -25,10 +26,40 @@
 
 </details>
 
+### 🚧 v2.0 xref-fix (In Progress)
+
+**Milestone Goal:** Fix cross-referencing so related[] fields and Cross Links sections are correctly populated on all artifact pages after extraction.
+
+- [ ] **Phase 14: Extraction Pipeline Fix** - Infer and write related[] links during sara-extract and sara-update
+- [ ] **Phase 15: Lint Repair** - Detect and repair missing related[] and Cross Links on existing wiki pages
+
+## Phase Details
+
+### Phase 14: Extraction Pipeline Fix
+**Goal**: sara-extract infers related[] links between co-extracted artifacts and sara-update writes them to frontmatter
+**Depends on**: Phase 13
+**Requirements**: XREF-01, XREF-02
+**Success Criteria** (what must be TRUE):
+  1. After sara-extract, the extraction plan includes related[] fields linking co-extracted artifacts to each other
+  2. After sara-update, every newly created or updated artifact page has a populated related[] frontmatter field referencing its batch peers
+  3. Artifacts extracted in isolation (single-artifact batch) have an empty related[] rather than a missing field
+**Plans**: TBD
+
+### Phase 15: Lint Repair
+**Goal**: sara-lint detects missing or stale related[] and Cross Links on existing wiki pages and repairs them without user having to re-run the ingest pipeline
+**Depends on**: Phase 14
+**Requirements**: XREF-03, XREF-04, XREF-05
+**Success Criteria** (what must be TRUE):
+  1. sara-lint reports each artifact page that has a missing or empty related[] frontmatter field
+  2. sara-lint reports each artifact page whose Cross Links body section is missing or does not match the current related[] frontmatter
+  3. When the user approves a repair, sara-lint writes the corrected related[] and Cross Links to the page and commits the change
+  4. After a full lint + repair run, re-running sara-lint reports zero related[]/Cross Links findings
+**Plans**: TBD
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
-|-------|-----------|---------------|--------|-----------|
+|-------|-----------|----------------|--------|-----------|
 | 1. Foundation & Schema | v1.0 | 3/3 | Complete | 2026-04-27 |
 | 2. Ingest Pipeline | v1.0 | 7/7 | Complete | 2026-04-27 |
 | 3. Meeting Specialisation | v1.0 | 3/3 | Complete | 2026-04-28 |
@@ -42,3 +73,5 @@
 | 11. Refine Risks | v1.0 | 3/3 | Complete | 2026-04-29 |
 | 12. Vertical Awareness | v1.0 | 4/4 | Complete | 2026-04-30 |
 | 13. Lint Refactor | v1.0 | 2/2 | Complete | 2026-04-30 |
+| 14. Extraction Pipeline Fix | v2.0 | 0/? | Not started | - |
+| 15. Lint Repair | v2.0 | 0/? | Not started | - |

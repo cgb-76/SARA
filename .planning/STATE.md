@@ -2,11 +2,11 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: xref-fix
-status: defining_requirements
-stopped_at: Milestone v2.0 started
+status: ready_to_plan
+stopped_at: Roadmap created — Phase 14 ready to plan
 last_updated: "2026-04-30T00:00:00.000Z"
 progress:
-  total_phases: 0
+  total_phases: 2
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -15,64 +15,64 @@ progress:
 
 # SARA — Project State
 
-## Current Status
-
-**Phase:** Not started (defining requirements)
-**Plan:** —
-**Status:** Defining requirements
-**Last activity:** 2026-04-30 — Milestone v2.0 xref-fix started
-
 ## Project Reference
 
-See: .planning/PROJECT.md
-See: .planning/ROADMAP.md
+See: .planning/PROJECT.md (updated 2026-04-30)
 
-**Core value:** Every design meeting, email thread, Slack conversation, and document gets permanently integrated into a structured wiki — knowledge compounds across sessions instead of disappearing into chat history.
-**Current focus:** Phase 13 — lint-refactor
+**Core value:** Every meeting, email thread, Slack conversation, and document gets permanently integrated into a structured wiki — knowledge compounds across sessions instead of disappearing into chat history.
+**Current focus:** Phase 14 — extraction-pipeline-fix
 
-## Phase Progress
+## Current Position
 
-| # | Phase | Status |
-|---|-------|--------|
-| 1 | Foundation & Schema | ✅ Complete (3/3 plans) |
-| 2 | Ingest Pipeline | ✅ Complete (7/7 plans) |
-| 3 | Meeting Specialisation | ✅ Complete (3/3 plans) |
+Phase: 14 of 15 (Extraction Pipeline Fix)
+Plan: 0 of ? in current phase
+Status: Ready to plan
+Last activity: 2026-04-30 — v2.0 roadmap created, phases 14–15 defined
 
-## Decisions
+Progress: [░░░░░░░░░░] 0%
 
-- schema_version quoted as '1.0' string in all templates and wiki/CLAUDE.md schema blocks to prevent Obsidian YAML float parse
-- stakeholder template has vertical and department as separate YAML fields — never merged — domain constraint
-- wiki/CLAUDE.md behavioral contract pattern: five numbered rules (deduplication, index maintenance, log maintenance, ID assignment, cross-references) auto-loaded by Claude Code for all wiki-scoped skills
-- Amended sara-init SKILL.md Steps 9 and 12 to add nickname field to stakeholder schema — runtime files not amended directly as they do not exist yet
-- sara-ingest SKILL.md created as pipeline entry point with two-branch invocation (INGEST/STATUS modes), hardcoded type list, filename path-traversal guard, and Read+Write-only JSON pattern
-- sara-add-stakeholder SKILL.md created: 6-step closed-loop collect→assign-ID→write-page→update-index-log→commit; callable standalone and inline from sara-discuss
-- sara-discuss SKILL.md created: 6-step LLM-driven blocker-clearing skill with dual-field stakeholder matching (name+nickname), priority-ordered blocker resolution, inline sara-add-stakeholder invocation, and freeform rule for P2-4 blockers
-- sara-extract raised_by canonical field contains sed substring — grep false positive documented in skill notes; field name non-negotiable as canonical schema consumed by sara-update
-- wiki/index.md re-read at dedup step (Step 2) not skill entry — catches index updates from sara-add-stakeholder mid-session (Pitfall 4 guard)
-- stage=complete written to pipeline-state.json ONLY after git commit succeeds (exit code 0) — prevents permanent item strand on commit failure (Pitfall 1 guard)
-- sara-update entity counter incremented and persisted before each create-action page write — prevents duplicate ID assignment on re-run after partial failure
+## Performance Metrics
+
+**Velocity:**
+- Total plans completed: 0 (this milestone)
+- v1.0 reference: 46 plans across 13 phases
+
+**By Phase:**
+
+| Phase | Plans | Total | Avg/Plan |
+|-------|-------|-------|----------|
+| - | - | - | - |
+
+*Updated after each plan completion*
 
 ## Accumulated Context
 
-### Roadmap Evolution
+### Decisions
 
-- Phase 4 added: make-installable
-- Phase 5 added: artifact-summaries
-- Phase 6 added: refine-entity-extraction
-- Phase 7 added: adjust-agent-workflow
-- Phase 8 added: Semantic wiki deduplication for the sorter using sqlite-vec
-- Phase 8 removed: semantic-wiki-deduplication-for-the-sorter-using-sqlite-vec
-- Phase 8 added: refine-requirements
-- Phase 9 added: refine-decisions
-- Phase 10 added: refine-actions
-- Phase 11 added: refine-risks
-- Phase 12 added: vertical-awareness
-- Phase 13 added: lint-refactor
+Decisions are logged in PROJECT.md Key Decisions table.
+Recent decisions affecting current work:
 
-## Open Items
+- Phase 13: sara-lint rewritten to v2.0 with five mechanical checks (D-02 through D-06) — check D-06 detects Cross Links divergence but does not repair it; Phase 15 fixes this
+- Phase 8: Requirement pages use v2.0 schema (7-section body, section matrix)
+- Phase 7: Extraction uses four inline passes, not specialist agents
 
-(None yet)
+### Pending Todos
 
-**Stopped at:** Phase 13 context gathered
+None.
 
-**Planned Phase:** 13 (lint-refactor) — 2 plans — 2026-04-30T09:24:32.347Z
+### Blockers/Concerns
+
+None.
+
+## Deferred Items
+
+| Category | Item | Status | Deferred At |
+|----------|------|--------|-------------|
+| Bug | MEET-01: sara-minutes pipeline-state.json write-back (assigned_id not persisted) | Deferred | v1.0 close |
+| Verification | MEET-02: sara-agenda unverified but correctly wired | Deferred | v1.0 close |
+
+## Session Continuity
+
+Last session: 2026-04-30
+Stopped at: Roadmap written — Phase 14 ready to plan
+Resume file: None
