@@ -43,7 +43,11 @@
   1. After sara-extract, the extraction plan includes related[] fields linking co-extracted artifacts to each other
   2. After sara-update, every newly created or updated artifact page has a populated related[] frontmatter field referencing its batch peers
   3. Artifacts extracted in isolation (single-artifact batch) have an empty related[] rather than a missing field
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 14-01-PLAN.md — Add temp_id to sara-extract Step 3 passes and full-mesh linking to Step 5
+- [ ] 14-02-PLAN.md — Add temp_id→real_id resolution block to sara-update Step 2
 
 ### Phase 15: Lint Repair
 **Goal**: sara-lint detects missing or stale related[] and Cross Links on existing wiki pages and repairs them without user having to re-run the ingest pipeline
@@ -73,5 +77,5 @@
 | 11. Refine Risks | v1.0 | 3/3 | Complete | 2026-04-29 |
 | 12. Vertical Awareness | v1.0 | 4/4 | Complete | 2026-04-30 |
 | 13. Lint Refactor | v1.0 | 2/2 | Complete | 2026-04-30 |
-| 14. Extraction Pipeline Fix | v2.0 | 0/? | Not started | - |
+| 14. Extraction Pipeline Fix | v2.0 | 0/2 | Not started | - |
 | 15. Lint Repair | v2.0 | 0/? | Not started | - |
