@@ -93,10 +93,11 @@ For each requirement found:
     3. Empty fallback: if neither attribution nor keyword matching resolves any segment name,
        set `segments` = `[]`.
     Deduplication: each segment name appears at most once in the array.
-- Set `temp_id` = an 8-character lowercase hex string generated at extraction time.
-  Use: Bash one-liner `python3 -c "import secrets; print(secrets.token_hex(4))"` OR
-  generate inline as a random 8-hex string (e.g. `a3f2b901`). Each artifact gets a
-  unique temp_id — do not reuse across artifacts in the same batch.
+- Set `temp_id` = result of Bash: `python3 -c "import secrets; print(secrets.token_hex(4))"`
+  MANDATORY: use the Bash tool to generate this value. Do NOT generate inline — inline
+  generation is not random and risks collisions. Each artifact gets a unique temp_id.
+  After all four passes complete, verify all temp_ids in `{merged}` are unique. If any
+  duplicates are found, regenerate the duplicate temp_id(s) with a new Bash call.
 - Set `action` = `"create"`, `type` = `"requirement"`, `id_to_assign` = `"REQ-NNN"`, `related` = `[]`, `change_summary` = `""`
 - Do NOT resolve create-vs-update — that is the sorter's job
 - Assign `req_type` so sara-update can apply the section matrix (defined in `.sara/templates/requirement.md`) to determine which body sections are required, optional, or omitted for each requirement type
@@ -155,10 +156,11 @@ For each decision found:
     3. Empty fallback: if neither attribution nor keyword matching resolves any segment name,
        set `segments` = `[]`.
     Deduplication: each segment name appears at most once in the array.
-- Set `temp_id` = an 8-character lowercase hex string generated at extraction time.
-  Use: Bash one-liner `python3 -c "import secrets; print(secrets.token_hex(4))"` OR
-  generate inline as a random 8-hex string (e.g. `a3f2b901`). Each artifact gets a
-  unique temp_id — do not reuse across artifacts in the same batch.
+- Set `temp_id` = result of Bash: `python3 -c "import secrets; print(secrets.token_hex(4))"`
+  MANDATORY: use the Bash tool to generate this value. Do NOT generate inline — inline
+  generation is not random and risks collisions. Each artifact gets a unique temp_id.
+  After all four passes complete, verify all temp_ids in `{merged}` are unique. If any
+  duplicates are found, regenerate the duplicate temp_id(s) with a new Bash call.
 - Set `action` = `"create"`, `type` = `"decision"`, `id_to_assign` = `"DEC-NNN"`, `related` = `[]`, `change_summary` = `""`
 - Do NOT extract `context` or `rationale` — these are synthesised by sara-update from the full source document, not extracted here
 - Do NOT set a `deciders` field — the `deciders` frontmatter field on decision pages is intentionally left as `[]` by the pipeline and must be filled in manually after wiki pages are created
@@ -205,10 +207,11 @@ For each action found:
     3. Empty fallback: if neither attribution nor keyword matching resolves any segment name,
        set `segments` = `[]`.
     Deduplication: each segment name appears at most once in the array.
-- Set `temp_id` = an 8-character lowercase hex string generated at extraction time.
-  Use: Bash one-liner `python3 -c "import secrets; print(secrets.token_hex(4))"` OR
-  generate inline as a random 8-hex string (e.g. `a3f2b901`). Each artifact gets a
-  unique temp_id — do not reuse across artifacts in the same batch.
+- Set `temp_id` = result of Bash: `python3 -c "import secrets; print(secrets.token_hex(4))"`
+  MANDATORY: use the Bash tool to generate this value. Do NOT generate inline — inline
+  generation is not random and risks collisions. Each artifact gets a unique temp_id.
+  After all four passes complete, verify all temp_ids in `{merged}` are unique. If any
+  duplicates are found, regenerate the duplicate temp_id(s) with a new Bash call.
 - Set `action` = `"create"`, `type` = `"action"`, `id_to_assign` = `"ACT-NNN"`, `related` = `[]`, `change_summary` = `""`
 - Do NOT extract Description or Context — these are synthesised by sara-update from the full source document, not extracted here
 
@@ -262,10 +265,11 @@ For each risk found:
     3. Empty fallback: if neither attribution nor keyword matching resolves any segment name,
        set `segments` = `[]`.
     Deduplication: each segment name appears at most once in the array.
-- Set `temp_id` = an 8-character lowercase hex string generated at extraction time.
-  Use: Bash one-liner `python3 -c "import secrets; print(secrets.token_hex(4))"` OR
-  generate inline as a random 8-hex string (e.g. `a3f2b901`). Each artifact gets a
-  unique temp_id — do not reuse across artifacts in the same batch.
+- Set `temp_id` = result of Bash: `python3 -c "import secrets; print(secrets.token_hex(4))"`
+  MANDATORY: use the Bash tool to generate this value. Do NOT generate inline — inline
+  generation is not random and risks collisions. Each artifact gets a unique temp_id.
+  After all four passes complete, verify all temp_ids in `{merged}` are unique. If any
+  duplicates are found, regenerate the duplicate temp_id(s) with a new Bash call.
 - Set `action` = `"create"`, `type` = `"risk"`, `id_to_assign` = `"RSK-NNN"`, `related` = `[]`, `change_summary` = `""`
 - Do NOT extract IF/THEN statement or Mitigation — these are synthesised by sara-update from the full source document, not extracted here
 
