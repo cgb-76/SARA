@@ -12,9 +12,9 @@
 
 ### sara-lint Repair
 
-- [ ] **XREF-03**: sara-lint detects artifacts with missing or empty related[] frontmatter
-- [ ] **XREF-04**: sara-lint detects artifacts with missing or stale Cross Links body sections
-- [ ] **XREF-05**: sara-lint repairs related[] and Cross Links on existing wiki pages (not just flags them)
+- [x] **XREF-03**: sara-lint detects artifacts with missing or empty related[] frontmatter
+- [x] **XREF-04**: sara-lint detects artifacts with missing or stale Cross Links body sections
+- [x] **XREF-05**: sara-lint repairs related[] and Cross Links on existing wiki pages (not just flags them)
 
 ## Future Requirements
 
@@ -34,9 +34,9 @@
 |-------------|-------|--------|
 | XREF-01 | Phase 14 | Complete |
 | XREF-02 | Phase 14 | Complete |
-| XREF-03 | Phase 15 | Pending |
-| XREF-04 | Phase 15 | Pending |
-| XREF-05 | Phase 15 | Pending |
+| XREF-03 | Phase 15 | Complete |
+| XREF-04 | Phase 15 | Complete |
+| XREF-05 | Phase 15 | Complete |
 
 **Coverage:**
 - v2.0 requirements: 5 total
