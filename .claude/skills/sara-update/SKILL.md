@@ -597,6 +597,11 @@ Running /sara-lint to curate related[] and Cross Links...
 
 Then invoke `/sara-lint`.
 
+If `/sara-lint` exits with an error or the wiki guard (Step 1 of sara-lint) fires: output
+the lint error message and STOP. The sara-update is already complete — the wiki commit and
+stage=complete write are final. The user can re-run `/sara-lint` independently to address
+any lint issues. Do NOT re-run sara-update or reverse any state changes.
+
 **If commit FAILS (exit code != 0):**
 
   Output:
