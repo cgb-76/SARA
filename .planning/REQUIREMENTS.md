@@ -32,8 +32,7 @@
 
 ### Meeting Specialisation
 
-- [ ] **MEET-01**: User can run `/sara-minutes N` (where N is a meeting ingest item) to generate structured meeting minutes as a markdown file filed in the wiki, and an email-ready plain-text version suitable for copy-paste into an email client
-- [ ] **MEET-02**: User can run `/sara-agenda` to generate an email-friendly meeting agenda from user-provided information (attendees, topics, goals); output is a draft for review only — not stored in the wiki
+*(Deferred to backlog at v1.0 close — 2026-04-30. Skills exist but MEET-01 has a known pipeline-state.json write-back bug; moved to v2 backlog for proper fix.)*
 
 ### Wiki Entity Types
 
@@ -56,9 +55,11 @@
 
 ## v2 Requirements
 
+- **MEET-01** (deferred from v1): `/sara-minutes N` generates structured meeting minutes — fix `sara-update` to write `assigned_id` back to `extraction_plan` items in `pipeline-state.json` before advancing stage
+- **MEET-02** (deferred from v1): `/sara-agenda` generates email-friendly meeting agenda — skill exists and is stateless; add formal verification
 - `/sara-query` — natural language query synthesised from wiki with source attribution (wiki page IDs + ingest IDs cited per claim)
-- `/sara-lint` — wiki health checks: orphaned pages, broken cross-references, contradicting status fields, stale open Actions, index validation (bidirectional), regenerable index via `--fix`
-- `/sara-add-stakeholder` — standalone command for manually adding stakeholders outside the discuss flow
+- `/sara-lint` — extended health checks: contradicting status fields, stale open Actions
+- `/sara-add-stakeholder` — already shipped in v1 (Phase 6)
 - Agenda linked to ingest item — `/sara-agenda` optionally creates a pending meeting item; linked when transcript is later ingested
 - Full-text search via `ripgrep` — supplement `index.md` routing at scale
 - External integrations (Jira, Linear, email send)
@@ -97,5 +98,5 @@
 | PIPE-05 | Phase 2 — Ingest Pipeline |
 | PIPE-06 | Phase 2 — Ingest Pipeline |
 | PIPE-07 | Phase 2 — Ingest Pipeline |
-| MEET-01 | Phase 3 — Meeting Specialisation |
-| MEET-02 | Phase 3 — Meeting Specialisation |
+| MEET-01 | Deferred to v2 backlog (2026-04-30) |
+| MEET-02 | Deferred to v2 backlog (2026-04-30) |
