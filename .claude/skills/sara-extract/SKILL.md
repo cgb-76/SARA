@@ -300,6 +300,10 @@ If `{sorter_questions}` is non-empty:
           A: keep action=update for the matched existing entity; remove create duplicate from cleaned_artifacts
           B: keep action=create (treat as a separate new artifact)
           C: remove from cleaned_artifacts (skip — not relevant)
+      - If the question contains "both want to update": duplicate-update resolution
+          A: keep artifact A; remove artifact B from cleaned_artifacts
+          B: keep artifact B; remove artifact A from cleaned_artifacts
+          C: keep both artifacts in cleaned_artifacts (both updates will be applied)
       - If the question contains "appears to relate to": cross-reference resolution
           A: add the referenced entity ID to the artifact's related array
           B: no change to the artifact's related array

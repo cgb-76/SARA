@@ -475,17 +475,11 @@ Step 2.6: SKIPPED — phase modifies only markdown skill files. No external tool
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Sorter output_format action example**
-   - What we know: The sorter's `<output_format>` section shows example artifacts for requirements and decisions with their type-specific fields (e.g. `req_type`, `priority`, `dec_type`, `status`). Action artifacts appear in the output as pass-through items.
-   - What's unclear: Whether the sorter's output_format documentation needs an updated action artifact example to show `act_type`, `owner`, `due_date` for clarity, even though no code change is needed.
-   - Recommendation: Include a documentation-only update to the sorter's output_format section as an optional sub-task in the sara-extract plan, or leave it out since the pass-through is functional without it. The planner should decide based on maintenance value.
+1. RESOLVED: **Sorter output_format action example** — Plan 03 Task 2 adds a documentation-only rule to the sorter's output_format section showing `act_type`, `owner`, `due_date` fields in the action artifact example. This provides clarity without any functional change to the sorter.
 
-2. **Update branch: existing ACT pages with v1.0 schema**
-   - What we know: When sara-update processes an `action=update` artifact against an existing ACT page (written in v1.0), it will apply the v2.0 body structure. The existing page has `## Description` + `## Notes` format, no `type`, no `due-date` frontmatter.
-   - What's unclear: Whether the update branch should silently upgrade the schema of any existing ACT page it touches (mirroring Phase 8's requirement update branch pattern), or only apply the change_summary without restructuring.
-   - Recommendation: Mirror Phase 8 pattern — the update branch upgrades the entire page to v2.0 format whenever it processes an action artifact, consistent with how requirement and decision update branches work.
+2. RESOLVED: **Update branch: existing ACT pages with v1.0 schema** — Plan 03 Task 2 mirrors the Phase 8 pattern: the update branch upgrades the entire action page to v2.0 format (full six-section body + new frontmatter fields) whenever it processes an action artifact, consistent with how requirement and decision update branches work.
 
 ---
 
