@@ -93,6 +93,10 @@ For each requirement found:
     3. Empty fallback: if neither attribution nor keyword matching resolves any segment name,
        set `segments` = `[]`.
     Deduplication: each segment name appears at most once in the array.
+- Set `temp_id` = an 8-character lowercase hex string generated at extraction time.
+  Use: Bash one-liner `python3 -c "import secrets; print(secrets.token_hex(4))"` OR
+  generate inline as a random 8-hex string (e.g. `a3f2b901`). Each artifact gets a
+  unique temp_id — do not reuse across artifacts in the same batch.
 - Set `action` = `"create"`, `type` = `"requirement"`, `id_to_assign` = `"REQ-NNN"`, `related` = `[]`, `change_summary` = `""`
 - Do NOT resolve create-vs-update — that is the sorter's job
 - Assign `req_type` so sara-update can apply the section matrix (defined in `.sara/templates/requirement.md`) to determine which body sections are required, optional, or omitted for each requirement type
@@ -151,6 +155,10 @@ For each decision found:
     3. Empty fallback: if neither attribution nor keyword matching resolves any segment name,
        set `segments` = `[]`.
     Deduplication: each segment name appears at most once in the array.
+- Set `temp_id` = an 8-character lowercase hex string generated at extraction time.
+  Use: Bash one-liner `python3 -c "import secrets; print(secrets.token_hex(4))"` OR
+  generate inline as a random 8-hex string (e.g. `a3f2b901`). Each artifact gets a
+  unique temp_id — do not reuse across artifacts in the same batch.
 - Set `action` = `"create"`, `type` = `"decision"`, `id_to_assign` = `"DEC-NNN"`, `related` = `[]`, `change_summary` = `""`
 - Do NOT extract `context` or `rationale` — these are synthesised by sara-update from the full source document, not extracted here
 - Do NOT set a `deciders` field — the `deciders` frontmatter field on decision pages is intentionally left as `[]` by the pipeline and must be filled in manually after wiki pages are created
@@ -197,6 +205,10 @@ For each action found:
     3. Empty fallback: if neither attribution nor keyword matching resolves any segment name,
        set `segments` = `[]`.
     Deduplication: each segment name appears at most once in the array.
+- Set `temp_id` = an 8-character lowercase hex string generated at extraction time.
+  Use: Bash one-liner `python3 -c "import secrets; print(secrets.token_hex(4))"` OR
+  generate inline as a random 8-hex string (e.g. `a3f2b901`). Each artifact gets a
+  unique temp_id — do not reuse across artifacts in the same batch.
 - Set `action` = `"create"`, `type` = `"action"`, `id_to_assign` = `"ACT-NNN"`, `related` = `[]`, `change_summary` = `""`
 - Do NOT extract Description or Context — these are synthesised by sara-update from the full source document, not extracted here
 
@@ -250,6 +262,10 @@ For each risk found:
     3. Empty fallback: if neither attribution nor keyword matching resolves any segment name,
        set `segments` = `[]`.
     Deduplication: each segment name appears at most once in the array.
+- Set `temp_id` = an 8-character lowercase hex string generated at extraction time.
+  Use: Bash one-liner `python3 -c "import secrets; print(secrets.token_hex(4))"` OR
+  generate inline as a random 8-hex string (e.g. `a3f2b901`). Each artifact gets a
+  unique temp_id — do not reuse across artifacts in the same batch.
 - Set `action` = `"create"`, `type` = `"risk"`, `id_to_assign` = `"RSK-NNN"`, `related` = `[]`, `change_summary` = `""`
 - Do NOT extract IF/THEN statement or Mitigation — these are synthesised by sara-update from the full source document, not extracted here
 
@@ -374,6 +390,22 @@ If `/sara-extract N` is re-run on an item that is still in `extracting` stage (p
 NOTE: Re-running `/sara-extract {N}` always re-runs the full extraction and sorter pipeline from the beginning. Previously answered sorter questions are not preserved between sessions. The user will be presented with all sorter questions again on re-run. This is by design — the fresh extraction may produce a different artifact set than the interrupted session.
 
 **Step 5 — Write extraction plan and advance stage**
+
+**Full-mesh related[] linking**
+
+After all artifacts are resolved to "Accept" or "Reject":
+
+Build the full-mesh related[] for all approved artifacts:
+  For each artifact `A` in `approved_artifacts`:
+    Set `A.related` = array of `temp_id` values of all OTHER artifacts in `approved_artifacts`
+    (i.e. every temp_id in `approved_artifacts` except `A.temp_id` itself)
+
+For a single-artifact batch: `A.related` = `[]` (the other-artifacts set is empty — no special case needed)
+For a zero-artifact batch: skip this step entirely (approved_artifacts is empty)
+
+This replaces the `related: []` that was set during Step 3. The temp_id values are stable
+cross-reference keys — they persist in extraction_plan until sara-update resolves them to
+real IDs at the start of Step 2.
 
 Read `.sara/pipeline-state.json` using the Read tool.
 
