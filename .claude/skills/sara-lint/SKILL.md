@@ -212,6 +212,31 @@ Initialise `{fix_number}` = 1. Set `{total}` = total number of findings.
 
 For each finding in {all_findings} in order:
 
+  **If finding.check_id == D-07:** Run inference BEFORE presenting to the user — the user must see specific proposed IDs, not the generic placeholder from Step 3.
+
+    1. Re-read the target file using the Read tool.
+
+    2. Collect all other wiki artifact pages for context:
+       Run:
+       ```bash
+       find wiki/requirements wiki/decisions wiki/actions wiki/risks -name "*.md" ! -name ".gitkeep" 2>/dev/null
+       ```
+       For each file path returned (excluding the target file itself):
+       - If the wiki has 20 or fewer artifact pages total: Read the full file using the Read tool.
+       - If the wiki has more than 20 artifact pages total: Read the full file using the Read tool, but when reasoning about relationships use only the `id`, `title`, and `summary` frontmatter fields as context — do not consider body section content for non-target pages. This limits reasoning scope to stay within the effective context window for large wikis.
+
+    3. LLM inference pass:
+       Reason semantically about which other artifact pages are related to the target artifact.
+       Relationship criteria:
+       - Shared topic: both artifacts concern the same subject matter
+       - Addressal: one artifact addresses or responds to the other (e.g. an action mitigates a risk)
+       - Consequence: one artifact is a consequence or result of the other
+       Example: RSK-001 and ACT-003 are related if the action sets up a workshop to address the risk — not merely because they were extracted from the same meeting.
+
+    4. Produce the concrete proposed_related list (may be `[]` if no semantic relationships found).
+       Update finding.proposed_fix to include the specific IDs:
+       "Proposed: related: [ACT-003, RSK-001]" or "Proposed: related: [] (no relationships found)"
+
   Present using AskUserQuestion:
   - header: "Lint finding [{fix_number} of {total}]"
   - question: "{issue description}\n\nProposed fix: {proposed_fix}\n\nApply this fix?"
@@ -253,33 +278,7 @@ For each finding in {all_findings} in order:
     The page has `related: []` but is missing the `## Cross Links` section header entirely. Append `\n## Cross Links\n` at the very end of the file body. No link content — heading only. Use the Write tool to write the full file back. This signals the check has run (consistent with the empty-section pattern used across all artifact types when related is empty).
 
     **D-07 — Semantic related[] curation:**
-
-    1. Re-read the target file using the Read tool.
-
-    2. Collect all other wiki artifact pages for context:
-       Run:
-       ```bash
-       find wiki/requirements wiki/decisions wiki/actions wiki/risks -name "*.md" ! -name ".gitkeep" 2>/dev/null
-       ```
-       For each file path returned (excluding the target file itself):
-       - If the wiki has 20 or fewer artifact pages total: Read the full file using the Read tool.
-       - If the wiki has more than 20 artifact pages total: Read the file using the Read tool but extract only the frontmatter fields `id`, `title`, and `summary` — use only those fields as context (to stay within context window for large wikis).
-
-    3. LLM inference pass:
-       Reason semantically about which other artifact pages are related to the target artifact.
-       Relationship criteria:
-       - Shared topic: both artifacts concern the same subject matter
-       - Addressal: one artifact addresses or responds to the other (e.g. an action mitigates a risk)
-       - Consequence: one artifact is a consequence or result of the other
-       Example: RSK-001 and ACT-003 are related if the action sets up a workshop to address the risk — not merely because they were extracted from the same meeting.
-
-    4. Propose a `related:` list (may be `[]` if no semantic relationships found).
-       The proposed_fix shown in the AskUserQuestion must include the specific IDs proposed, e.g.:
-       "Proposed: related: [ACT-003, RSK-001]" or "Proposed: related: [] (no relationships found)"
-       (The AskUserQuestion call is already handled by the Step 5 loop — no additional prompt needed here.)
-
-    5. On "Apply":
-       a. Write `related: [ID1, ID2, ...]` (or `related: []`) to the frontmatter `related:` field.
+       a. Write `related: [ID1, ID2, ...]` (or `related: []`) to the frontmatter `related:` field using the proposed_related list already inferred above.
        b. If related is non-empty: regenerate the `## Cross Links` section with wikilinks.
           For each ID in related: look up the page title by reading the corresponding wiki file.
           Format each link as `[[{ID}|{Title}]]` — one per line.
