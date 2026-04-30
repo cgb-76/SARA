@@ -190,13 +190,13 @@ Plans:
 **Goal:** Rename `vertical` → `segment` across all SARA skills and agents; add `segments: []` array field to all four artifact types with extraction inference (STK-attribution, keyword matching, empty fallback) and wiki write
 **Requirements:** No formal requirement IDs — see D-01 through D-10 in 12-CONTEXT.md
 **Depends on:** Phase 11
-**Plans:** 4 plans
+**Plans:** 4/4 plans complete
 
 Plans:
-- [ ] 12-01-PLAN.md — Rename vertical → segment in sara-add-stakeholder and sara-lint
-- [ ] 12-02-PLAN.md — Add segments field to sara-extract (config read + 4 pass inference) and sara-artifact-sorter (passthrough rule)
-- [ ] 12-03-PLAN.md — Rename vertical → segment in sara-init (5 locations) + add segments: [] to 4 entity templates and 4 CLAUDE.md schema blocks
-- [ ] 12-04-PLAN.md — Rename vertical → segment in sara-update (STK rule + notes) + add segments write rule to all 8 entity branches
+- [x] 12-01-PLAN.md — Rename vertical → segment in sara-add-stakeholder and sara-lint
+- [x] 12-02-PLAN.md — Add segments field to sara-extract (config read + 4 pass inference) and sara-artifact-sorter (passthrough rule)
+- [x] 12-03-PLAN.md — Rename vertical → segment in sara-init (5 locations) + add segments: [] to 4 entity templates and 4 CLAUDE.md schema blocks
+- [x] 12-04-PLAN.md — Rename vertical → segment in sara-update (STK rule + notes) + add segments write rule to all 8 entity branches
 
 ---
 
