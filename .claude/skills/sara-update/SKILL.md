@@ -71,6 +71,10 @@ incrementing the counters:
   Initialize `preview_counters` = deep copy of `counters.entity` from the in-memory state
     (do NOT modify the real counters — these are read-only preview increments)
 
+  IMPORTANT: Iterate `{extraction_plan}` in its declared order — the same order the write loop
+  below uses. Do not reorder or group by action type. The preview counter sequence MUST match
+  the real counter sequence or temp_id → real_id assignments will diverge.
+
   For each artifact in `{extraction_plan}` where `artifact.action == "create"`:
     Determine `{entity_type_key}` from `artifact.type`:
     - `requirement` → `REQ`
@@ -93,8 +97,16 @@ happen inside the write loop as they always have (Pitfall 1 guard preserved).
       If `id_map[t]` does not exist: leave `t` unchanged (it may already be a real ID
         from a sorter cross-reference resolution in sara-extract Step 3)
 
-After this pass, all `artifact.related` arrays in the in-memory `extraction_plan` contain
-real entity IDs. Proceed to "Initialize `written_files = []`" and the write loop.
+After the substitution pass, scan each artifact.related array for any entries that still
+match the pattern /^[a-f0-9]{8}$/ (8 lowercase hex chars — unresolved temp_ids). For each
+such entry, log a warning:
+  "WARNING: Unresolved temp_id '{entry}' in artifact '{artifact.title}' related[] —
+   the referenced artifact was likely rejected or is missing a temp_id. Removing to
+   prevent malformed wiki frontmatter."
+Then remove that entry from the artifact's related[] array.
+
+After this scan, all `artifact.related` arrays in the in-memory `extraction_plan` contain
+real entity IDs only. Proceed to "Initialize `written_files = []`" and the write loop.
 
 Do NOT write the substituted `extraction_plan` back to `pipeline-state.json` at this
 point — the write loop persists counters on each create-action iteration as before.
