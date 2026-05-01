@@ -63,8 +63,12 @@ If plan.md cannot be read or is empty:
   git commit -m "feat(sara): wiki {N} — 0 artifacts (empty plan)"
   echo "EXIT:$?"
   ```
-  Output: `"Item {N} stage advanced to complete. No artifacts were written."`
-  STOP.
+  If commit SUCCEEDS (exit code 0):
+    Output: `"Item {N} stage advanced to complete. No artifacts were written."`
+    STOP.
+  If commit FAILS (exit code != 0):
+    Output: `"Commit failed for {N}. state.md has been written with stage: complete but the commit did not succeed. Run: git add .sara/pipeline/{N}/state.md && git commit -m 'feat(sara): wiki {N} — 0 artifacts (empty plan)' to retry."`
+    STOP.
 
 **Step 1b — Load source document and discussion notes**
 
