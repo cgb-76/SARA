@@ -84,9 +84,14 @@ grep -rL "^segment:" wiki/stakeholders/ 2>/dev/null | grep "\.md$" | grep -v "\.
 
 # segments missing — four artifact dirs (not STK)
 grep -rL "^segments:" wiki/requirements/ wiki/decisions/ wiki/actions/ wiki/risks/ 2>/dev/null | grep "\.md$" | grep -v "\.gitkeep"
+
+# segments empty (segments: []) — four artifact dirs — also treat as D-02 findings
+grep -rl "^segments: \[\]" wiki/requirements/ wiki/decisions/ wiki/actions/ wiki/risks/ 2>/dev/null | grep "\.md$" | grep -v "\.gitkeep"
 ```
 
 For each missing-field finding: issue = "{field} field missing from {file}". proposed_fix = "Read page, infer value, insert {field} into frontmatter, commit."
+
+For each empty-segments finding: issue = "`segments: []` (empty) in {file}". proposed_fix = "Read page, infer value, replace `segments: []` with inferred segment list." Set check_id = D-02, field_or_id = "segments".
 
 ---
 
@@ -242,8 +247,8 @@ For each finding in {all_findings} in order:
 
     Apply the fix in memory based on check_id:
 
-    **D-02 — Missing frontmatter field:**
-    Infer the value using the back-fill inference rules below. Insert the field into the YAML frontmatter in the correct position using the field insertion rules below. Use the Write tool to write the full file back.
+    **D-02 — Missing frontmatter field (or empty `segments: []`):**
+    Infer the value using the back-fill inference rules below. If the field is absent: insert it in the correct position using the field insertion rules below. If the field is `segments` and the current value is `[]`: replace the `segments: []` line with the inferred value (a YAML block list, one segment per line). Use the Write tool to write the full file back.
 
     **D-03 — Broken related[] ID:**
     Remove the broken ID from the `related:` YAML list. If the list becomes empty, write `related: []`. Use the Write tool to write the full file back.
@@ -353,8 +358,7 @@ For each finding in {all_findings} in order:
   - Set `segments` to an array of segment name strings (zero or more):
       1. STK attribution: check the `source_quote` frontmatter field of the page. If it ends with `— [[STK-NNN|…]]`, parse the STK-NNN ID, read `wiki/stakeholders/{STK-NNN}.md`, extract the `segment:` field value, and add it as the first entry in the array.
       2. Keyword matching: scan the `source_quote` frontmatter field and the page body content for case-insensitive substrings matching any name in `config.segments`; add each matching segment name (deduplicated).
-      3. Semantic matching: if the artifact title, source_quote, and body content indicate it is a cross-cutting concern that applies equally to all user segments (e.g., a system-wide policy, universal obligation, or infrastructure requirement with no segment-specific language), add all segment names from `config.segments`.
-      4. Empty fallback: if neither attribution nor keyword matching nor semantic matching resolves any segment name, set `segments` = `[]`.
+      3. All-segments fallback: if neither attribution nor keyword matching resolves any segment name, add all segment names from `config.segments`.
       Deduplication: each segment name appears at most once in the array.
 
 - `likelihood` / `impact`: scan `## Risk IF/THEN` and `## Mitigation` body sections for the words high, medium, low. If found, use the matching level. If not found, propose `""`.
@@ -458,15 +462,18 @@ Output a table showing what tags were assigned:
 
 Initialise `{written_files}` = [] (explicit file list for the commit stage).
 
-For each file in `{artifact_pages}` that has an entry in `{assignment_map}`:
+For each file in `{artifact_pages}`:
 
-Re-read the file immediately before writing using the Read tool (always re-read before writing — another fix in the same loop may have modified it).
+  If `{assignment_map}[file_path]` is non-empty (one or more tags assigned):
 
-In the full file content, locate the `tags:` line in the YAML frontmatter. Replace the entire `tags:` line with the new inline YAML array. Format rules:
-- Zero tags: `tags: []`
-- One or more tags: `tags: [tag1, tag2, tag3]` (inline YAML array, lowercase kebab-case strings, no quotes)
+    Re-read the file immediately before writing using the Read tool (always re-read before writing — another fix in the same loop may have modified it).
 
-Use the Write tool to write the full file back. Append `{file_path}` to `{written_files}`.
+    In the full file content, locate the `tags:` line in the YAML frontmatter. Replace the entire `tags:` line with:
+    `tags: [tag1, tag2, tag3]` (inline YAML array, lowercase kebab-case strings, no quotes)
+
+    Use the Write tool to write the full file back. Append `{file_path}` to `{written_files}`.
+
+  Else (zero tags assigned): skip write for this file — leave the file unchanged (`tags: []` is already the default; writing no-op changes would produce a spurious commit).
 
 ---
 
