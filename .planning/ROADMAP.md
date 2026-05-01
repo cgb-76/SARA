@@ -65,6 +65,30 @@ Plans:
 - [x] 15-02-PLAN.md — Revert Phase 14: remove temp_id resolution from sara-update Step 2; add sara-lint auto-invoke
 - [x] 15-03-PLAN.md — Extend sara-lint: D-06 two-pass + D-07 semantic related[] curation check
 
+### Phase 16: tagging
+**Goal**: Activate the `tags: []` schema field by implementing sara-lint D-08 — a whole-wiki two-phase LLM pass that derives an emergent tag vocabulary from the corpus and assigns tags to every artifact page
+**Depends on**: Phase 15
+**Requirements**: TAG-01, TAG-02, TAG-03, TAG-04, TAG-05, TAG-06, TAG-07, TAG-08, TAG-09, TAG-10
+**Success Criteria** (what must be TRUE):
+  1. sara-lint Step 6 runs D-08 on every invocation (including auto-invoke from sara-update) after the per-finding loop
+  2. D-08 derives a whole-wiki emergent tag vocabulary and presents it for user approval before any writes
+  3. After vocabulary approval, D-08 assigns tags to all four artifact directories and commits them atomically
+  4. Tags are lowercase kebab-case; full replacement semantics on every run
+**Plans**: 1 plan
+
+Plans:
+- [ ] 16-01-PLAN.md — Add sara-lint objective update + Step 6 D-08 whole-wiki tag curation
+
+### Phase 17: document-based-statefulness
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 16
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 17 to break down)
+
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -84,3 +108,4 @@ Plans:
 | 13. Lint Refactor | v1.0 | 2/2 | Complete | 2026-04-30 |
 | 14. Extraction Pipeline Fix | v2.0 | 2/2 | Complete    | 2026-04-30 |
 | 15. Lint Repair | v2.0 | 3/3 | Complete    | 2026-04-30 |
+| 16. Tagging | v2.0 | 0/1 | Planned | — |

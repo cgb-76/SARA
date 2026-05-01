@@ -16,6 +16,19 @@
 - [x] **XREF-04**: sara-lint detects artifacts with missing or stale Cross Links body sections
 - [x] **XREF-05**: sara-lint repairs related[] and Cross Links on existing wiki pages (not just flags them)
 
+### Tagging
+
+- [ ] **TAG-01**: sara-lint D-08 check exists as Step 6, runs after the per-finding loop on every invocation
+- [ ] **TAG-02**: D-08 vocabulary derivation pass reads all artifact pages and derives emergent concept-level tags
+- [ ] **TAG-03**: D-08 presents derived vocabulary to the user via AskUserQuestion (Approve / Edit / Skip) before any writes
+- [ ] **TAG-04**: D-08 assignment pass fires only after vocabulary is approved (not before)
+- [ ] **TAG-05**: All tags are normalised to lowercase kebab-case before presentation and before any write
+- [ ] **TAG-06**: D-08 assignment targets all four artifact directories (requirements, decisions, actions, risks)
+- [ ] **TAG-07**: All tag writes from a single D-08 run are committed as one atomic commit with message `fix(wiki): update tags via sara-lint D-08`
+- [ ] **TAG-08**: D-08 runs on every sara-lint invocation — no opt-in flag required
+- [ ] **TAG-09**: Every D-08 run fully replaces existing tags — no merging with previous assignments
+- [ ] **TAG-10**: D-08 exits gracefully (without prompting) when no artifact pages exist in the wiki
+
 ## Future Requirements
 
 - **QUERY-01**: /sara-query answers questions synthesised from wiki content
@@ -37,12 +50,22 @@
 | XREF-03 | Phase 15 | Complete |
 | XREF-04 | Phase 15 | Complete |
 | XREF-05 | Phase 15 | Complete |
+| TAG-01 | Phase 16 | Planned |
+| TAG-02 | Phase 16 | Planned |
+| TAG-03 | Phase 16 | Planned |
+| TAG-04 | Phase 16 | Planned |
+| TAG-05 | Phase 16 | Planned |
+| TAG-06 | Phase 16 | Planned |
+| TAG-07 | Phase 16 | Planned |
+| TAG-08 | Phase 16 | Planned |
+| TAG-09 | Phase 16 | Planned |
+| TAG-10 | Phase 16 | Planned |
 
 **Coverage:**
-- v2.0 requirements: 5 total
-- Mapped to phases: 5 (100%) ✓
+- v2.0 requirements: 15 total
+- Mapped to phases: 15 (100%) ✓
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-04-30*
-*Last updated: 2026-04-30 — traceability mapped after roadmap creation*
+*Last updated: 2026-05-01 — TAG-01 through TAG-10 added for Phase 16*
