@@ -104,7 +104,7 @@ For each artifact in `{artifact_list}`:
 
     Derive the next entity ID by running:
     ```bash
-    LAST=$(ls wiki/{wiki_dir_name}/ 2>/dev/null | grep "^{entity_type_key}-" | sort | tail -1)
+    LAST=$(ls wiki/{wiki_dir_name}/ 2>/dev/null | grep -E "^{entity_type_key}-[0-9]{3}\.md$" | sort | tail -1)
     if [ -z "$LAST" ]; then
       NEXT="{entity_type_key}-001"
     else

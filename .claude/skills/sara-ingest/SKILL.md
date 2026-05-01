@@ -85,7 +85,7 @@ Determine `{type_dir}` from `{type}`:
 
 Derive the next ID by running:
 ```bash
-LAST=$(ls .sara/pipeline/ 2>/dev/null | grep "^{type_key}-" | sort | tail -1)
+LAST=$(ls .sara/pipeline/ 2>/dev/null | grep -E "^{type_key}-[0-9]{3}$" | sort | tail -1)
 if [ -z "$LAST" ]; then
   NEXT="{type_key}-001"
 else
