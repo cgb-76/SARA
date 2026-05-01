@@ -381,6 +381,119 @@ Insert each field in a consistent location within the YAML frontmatter block (be
 - `segment`: after `role:` field (STK)
 - `segments`: after `tags:` field (REQ, DEC, ACT, RSK)
 
+---
+
+**Step 6 — D-08 Tag curation**
+
+Run:
+
+```bash
+find wiki/requirements wiki/decisions wiki/actions wiki/risks -name "*.md" ! -name ".gitkeep" 2>/dev/null
+```
+
+Store the result as `{artifact_pages}`. Count the entries. If `{artifact_pages}` is empty (zero files found): output `"D-08: No artifact pages to analyse — tag curation skipped."` and STOP Step 6.
+
+---
+
+**Phase 1: Vocabulary derivation pass**
+
+For each file in `{artifact_pages}`, read it using the Read tool. Apply the following context window strategy:
+
+- If `{artifact_pages}` has 20 or fewer entries: read the full file.
+- If `{artifact_pages}` has more than 20 entries: read the file but extract only the frontmatter fields `id:`, `title:`, and `summary:` — use only those fields as context for vocabulary derivation.
+
+Using the content from all pages, reason across the entire corpus to identify what conceptual themes emerge. Each theme is a candidate tag. Produce `{proposed_vocabulary}`: a list of lowercase kebab-case tag strings. These are concept-level labels (e.g. `authentication`, `data-governance`, `q1-2026`, `infrastructure`, `stakeholder-alignment`, `compliance`) — not artifact IDs, not overly specific, not generic filler words. Aim for labels that group multiple artifacts by shared theme; include only themes that appear in at least two artifacts.
+
+**Kebab-case normalisation (apply before presenting to user and before any writes):**
+For each tag string: lowercase the string, replace spaces with hyphens, strip any character outside `[a-z0-9-]`. Present only the normalised form.
+
+**Full replacement semantics (per D-06):** Every D-08 run re-derives the vocabulary from scratch and replaces all existing tags. Do not merge with or preserve previous tag assignments.
+
+---
+
+**AskUserQuestion: vocabulary approval gate**
+
+Present using AskUserQuestion:
+- header: `"D-08: Tag vocabulary derived from {N} artifact pages"`
+- question: `"Derived tags:\n\n  {tag1}, {tag2}, {tag3}, ...\n\nApprove this vocabulary, edit it, or skip tag curation?"`
+- options: `["Approve", "Edit", "Skip"]`
+
+Where `{N}` is the count of artifact pages read and the tag list is the normalised `{proposed_vocabulary}`.
+
+**If "Skip":** output `"Tag curation skipped."` STOP Step 6.
+
+**If "Edit":** Ask the user to provide the modified vocabulary as a comma-separated list. Re-normalise all entries to lowercase kebab-case (same normalisation rule above). Confirm the normalised list with the user, then proceed as "Approve".
+
+**If "Approve" (or after Edit confirmed):** store the approved list as `{approved_vocabulary}`. Continue to Phase 2.
+
+---
+
+**Phase 2: Assignment pass**
+
+For each file in `{artifact_pages}`:
+
+Re-read the file in full using the Read tool (re-read now, immediately before assignment — Step 5 fixes may have modified pages since Phase 1).
+
+Using the full page content and `{approved_vocabulary}`, determine which tags from the vocabulary apply to this artifact. Criteria for applying a tag: the artifact's content, theme, or domain is meaningfully related to the concept the tag represents. Be precise — apply a tag only when the association is clear and direct, not peripheral. An artifact may receive zero tags.
+
+Record the assignment as `{assignment_map}`: a mapping from `{file_path}` to `[list of assigned tags]` (may be empty list).
+
+---
+
+**Present assignment summary**
+
+Output a table showing what tags were assigned:
+
+```
+| ID | Title | Tags assigned |
+|----|-------|---------------|
+| REQ-001 | ... | tag1, tag2 |
+| DEC-001 | ... | tag3 |
+| ... | ... | (none) |
+```
+
+---
+
+**Write tag updates**
+
+Initialise `{written_files}` = [] (explicit file list for the commit stage).
+
+For each file in `{artifact_pages}` that has an entry in `{assignment_map}`:
+
+Re-read the file immediately before writing using the Read tool (always re-read before writing — another fix in the same loop may have modified it).
+
+In the full file content, locate the `tags:` line in the YAML frontmatter. Replace the entire `tags:` line with the new inline YAML array. Format rules:
+- Zero tags: `tags: []`
+- One or more tags: `tags: [tag1, tag2, tag3]` (inline YAML array, lowercase kebab-case strings, no quotes)
+
+Use the Write tool to write the full file back. Append `{file_path}` to `{written_files}`.
+
+---
+
+**Atomic commit**
+
+If `{written_files}` is empty (all assignments were empty): output `"D-08: No tags assigned — nothing to commit."` STOP Step 6.
+
+Otherwise, stage and commit the exact file list:
+
+```bash
+git add {file_1} {file_2} ... {file_N}
+git commit -m "fix(wiki): update tags via sara-lint D-08"
+echo "EXIT:$?"
+```
+
+Where `{file_1} ... {file_N}` is the space-separated contents of `{written_files}` (explicit paths, never a directory glob — T-13-04 mitigation).
+
+If exit code 0: run `git log --oneline -1` to get `{commit_hash}`. Output: `"Fixed. Commit: {commit_hash}"`
+
+If exit code != 0: output the following warning and stop:
+```
+Tag writes are on disk but commit failed. Stage and commit manually with:
+  git add {file_1} {file_2} ... {file_N}
+  git commit -m 'fix(wiki): update tags via sara-lint D-08'
+Do NOT run git restore — that would undo the tag assignments.
+```
+
 </process>
 
 <notes>
