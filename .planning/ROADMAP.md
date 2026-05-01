@@ -81,13 +81,25 @@ Plans:
 
 ### Phase 17: document-based-statefulness
 
-**Goal:** [To be planned]
-**Requirements**: TBD
-**Depends on:** Phase 16
-**Plans:** 1/1 plans complete
+**Goal**: Refactor pipeline state from `.sara/pipeline-state.json` to a directory-per-item structure at `.sara/pipeline/{ID}/` with three markdown files (state.md, discuss.md, plan.md); counters derived from filesystem at runtime; six SKILL.md files updated; no external behaviour changes
+**Depends on**: Phase 16
+**Requirements**: STF-01, STF-02, STF-03, STF-04, STF-05, STF-06
+**Success Criteria** (what must be TRUE):
+  1. sara-init creates `.sara/pipeline/` directory (not `pipeline-state.json`); `summary_max_words` is in `config.json`
+  2. sara-ingest creates `.sara/pipeline/{ID}/state.md` with YAML frontmatter; derives next ID from filesystem glob
+  3. sara-discuss writes `.sara/pipeline/{ID}/discuss.md`; advances stage in `state.md` only after commit
+  4. sara-extract writes `.sara/pipeline/{ID}/plan.md` as headed markdown; advances stage in `state.md` only after commit
+  5. sara-update reads `plan.md` via LLM; derives entity IDs from `wiki/{type}/` filesystem glob; advances stage: complete only after wiki commit
+  6. sara-minutes reads `state.md` for guards; discovers entity IDs from `wiki/log.md` (not plan.md placeholder IDs)
+**Plans**: 6 plans
 
 Plans:
-- [ ] TBD (run /gsd-plan-phase 17 to break down)
+- [ ] 17-01-PLAN.md — Rewrite sara-init: pipeline/ directory creation, summary_max_words in config.json, CLAUDE.md Rule 4 filesystem derivation
+- [ ] 17-02-PLAN.md — Rewrite sara-ingest: filesystem counter derivation, state.md write, STATUS mode grep -rh
+- [ ] 17-03-PLAN.md — Rewrite sara-discuss: state.md stage guard, discuss.md write, atomic commit ordering
+- [ ] 17-04-PLAN.md — Rewrite sara-extract: state.md guard, discuss.md read, plan.md headed-section write
+- [ ] 17-05-PLAN.md — Rewrite sara-update: plan.md LLM parse, filesystem entity counters, config.json summary_max_words
+- [ ] 17-06-PLAN.md — Rewrite sara-minutes: state.md guards, log.md entity ID discovery
 
 ## Progress
 
@@ -109,3 +121,4 @@ Plans:
 | 14. Extraction Pipeline Fix | v2.0 | 2/2 | Complete    | 2026-04-30 |
 | 15. Lint Repair | v2.0 | 3/3 | Complete    | 2026-04-30 |
 | 16. Tagging | v2.0 | 1/1 | Complete    | 2026-05-01 |
+| 17. Document-Based Statefulness | v2.0 | 0/6 | In Progress | — |

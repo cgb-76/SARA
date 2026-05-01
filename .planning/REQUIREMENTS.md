@@ -29,6 +29,15 @@
 - [x] **TAG-09**: Every D-08 run fully replaces existing tags — no merging with previous assignments
 - [x] **TAG-10**: D-08 exits gracefully (without prompting) when no artifact pages exist in the wiki
 
+### Document-Based Statefulness
+
+- [ ] **STF-01**: sara-init creates `.sara/pipeline/` directory with `.gitkeep` (not `pipeline-state.json`); adds `summary_max_words: 50` to `config.json`; generated CLAUDE.md uses filesystem-derived ID assignment
+- [ ] **STF-02**: sara-ingest derives next ingest ID from filesystem glob of `.sara/pipeline/`; creates item directory; writes `state.md` with YAML frontmatter; STATUS mode uses `grep -rh` across `state.md` files
+- [ ] **STF-03**: sara-discuss reads `state.md` for stage guard; writes `discuss.md` as markdown prose; advances `stage: extracting` in `state.md` ONLY after git commit of `discuss.md` succeeds
+- [ ] **STF-04**: sara-extract reads `state.md` for stage guard; reads `discuss.md` (empty-string fallback if absent); writes approved artifact list as headed markdown to `plan.md`; advances `stage: approved` in `state.md` ONLY after git commit of `plan.md` succeeds
+- [ ] **STF-05**: sara-update reads `state.md` for stage guard; LLM-parses `plan.md` for artifact list; derives entity IDs from filesystem glob of `wiki/{type}/`; reads `summary_max_words` from `config.json`; advances `stage: complete` in `state.md` ONLY after wiki commit succeeds
+- [ ] **STF-06**: sara-minutes reads `state.md` for type guard (meeting) then stage guard (complete); discovers actual entity IDs from `wiki/log.md` log row wikilinks (not plan.md placeholder IDs)
+
 ## Future Requirements
 
 - **QUERY-01**: /sara-query answers questions synthesised from wiki content
@@ -60,12 +69,18 @@
 | TAG-08 | Phase 16 | Planned |
 | TAG-09 | Phase 16 | Planned |
 | TAG-10 | Phase 16 | Planned |
+| STF-01 | Phase 17 | Planned |
+| STF-02 | Phase 17 | Planned |
+| STF-03 | Phase 17 | Planned |
+| STF-04 | Phase 17 | Planned |
+| STF-05 | Phase 17 | Planned |
+| STF-06 | Phase 17 | Planned |
 
 **Coverage:**
-- v2.0 requirements: 15 total
-- Mapped to phases: 15 (100%) ✓
+- v2.0 requirements: 21 total
+- Mapped to phases: 21 (100%) ✓
 - Unmapped: 0
 
 ---
 *Requirements defined: 2026-04-30*
-*Last updated: 2026-05-01 — TAG-01 through TAG-10 added for Phase 16*
+*Last updated: 2026-05-01 — STF-01 through STF-06 added for Phase 17*
