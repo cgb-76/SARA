@@ -508,6 +508,8 @@ Do NOT run git restore — that would undo the tag assignments.
 - Bash is only used for: grep (read-only scan), find (read-only scan), ls (existence check), git commands
 - Always re-read a file immediately before writing it (another fix in the same loop may have changed it)
 - One commit per accepted fix — never batch multiple fixes into one commit
+  (exception: D-08 tag curation uses one atomic commit for all tag writes across all artifact pages — this is
+  intentional; do not apply the per-fix rule to Step 6)
 - If a commit fails (exit code != 0): write the warning and continue; do not STOP the lint run
 - Check D-04 and D-05 share the same disk file list and wiki/index.md read — avoid reading the same file twice; load once and reuse
 - The `segments:` (plural) field is NOT added to STK pages — only REQ, DEC, ACT, RSK get it; STK pages get the singular `segment:` field
