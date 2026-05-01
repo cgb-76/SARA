@@ -94,12 +94,12 @@ Plans:
 **Plans**: 6 plans
 
 Plans:
-- [ ] 17-01-PLAN.md — Rewrite sara-init: pipeline/ directory creation, summary_max_words in config.json, CLAUDE.md Rule 4 filesystem derivation
-- [ ] 17-02-PLAN.md — Rewrite sara-ingest: filesystem counter derivation, state.md write, STATUS mode grep -rh
-- [ ] 17-03-PLAN.md — Rewrite sara-discuss: state.md stage guard, discuss.md write, atomic commit ordering
-- [ ] 17-04-PLAN.md — Rewrite sara-extract: state.md guard, discuss.md read, plan.md headed-section write
-- [ ] 17-05-PLAN.md — Rewrite sara-update: plan.md LLM parse, filesystem entity counters, config.json summary_max_words
-- [ ] 17-06-PLAN.md — Rewrite sara-minutes: state.md guards, log.md entity ID discovery
+- [x] 17-01-PLAN.md — Rewrite sara-init: pipeline/ directory creation, summary_max_words in config.json, CLAUDE.md Rule 4 filesystem derivation
+- [x] 17-02-PLAN.md — Rewrite sara-ingest: filesystem counter derivation, state.md write, STATUS mode grep -rh
+- [x] 17-03-PLAN.md — Rewrite sara-discuss: state.md stage guard, discuss.md write, atomic commit ordering
+- [x] 17-04-PLAN.md — Rewrite sara-extract: state.md guard, discuss.md read, plan.md headed-section write
+- [x] 17-05-PLAN.md — Rewrite sara-update: plan.md LLM parse, filesystem entity counters, config.json summary_max_words
+- [x] 17-06-PLAN.md — Rewrite sara-minutes: state.md guards, log.md entity ID discovery
 
 ## Progress
 
@@ -121,4 +121,4 @@ Plans:
 | 14. Extraction Pipeline Fix | v2.0 | 2/2 | Complete    | 2026-04-30 |
 | 15. Lint Repair | v2.0 | 3/3 | Complete    | 2026-04-30 |
 | 16. Tagging | v2.0 | 1/1 | Complete    | 2026-05-01 |
-| 17. Document-Based Statefulness | v2.0 | 0/6 | In Progress | — |
+| 17. Document-Based Statefulness | v2.0 | 6/6 | Complete    | 2026-05-01 |

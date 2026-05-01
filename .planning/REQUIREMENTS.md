@@ -31,12 +31,12 @@
 
 ### Document-Based Statefulness
 
-- [ ] **STF-01**: sara-init creates `.sara/pipeline/` directory with `.gitkeep` (not `pipeline-state.json`); adds `summary_max_words: 50` to `config.json`; generated CLAUDE.md uses filesystem-derived ID assignment
-- [ ] **STF-02**: sara-ingest derives next ingest ID from filesystem glob of `.sara/pipeline/`; creates item directory; writes `state.md` with YAML frontmatter; STATUS mode uses `grep -rh` across `state.md` files
-- [ ] **STF-03**: sara-discuss reads `state.md` for stage guard; writes `discuss.md` as markdown prose; advances `stage: extracting` in `state.md` ONLY after git commit of `discuss.md` succeeds
-- [ ] **STF-04**: sara-extract reads `state.md` for stage guard; reads `discuss.md` (empty-string fallback if absent); writes approved artifact list as headed markdown to `plan.md`; advances `stage: approved` in `state.md` ONLY after git commit of `plan.md` succeeds
-- [ ] **STF-05**: sara-update reads `state.md` for stage guard; LLM-parses `plan.md` for artifact list; derives entity IDs from filesystem glob of `wiki/{type}/`; reads `summary_max_words` from `config.json`; advances `stage: complete` in `state.md` ONLY after wiki commit succeeds
-- [ ] **STF-06**: sara-minutes reads `state.md` for type guard (meeting) then stage guard (complete); discovers actual entity IDs from `wiki/log.md` log row wikilinks (not plan.md placeholder IDs)
+- [x] **STF-01**: sara-init creates `.sara/pipeline/` directory with `.gitkeep` (not `pipeline-state.json`); adds `summary_max_words: 50` to `config.json`; generated CLAUDE.md uses filesystem-derived ID assignment
+- [x] **STF-02**: sara-ingest derives next ingest ID from filesystem glob of `.sara/pipeline/`; creates item directory; writes `state.md` with YAML frontmatter; STATUS mode uses `grep -rh` across `state.md` files
+- [x] **STF-03**: sara-discuss reads `state.md` for stage guard; writes `discuss.md` as markdown prose; advances `stage: extracting` in `state.md` ONLY after git commit of `discuss.md` succeeds
+- [x] **STF-04**: sara-extract reads `state.md` for stage guard; reads `discuss.md` (empty-string fallback if absent); writes approved artifact list as headed markdown to `plan.md`; advances `stage: approved` in `state.md` ONLY after git commit of `plan.md` succeeds
+- [x] **STF-05**: sara-update reads `state.md` for stage guard; LLM-parses `plan.md` for artifact list; derives entity IDs from filesystem glob of `wiki/{type}/`; reads `summary_max_words` from `config.json`; advances `stage: complete` in `state.md` ONLY after wiki commit succeeds
+- [x] **STF-06**: sara-minutes reads `state.md` for type guard (meeting) then stage guard (complete); discovers actual entity IDs from `wiki/log.md` log row wikilinks (not plan.md placeholder IDs)
 
 ## Future Requirements
 
