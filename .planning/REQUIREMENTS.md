@@ -18,16 +18,16 @@
 
 ### Tagging
 
-- [ ] **TAG-01**: sara-lint D-08 check exists as Step 6, runs after the per-finding loop on every invocation
-- [ ] **TAG-02**: D-08 vocabulary derivation pass reads all artifact pages and derives emergent concept-level tags
-- [ ] **TAG-03**: D-08 presents derived vocabulary to the user via AskUserQuestion (Approve / Edit / Skip) before any writes
-- [ ] **TAG-04**: D-08 assignment pass fires only after vocabulary is approved (not before)
-- [ ] **TAG-05**: All tags are normalised to lowercase kebab-case before presentation and before any write
-- [ ] **TAG-06**: D-08 assignment targets all four artifact directories (requirements, decisions, actions, risks)
-- [ ] **TAG-07**: All tag writes from a single D-08 run are committed as one atomic commit with message `fix(wiki): update tags via sara-lint D-08`
-- [ ] **TAG-08**: D-08 runs on every sara-lint invocation — no opt-in flag required
-- [ ] **TAG-09**: Every D-08 run fully replaces existing tags — no merging with previous assignments
-- [ ] **TAG-10**: D-08 exits gracefully (without prompting) when no artifact pages exist in the wiki
+- [x] **TAG-01**: sara-lint D-08 check exists as Step 6, runs after the per-finding loop on every invocation
+- [x] **TAG-02**: D-08 vocabulary derivation pass reads all artifact pages and derives emergent concept-level tags
+- [x] **TAG-03**: D-08 presents derived vocabulary to the user via AskUserQuestion (Approve / Edit / Skip) before any writes
+- [x] **TAG-04**: D-08 assignment pass fires only after vocabulary is approved (not before)
+- [x] **TAG-05**: All tags are normalised to lowercase kebab-case before presentation and before any write
+- [x] **TAG-06**: D-08 assignment targets all four artifact directories (requirements, decisions, actions, risks)
+- [x] **TAG-07**: All tag writes from a single D-08 run are committed as one atomic commit with message `fix(wiki): update tags via sara-lint D-08`
+- [x] **TAG-08**: D-08 runs on every sara-lint invocation — no opt-in flag required
+- [x] **TAG-09**: Every D-08 run fully replaces existing tags — no merging with previous assignments
+- [x] **TAG-10**: D-08 exits gracefully (without prompting) when no artifact pages exist in the wiki
 
 ## Future Requirements
 

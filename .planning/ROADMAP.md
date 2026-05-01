@@ -77,14 +77,14 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 16-01-PLAN.md — Add sara-lint objective update + Step 6 D-08 whole-wiki tag curation
+- [x] 16-01-PLAN.md — Add sara-lint objective update + Step 6 D-08 whole-wiki tag curation
 
 ### Phase 17: document-based-statefulness
 
 **Goal:** [To be planned]
 **Requirements**: TBD
 **Depends on:** Phase 16
-**Plans:** 0 plans
+**Plans:** 1/1 plans complete
 
 Plans:
 - [ ] TBD (run /gsd-plan-phase 17 to break down)
@@ -108,4 +108,4 @@ Plans:
 | 13. Lint Refactor | v1.0 | 2/2 | Complete | 2026-04-30 |
 | 14. Extraction Pipeline Fix | v2.0 | 2/2 | Complete    | 2026-04-30 |
 | 15. Lint Repair | v2.0 | 3/3 | Complete    | 2026-04-30 |
-| 16. Tagging | v2.0 | 0/1 | Planned | — |
+| 16. Tagging | v2.0 | 1/1 | Complete    | 2026-05-01 |
