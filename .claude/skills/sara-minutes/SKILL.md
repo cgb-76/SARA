@@ -4,65 +4,69 @@ description: "Generate plain-text meeting minutes from a completed meeting item"
 argument-hint: "<ID>"
 allowed-tools:
   - Read
-version: 1.0.0
+version: 2.0.0
 ---
 
 <objective>
-Reads pipeline state and wiki artifacts for a completed meeting item, then outputs structured
-meeting minutes as plain text. Nothing is written to disk or committed to git.
+Reads pipeline state from `.sara/pipeline/{N}/state.md` and wiki artifacts for a completed meeting item, then outputs structured meeting minutes as plain text. Nothing is written to disk or committed to git.
 
 The minutes are structured around wiki entities actually created or updated for this meeting
-item (per extraction_plan) — not a generic summary of the transcript.
+item (per wiki/log.md entity IDs committed for this item) — not a generic summary of the transcript.
 </objective>
 
 <process>
 
 **Step 1 — Item lookup and guards (type first, then stage)**
 
-Read `.sara/pipeline-state.json` using the Read tool.
-
 Validate `$ARGUMENTS`: must be a non-empty pipeline item ID. If empty:
   Output: `"Usage: /sara-minutes <ID> where ID is a pipeline item identifier (e.g. MTG-001)."` and STOP.
 
-Find the item with key `"{N}"` in the `items` object (N is the full ID argument — for `/sara-minutes MTG-001`, N = `"MTG-001"`).
+Read `.sara/pipeline/{N}/state.md` using the Read tool.
 
-If no item exists with key `"{N}"`:
+If the file cannot be read (does not exist):
   Output: `"No pipeline item {N} found. Run /sara-ingest with no arguments to see the pipeline status."` and STOP.
 
-**Type guard (D-02, D-03 — type check FIRST):**
-Check `items["{N}"].type`. Expected value: `"meeting"` (lowercase, as stored by `/sara-ingest`).
-If `items["{N}"].type != "meeting"`:
+Parse the YAML frontmatter from state.md. Extract:
+- `id` → store as `{item.id}`
+- `type` → store as `{item.type}`
+- `filename` → store as `{item.filename}`
+- `source_path` → store as `{item.source_path}`
+- `stage` → store as `{item.stage}`
+
+**Type guard (type check FIRST — D-02, D-03):**
+Check `{item.type}`. Expected value: `"meeting"` (lowercase, as stored by `/sara-ingest`).
+If `{item.type}` != `"meeting"`:
   Output: `"{N} is a {item.type} item. /sara-minutes only works on meeting items (MTG-NNN)."` and STOP.
 
-**Stage guard (D-01 — stage check SECOND):**
-Check `items["{N}"].stage`. Expected value: `"complete"`.
-If `items["{N}"].stage != "complete"`:
+**Stage guard (stage check SECOND — D-01):**
+Check `{item.stage}`. Expected value: `"complete"`.
+If `{item.stage}` != `"complete"`:
   Output: `"Item {N} is in stage '{item.stage}'. Run /sara-update {N} first to complete the extraction pipeline before generating minutes."` and STOP.
 
-Store `{item}` = `items["{N}"]`.
-Store `{extraction_plan}` = `items["{N}"].extraction_plan`.
+**Step 2 — Discover entity IDs from wiki/log.md**
 
-**Step 2 — Aggregate wiki entities from extraction_plan (D-04, D-05)**
+Read `wiki/log.md` using the Read tool.
 
-Initialize four lists: `{decisions}`, `{actions}`, `{risks}`, `{requirements}` — all empty.
-Also initialize `{stakeholder_ids}` = [] — list of STK IDs encountered in extraction_plan.
+Find the log row(s) where the first column contains `[[{N}]]` (e.g. `[[MTG-001]]`). A single ingest item typically produces one log row but may produce multiple if sara-update was run multiple times.
 
-If `{extraction_plan}` is empty:
+For each matching row, parse the last column to extract entity IDs. The last column contains wikilinks in the format `[[REQ-001]], [[DEC-002]], [[ACT-003]]`. Extract each entity ID (the text inside `[[` and `]]`).
+
+Collect all unique entity IDs from all matching rows into `{entity_ids}` list.
+
+If no matching rows are found (item has no log entries — extraction plan was empty or log.md is missing/empty):
   Set `{no_entities}` = true. Skip to Step 3.
 
-For each artifact in `{extraction_plan}` (aggregate BOTH `create` and `update` actions — both represent what this meeting did to the wiki):
+Initialize four lists: `{decisions}`, `{actions}`, `{risks}`, `{requirements}` — all empty.
+Also initialize `{stakeholder_ids}` = [] — list of STK IDs encountered.
 
-  Determine the entity ID:
-  - If `artifact.action == "create"`: use `artifact.assigned_id`
-  - If `artifact.action == "update"`: use `artifact.existing_id`
-  Store as `{entity_id}`.
+For each entity ID in `{entity_ids}`:
 
-  Determine `{wiki_path}` from `artifact.type`:
-  - `requirement` → `wiki/requirements/{entity_id}.md`
-  - `decision`    → `wiki/decisions/{entity_id}.md`
-  - `action`      → `wiki/actions/{entity_id}.md`
-  - `risk`        → `wiki/risks/{entity_id}.md`
-  - `stakeholder` → skip (collect IDs separately — see below)
+  Determine `{wiki_path}` from the ID prefix:
+  - ID starts with `REQ-` → `wiki/requirements/{entity_id}.md`
+  - ID starts with `DEC-` → `wiki/decisions/{entity_id}.md`
+  - ID starts with `ACT-` → `wiki/actions/{entity_id}.md`
+  - ID starts with `RSK-` → `wiki/risks/{entity_id}.md`
+  - ID starts with `STK-` → skip (collect STK IDs separately into `{stakeholder_ids}`)
 
   Read `{wiki_path}` using the Read tool.
   Extract frontmatter fields and body section relevant to that type:
@@ -73,9 +77,9 @@ For each artifact in `{extraction_plan}` (aggregate BOTH `create` and `update` a
 
   Append the extracted record to the appropriate list (`{decisions}`, `{actions}`, `{risks}`, `{requirements}`).
 
-  Collect stakeholder IDs: if `artifact.type == "action"` and `owner` field contains an STK-NNN ID, add to `{stakeholder_ids}` if not already present. Similarly collect STK IDs from `raised-by` fields of any entity type.
+  Collect stakeholder IDs: if `owner` field contains an STK-NNN ID, add to `{stakeholder_ids}` if not already present. Similarly collect STK IDs from `raised-by` fields.
 
-**Step 3 — Resolve attendees (D-04)**
+**Step 3 — Resolve attendees**
 
 For each STK-NNN ID in `{stakeholder_ids}`:
   Read `wiki/stakeholders/{stk_id}.md` using the Read tool.
@@ -132,13 +136,14 @@ STOP — do NOT write any file, do NOT run any git command.
 
 <notes>
 
-- CRITICAL — GUARD ORDER: Type check (`item.type == "meeting"`) MUST run before stage check (`item.stage == "complete"`). A non-meeting item must never reach the extraction_plan traversal. (D-03)
+- CRITICAL — GUARD ORDER: Type check (`item.type == "meeting"`) MUST run before stage check (`item.stage == "complete"`). A non-meeting item must never reach the log.md traversal. (D-03)
 - CRITICAL — NO WRITES: This skill is read-only. Do NOT use the Write tool. Do NOT run git commands. `allowed-tools: [Read]` is intentional and must not be changed.
-- `{N}` is the full pipeline item ID (e.g. `MTG-001`). The JSON key in `items` is that same string. For `/sara-minutes MTG-001`, look up `items["MTG-001"]`.
+- Entity IDs are discovered from `wiki/log.md` — not from `plan.md`. plan.md contains placeholder IDs (REQ-NNN) at write time; by the time /sara-minutes runs (stage=complete), the actual committed IDs are in wiki/log.md (Pitfall 7).
+- Guard order is TYPE then STAGE: type guard runs first (item.type == 'meeting'), stage guard runs second (item.stage == 'complete'). A non-meeting item must never reach the log.md traversal.
+- `{N}` is the full pipeline item ID (e.g. `MTG-001`). The state.md file is at `.sara/pipeline/{N}/state.md`.
 - `item.type` is stored as lowercase `"meeting"` by `/sara-ingest`. Check `item.type == "meeting"`, not `"MTG"`.
-- Aggregate BOTH `create` and `update` actions from extraction_plan — both represent what this meeting did to the wiki.
-- For `action == "create"` artifacts: use `artifact.assigned_id` as the entity ID. For `action == "update"` artifacts: use `artifact.existing_id`.
-- Transcript path: use `{item.source_path}` from `pipeline-state.json`. The source file was moved to this permanent path by `/sara-ingest` — it is never in `raw/input/` for items processed after that change.
+- A single ingest item typically produces one log row in wiki/log.md but may produce multiple if sara-update was run multiple times. Collect all unique entity IDs from all matching rows.
+- Transcript path: use `{item.source_path}` from state.md frontmatter. The source file was moved to this permanent path by `/sara-ingest` — it is never in `raw/input/` for items processed after that change.
 - Attendee resolution is best-effort. If neither STK pages nor transcript yield attendees, output `(attendees not recorded)` rather than an error.
 - PLAIN TEXT ONLY: Output uses CAPS section labels. No `#` headings, no `**bold**`, no markdown formatting.
 - Empty sections are silently omitted — never print a section label with no content.
