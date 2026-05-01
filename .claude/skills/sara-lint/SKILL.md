@@ -11,7 +11,7 @@ version: 2.0.0
 ---
 
 <objective>
-sara-lint v2.0 scans all wiki artifact pages across six checks: (1) missing v2.0 frontmatter fields, (2) broken related[] IDs, (3) orphaned wiki pages, (4) index↔disk bidirectional sync, (5) Cross Links↔related[] divergence, (6) missing/empty related[] curation. Every finding is presented individually for approval. Every accepted fix is committed atomically.
+sara-lint v2.0 scans all wiki artifact pages across six mechanical checks plus whole-wiki tag curation (D-08): (1) missing v2.0 frontmatter fields, (2) broken related[] IDs, (3) orphaned wiki pages, (4) index↔disk bidirectional sync, (5) Cross Links↔related[] divergence, (6) missing/empty related[] curation. Every finding is presented individually for approval. Every accepted fix is committed atomically. After all findings are resolved, D-08 derives an emergent tag vocabulary from the full wiki corpus and assigns tags to all artifact pages.
 </objective>
 
 <process>
