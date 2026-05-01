@@ -27,7 +27,7 @@ Every meeting, email thread, Slack conversation, and document gets permanently i
 ### Active
 
 - [ ] `/sara-query` answers questions synthesised from wiki content — v2
-- [ ] `/sara-lint` health-checks the wiki (orphans, contradictions, stale content, missing cross-references) — v2 (D-02–D-07 complete as of Phase 15)
+- [ ] `/sara-lint` health-checks the wiki (orphans, contradictions, stale content, missing cross-references) — v2 (D-02–D-07 complete Phase 15; D-08 tag curation complete Phase 16)
 
 ### Out of Scope
 
@@ -46,7 +46,7 @@ Every meeting, email thread, Slack conversation, and document gets permanently i
 
 ## Current State
 
-v1.0 shipped 2026-04-30 — complete git-backed LLM knowledgebase with four-stage ingest pipeline, five entity types (v2.0 schema), sara-lint v2.0, and install script. v2.0 complete 2026-05-01 — Phase 15 reverted Phase 14 over-engineering: sara-extract no longer assigns temp_ids or performs full-mesh linking (artifacts carry related: [] default); sara-update no longer resolves temp_ids and now auto-invokes /sara-lint on every successful run; sara-lint extended to six checks — D-06 two-pass (non-empty divergence + empty header check) and new D-07 semantic curation (grep -rL for absent related: field, LLM inference, approval loop, atomic commit). Related[] is now populated via LLM semantic inference via sara-lint rather than batch co-extraction linking.
+v1.0 shipped 2026-04-30 — complete git-backed LLM knowledgebase with four-stage ingest pipeline, five entity types (v2.0 schema), sara-lint v2.0, and install script. v2.0 complete 2026-05-01 — Phase 15 reverted Phase 14 over-engineering: sara-extract no longer assigns temp_ids or performs full-mesh linking (artifacts carry related: [] default); sara-update no longer resolves temp_ids and now auto-invokes /sara-lint on every successful run; sara-lint extended to six checks — D-06 two-pass (non-empty divergence + empty header check) and new D-07 semantic curation (grep -rL for absent related: field, LLM inference, approval loop, atomic commit). Related[] is now populated via LLM semantic inference via sara-lint rather than batch co-extraction linking. Phase 16 complete 2026-05-01 — D-08 whole-wiki tag curation added as sara-lint Step 6: two-phase vocabulary derivation + assignment pass, AskUserQuestion approval gate (Approve/Edit/Skip), kebab-case normalisation, full-replacement semantics, atomic commit with explicit file list (T-13-04).
 
 ## Context
 
