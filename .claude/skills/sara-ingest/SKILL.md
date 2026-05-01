@@ -48,10 +48,10 @@ Invalid type '{type}'. Valid types: meeting, email, slack, document
 ```
 This validation is hardcoded — do not read the type list from `.sara/config.json`.
 
-Validate `{filename}`: must not contain `/` or `..` (path traversal guard). If it does:
+Validate `{filename}`: must not be empty, must not contain `/`, `\`, `..`, or `\0`, and must not begin with a dot. If invalid:
 output the following and STOP:
 ```
-Invalid filename '{filename}'. Filename must not contain path separators or '..'.
+Invalid filename '{filename}'. Filename must not be empty, must not contain path separators, '..', or null bytes, and must not begin with a dot.
 ```
 
 **Step 2 — File existence check (INGEST mode)**
@@ -203,9 +203,7 @@ STOP.
 
 <notes>
 
-- **Filename validation prevents path traversal:** Always validate `{filename}` for `/` and
-  `..` before constructing any file path. This check must run in Step 1, before any file
-  operation.
+- **Filename validation prevents path traversal:** Always validate `{filename}` — it must not be empty, must not contain `/`, `\`, `..`, or `\0`, and must not begin with a dot. This check must run in Step 1, before any file operation. The Step 2 filesystem check (`[ ! -f "raw/input/{filename}" ]`) acts as a defense-in-depth guard even if the LLM validation passes.
 
 - **Type list is hardcoded:** Do NOT read the valid type list from `.sara/config.json`. The
   four types — `meeting`, `email`, `slack`, `document` — are fixed and must be validated
