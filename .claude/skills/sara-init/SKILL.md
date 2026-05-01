@@ -12,9 +12,10 @@ version: 1.0.0
 
 <objective>
 Initialise a new SARA wiki in the current directory. Creates the full /raw/ and /wiki/ directory
-tree, captures project configuration (name, segments, departments), writes .sara/config.json and
-.sara/pipeline-state.json, creates the CLAUDE.md schema contract, wiki/index.md and wiki/log.md
-catalog stubs, and five entity page templates in .sara/templates/.
+tree, captures project configuration (name, segments, departments), writes .sara/config.json
+(including summary_max_words) and creates the .sara/pipeline/ directory, creates the CLAUDE.md
+schema contract, wiki/index.md and wiki/log.md catalog stubs, and five entity page templates in
+.sara/templates/.
 
 Run this skill once per project in an empty directory before using any other SARA commands.
 </objective>
@@ -92,7 +93,8 @@ mkdir -p \
   wiki/actions \
   wiki/risks \
   wiki/stakeholders \
-  .sara/templates
+  .sara/templates \
+  .sara/pipeline
 
 touch \
   raw/input/.gitkeep \
@@ -104,7 +106,8 @@ touch \
   wiki/decisions/.gitkeep \
   wiki/actions/.gitkeep \
   wiki/risks/.gitkeep \
-  wiki/stakeholders/.gitkeep
+  wiki/stakeholders/.gitkeep \
+  .sara/pipeline/.gitkeep
 ```
 
 **Step 6 — Write .sara/config.json**
@@ -118,25 +121,21 @@ Steps 2–4. Format the arrays as valid JSON arrays (e.g. ["Residential", "Enter
   "project": "{project_name}",
   "segments": {segments_array},
   "departments": {departments_array},
-  "schema_version": "1.0"
+  "schema_version": "1.0",
+  "summary_max_words": 50
 }
 ```
 
-**Step 7 — Write .sara/pipeline-state.json**
+**Step 7 — Create .sara/pipeline/ directory**
 
-Use the Write tool to create `.sara/pipeline-state.json` with the following exact content (no
-variable substitution needed — all counters start at zero):
+The `.sara/pipeline/` directory is already created in Step 5 (via `mkdir -p`). The `.gitkeep`
+file inside it (also created in Step 5) ensures the directory is tracked in git even when empty.
 
-```json
-{
-  "summary_max_words": 50,
-  "counters": {
-    "ingest": { "MTG": 0, "EML": 0, "SLK": 0, "DOC": 0 },
-    "entity": { "REQ": 0, "DEC": 0, "ACT": 0, "RSK": 0, "STK": 0 }
-  },
-  "items": {}
-}
-```
+No additional action is required in this step. The pipeline directory is ready for use by
+`/sara-ingest`.
+
+Note: Do NOT create `.sara/pipeline-state.json`. The new state backend is the `.sara/pipeline/`
+directory.
 
 **Step 8 — Write .gitignore**
 
@@ -170,8 +169,11 @@ All SARA pipeline commands that read or write wiki pages must follow the rules b
    with the new or changed row (ID, title, status, type, tags, last-updated).
 3. **Log maintenance:** Every entity write must append an entry to `wiki/log.md` recording the
    ingest ID, date, entity IDs created/updated, and source filename.
-4. **ID assignment:** Before assigning a new entity ID, increment the relevant counter in
-   `.sara/pipeline-state.json`. Read the post-increment value and use it as the new ID (e.g. REQ-001).
+4. **ID assignment:** Before assigning a new entity ID, derive the next ID by listing the relevant
+   wiki directory and incrementing the highest existing numeric suffix. For example, to assign the
+   next REQ ID: `ls wiki/requirements/ | grep '^REQ-' | sort | tail -1` — parse the numeric suffix
+   from the result, increment by 1, zero-pad to 3 digits (e.g. REQ-007 → REQ-008). If no pages
+   exist yet, start at 001. This applies to all entity types (REQ, DEC, ACT, RSK, STK).
 5. **Cross-references:** `related` fields must use entity IDs only (e.g. `REQ-001`, `DEC-003`) —
    never file paths, relative links, or Obsidian wiki-links. In body prose, always use
    `[[ID|ID Title]]` (ID prefix + title or name, e.g. `[[DEC-007|DEC-007 Defer SSO to Phase 3]]`) —
@@ -180,7 +182,7 @@ All SARA pipeline commands that read or write wiki pages must follow the rules b
    `summary` field using the type-specific content rules (REQ: title/status/description;
    DEC: options considered/chosen option/status/date; ACT: owner/due-date/status;
    RSK: likelihood/impact/mitigation/status; STK: segment/department/role) and the
-   `summary_max_words` limit from `.sara/pipeline-state.json` (default: 50 words if absent).
+   `summary_max_words` value from `.sara/config.json` (default: 50 words if absent).
 
 ## Entity Schemas
 
@@ -584,7 +586,7 @@ combined field. Do not add body section headings to `stakeholder.md`.
 Report success to the user with the following information:
 
 - **Project:** {project_name}
-- **Directories created (11):**
+- **Directories created (12):**
   - `raw/input/`
   - `raw/meetings/`
   - `raw/emails/`
@@ -596,10 +598,11 @@ Report success to the user with the following information:
   - `wiki/risks/`
   - `wiki/stakeholders/`
   - `.sara/templates/`
+  - `.sara/pipeline/` (pipeline state directory)
 - **Files created:**
   - `.gitignore`
   - `.sara/config.json`
-  - `.sara/pipeline-state.json`
+  - `.sara/pipeline/` (pipeline state directory)
   - `CLAUDE.md`
   - `wiki/index.md`
   - `wiki/log.md`
@@ -620,7 +623,7 @@ git rev-parse --git-dir > /dev/null 2>&1 || git init
 git add \
   .gitignore \
   .sara/config.json \
-  .sara/pipeline-state.json \
+  .sara/pipeline/.gitkeep \
   CLAUDE.md \
   wiki/index.md \
   wiki/log.md \
