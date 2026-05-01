@@ -7,45 +7,59 @@ allowed-tools:
   - Write
   - Edit
   - Bash
-version: 1.0.0
+version: 2.0.0
 ---
 
 <objective>
-Reads the approved extraction plan from `pipeline-state.json` and writes all wiki artifacts (create or update) plus `wiki/index.md` and `wiki/log.md` in a single atomic git commit. Stage advances to `complete` only after the commit succeeds. The source file is already at its permanent path (`item.source_path`) — it was moved and committed by `/sara-ingest`.
+Reads the approved extraction plan from `.sara/pipeline/{N}/plan.md` and writes all wiki artifacts (create or update) plus `wiki/index.md` and `wiki/log.md` in a single atomic git commit. Stage advances to `complete` in `.sara/pipeline/{N}/state.md` only after the commit succeeds. The source file is already at its permanent path (`item.source_path`) — it was moved and committed by `/sara-ingest`.
 </objective>
 
 <process>
 
 **Step 1 — Stage guard and item lookup**
 
-Read `.sara/pipeline-state.json` using the Read tool.
-
 Validate `$ARGUMENTS`: it must be a non-empty pipeline item ID (e.g. `MTG-001`). If empty:
   Output: `"Usage: /sara-update <ID> where ID is a pipeline item identifier (e.g. MTG-001)."` and STOP.
 
-Find the item with key `"{N}"` in the `items` object (N is the full ID argument — for `/sara-update MTG-001`, N = `"MTG-001"`).
+Read `.sara/pipeline/{N}/state.md` using the Read tool.
 
-If no item exists with key `"{N}"`:
+If the file cannot be read (does not exist):
   Output: `"No pipeline item {N} found. Run /sara-ingest to register a new item, or run /sara-ingest with no arguments to see the full pipeline status."`
   STOP.
 
-Check `items["{N}"].stage`. Expected stage: `"approved"`.
+Parse the YAML frontmatter from state.md. Extract:
+- `id` → store as `{item.id}`
+- `type` → store as `{item.type}`
+- `filename` → store as `{item.filename}`
+- `source_path` → store as `{item.source_path}`
+- `stage` → store as `{item.stage}`
+- `created` → store as `{item.created}`
 
-If actual stage != `"approved"`:
-  Output: `"Item {N} is in stage '{actual_stage}'. Run /sara-update <ID> only when stage is 'approved'. Re-run /sara-extract {N} if you need to revise the plan."`
+Check `{item.stage}`. Expected stage: `"approved"`.
+
+If `{item.stage}` != `"approved"`:
+  Output: `"Item {N} is in stage '{item.stage}'. Run /sara-update <ID> only when stage is 'approved'. Re-run /sara-extract {N} if you need to revise the plan."`
   STOP.
 
-Store `{item}` = `items["{N}"]`.
-Store `{extraction_plan}` = `items["{N}"].extraction_plan`.
+Read `.sara/pipeline/{N}/plan.md` using the Read tool. Use LLM reasoning to parse the artifact sections from the headed markdown body. Each `##` heading beginning with "Artifact" introduces one artifact. Extract all field values from the bold-label lines within each section. Store the parsed list as `{artifact_list}`.
 
-If `{extraction_plan}` is empty or null:
-  Output: `"Extraction plan for item {N} is empty — no wiki files to write."`
+If plan.md cannot be read or is empty:
+  Output: `"Extraction plan for item {N} is empty or missing — no wiki files to write."`
   Set `written_files = []` and `count = 0`.
-  Update `items["{N}"].stage` = `"complete"` in memory.
-  Write the updated `.sara/pipeline-state.json` using the Write tool.
+  Write `.sara/pipeline/{N}/state.md` with `stage: complete` using the Write tool:
+  ```markdown
+  ---
+  id: {item.id}
+  type: {item.type}
+  filename: {item.filename}
+  source_path: {item.source_path}
+  stage: complete
+  created: {item.created}
+  ---
+  ```
   Run:
   ```bash
-  git add .sara/pipeline-state.json
+  git add ".sara/pipeline/{N}/state.md"
   git commit -m "feat(sara): wiki {N} — 0 artifacts (empty plan)"
   echo "EXIT:$?"
   ```
@@ -56,16 +70,17 @@ If `{extraction_plan}` is empty or null:
 
 Read `{item.source_path}` using the Read tool. Store as `{source_doc}`.
 
-`{discussion_notes}` = `items["{N}"].discussion_notes` (already in memory from Step 1).
+Attempt to read `.sara/pipeline/{N}/discuss.md` using the Read tool. If present: `{discussion_notes}` = markdown body. If absent: `{discussion_notes}` = `""` (empty string). Continue — do not stop.
 
 These are used in Step 2 to synthesise body section content for each created artifact.
 
 **Step 2 — Write wiki artifact files**
 
+Read `.sara/config.json` using the Read tool. Extract `summary_max_words` field. If absent or config.json unreadable: use 50 as the default. Store as `{summary_max_words}`. (This read happens once here, before the loop — not per-artifact.)
 
 Initialize `written_files = []` and `failed_files = []`.
 
-For each artifact in `{extraction_plan}`:
+For each artifact in `{artifact_list}`:
 
   Determine `{wiki_dir}` from `artifact.type`:
   - `requirement` → `wiki/requirements/`
@@ -81,11 +96,26 @@ For each artifact in `{extraction_plan}`:
     - `action`      → `ACT`
     - `risk`        → `RSK`
 
-    Increment `counters.entity.{entity_type_key}` by 1 in the in-memory JSON state (do NOT re-read `pipeline-state.json` — the counters loaded in Step 1 are kept current in memory across loop iterations; each Write call below persists the latest state).
+    Determine `{wiki_dir_name}` from `artifact.type`:
+    - `requirement` → `requirements`
+    - `decision`    → `decisions`
+    - `action`      → `actions`
+    - `risk`        → `risks`
 
-    Write the updated `pipeline-state.json` immediately using the Write tool (the counter increment MUST be persisted before the page is written — this prevents duplicate ID assignment if a page write fails and the skill is re-run).
+    Derive the next entity ID by running:
+    ```bash
+    LAST=$(ls wiki/{wiki_dir_name}/ 2>/dev/null | grep "^{entity_type_key}-" | sort | tail -1)
+    if [ -z "$LAST" ]; then
+      NEXT="{entity_type_key}-001"
+    else
+      NUM=$(echo "$LAST" | sed 's/{entity_type_key}-//' | sed 's/\.md//')
+      NEXT="{entity_type_key}-$(printf '%03d' $((10#$NUM + 1)))"
+    fi
+    echo "$NEXT"
+    ```
+    Capture output as `{assigned_id}`.
 
-    Compute `{assigned_id}` = `"{entity_type_key}-"` + zero-padded 3-digit counter (e.g. counter = 1 → `"REQ-001"`).
+    Note: The Write tool is synchronous. Pages written earlier in the same run are already on disk when this glob runs. The grep "^{entity_type_key}-" filter excludes .gitkeep files. No ID duplication occurs.
 
     Read `.sara/templates/{artifact.type}.md` using the Read tool to get the template structure.
 
@@ -125,8 +155,7 @@ For each artifact in `{extraction_plan}`:
         `segments: [Residential, Enterprise]` for two; use block style only if the array has 3+
         entries — consistent with `tags`, `related`, `source` in existing templates)
     - All other fields not supplied by the artifact: use the template default value (empty string `""` or empty array `[]`)
-    - Read `summary_max_words` from the already-loaded pipeline-state.json (field: `summary_max_words`). If the field is absent, use 50 as the default.
-    - `summary` = LLM-generated prose string within `summary_max_words` words. Write type-appropriate content:
+    - `summary` = LLM-generated prose string within `{summary_max_words}` words. Write type-appropriate content:
       - REQ: title, status, one-line description of what is required
       - DEC (status=accepted): options considered, chosen option, status: accepted, decision date
       - DEC (status=open): competing options/positions, alignment not reached, status: open, decision date
@@ -358,7 +387,7 @@ For each artifact in `{extraction_plan}`:
       Append `{wiki_dir}{artifact.existing_id}.md` to `failed_files`.
       Output the partial failure report and STOP.
     Apply `artifact.change_summary` to the relevant field(s) in the frontmatter or body. Update the `source` field: if it is currently a scalar string, convert it to a single-element YAML list. Append `{item.id}` to the list if not already present. Result format: `source: [MTG-001, MTG-003]`. Update the `related` field by merging `artifact.related` with the existing related array (deduplicating by entity ID).
-    Regenerate the `summary` field: read `summary_max_words` from pipeline-state.json (already in memory; default 50 if absent). Generate a fresh summary prose string using the same type-specific content rules as the create branch — REQ: title/status/description; DEC: options/chosen option/status/date; ACT: owner/due-date/type/status; RSK: likelihood, impact, type, status, mitigation approach; STK: segment, department, role. Replace the existing `summary` value in the frontmatter with the newly generated string.
+    Regenerate the `summary` field using `{summary_max_words}` (read from `.sara/config.json` at the start of Step 2; default 50 if absent). Generate a fresh summary prose string using the same type-specific content rules as the create branch — REQ: title/status/description; DEC: options/chosen option/status/date; ACT: owner/due-date/type/status; RSK: likelihood, impact, type, status, mitigation approach; STK: segment, department, role. Replace the existing `summary` value in the frontmatter with the newly generated string.
     For requirement artifacts (`artifact.type == "requirement"`): after applying the change_summary
     to frontmatter fields and regenerating the summary, also update the frontmatter to include
     the v2.0 fields from the artifact object:
@@ -558,8 +587,7 @@ Run the git add and commit in a single Bash block. Capture the exit code:
 
 ```bash
 git add wiki/requirements/ wiki/decisions/ wiki/actions/ wiki/risks/ \
-        wiki/index.md wiki/log.md \
-        .sara/pipeline-state.json
+        wiki/index.md wiki/log.md
 git commit -m "feat(sara): wiki {item.id} — {count} artifacts"
 echo "EXIT:$?"
 ```
@@ -570,9 +598,25 @@ Check the exit code from the `echo "EXIT:$?"` output.
 
   Capture `{commit_hash}` by running: `git log --oneline -1`
 
-  Read `.sara/pipeline-state.json` using the Read tool.
-  Update `items["{N}"].stage` = `"complete"` in memory.
-  Write the updated `pipeline-state.json` using the Write tool.
+  Read `.sara/pipeline/{N}/state.md` using the Read tool.
+  Reconstruct frontmatter with `stage: complete` (all other fields unchanged from the values read in Step 1):
+  ```markdown
+  ---
+  id: {item.id}
+  type: {item.type}
+  filename: {item.filename}
+  source_path: {item.source_path}
+  stage: complete
+  created: {item.created}
+  ---
+  ```
+  Write `.sara/pipeline/{N}/state.md` using the Write tool.
+
+  Run:
+  ```bash
+  git add ".sara/pipeline/{N}/state.md"
+  git commit -m "feat(sara): stage {N} → complete"
+  ```
 
   Output:
   ```
@@ -616,22 +660,24 @@ any lint issues. Do NOT re-run sara-update or reverse any state changes.
   or use `git reset HEAD {written_files}` to undo the uncommitted writes if needed.
   ```
 
-  Do NOT write `stage = "complete"` to `pipeline-state.json`.
+  Do NOT write `stage: complete` to state.md.
   STOP.
 
 </process>
 
 <notes>
-- CRITICAL: Stage advances to `"complete"` ONLY after the git commit succeeds (exit code 0). Writing `stage=complete` before the commit is a fatal error — the item would be permanently stuck with no way to re-run `/sara-update` (Pitfall 1 from 02-RESEARCH.md). The correct ordering is: (1) write all wiki files, (2) git add + commit, (3) only then write `stage=complete`.
-- CRITICAL: Entity counter increments happen BEFORE each create-action page write, and the updated counter is written to `pipeline-state.json` immediately (as a separate Write call before the page Write call). This prevents duplicate ID assignment if a page write fails and the skill is re-run. Counters are tracked in-memory across loop iterations — the in-memory state is authoritative after each Write; do NOT re-read `pipeline-state.json` inside the loop.
-- The N argument is the full pipeline item ID (e.g. `MTG-001`). The JSON key in `items` is that same ID string. For `/sara-update MTG-001`, look up `items["MTG-001"]`. The `item.id` field equals the key — it appears in the commit message, the `source` field of written pages, and the log entry.
-- Source file location: the source file was moved to its permanent path by `/sara-ingest` and committed at that time. Use `{item.source_path}` (stored in `pipeline-state.json`) to read it. Do NOT look in `raw/input/` — the file is no longer there.
+- CRITICAL — Stage advances to 'complete' ONLY after the git commit succeeds. Writing state.md with stage: complete before the commit is a fatal error — the item would be permanently stuck with no way to re-run /sara-update (Pitfall 1). The correct ordering is: (1) write all wiki files, (2) git add + commit, (3) only then write state.md with stage: complete, (4) git add + commit the stage advance.
+- CRITICAL — Do NOT re-read state.md inside the entity write loop. Read state.md once in Step 1. Write state.md (stage: complete) once, after the commit (Pitfall 2).
+- Entity counter derivation uses filesystem glob: the Write tool is synchronous; each page write is immediately visible to subsequent glob calls. The grep ^{TYPE_KEY}- filter excludes .gitkeep files. ID duplication is theoretically impossible in a single-user sequential run (Pitfall 3 — false alarm).
+- summary_max_words is read from .sara/config.json. If absent, default is 50.
+- The N argument is the full pipeline item ID (e.g. `MTG-001`). For `/sara-update MTG-001`, look up `.sara/pipeline/MTG-001/state.md`. The `item.id` field equals the argument — it appears in the commit message, the `source` field of written pages, and the log entry.
+- Source file location: the source file was moved to its permanent path by `/sara-ingest` and committed at that time. Use `{item.source_path}` (stored in state.md frontmatter) to read it. Do NOT look in `raw/input/` — the file is no longer there.
 - Do NOT auto-rollback on partial failure (D-14). The user has full git history. Report which files were written and which were not; let the user decide whether to `git reset` or re-run `/sara-update {N}` after fixing the root cause. The written files are uncommitted changes — no commit was made.
 - `schema_version` must be quoted to prevent Obsidian's YAML parser from treating it as a float. All artifact types (requirement, decision, action, risk) → `'2.0'` (single-quoted).
 - `related` fields must use entity IDs only (e.g. `REQ-001`, `DEC-003`) — never file paths, relative links, or Obsidian `[[wiki-links]]`. This is a Phase 1 behavioral rule carried forward.
-- The `raised_by` field in the artifact schema (written by `/sara-extract`) maps to the `raised-by` field in wiki page frontmatter (defined in the entity templates). The hyphen vs underscore difference is intentional: `raised_by` is the JSON field name in `pipeline-state.json`; `raised-by` is the YAML field name in wiki pages. Apply the mapping in Step 2 when substituting template fields.
+- The `raised_by` field in the artifact schema (written by `/sara-extract`) maps to the `raised-by` field in wiki page frontmatter (defined in the entity templates). The hyphen vs underscore difference is intentional: `raised_by` is the field name in plan.md; `raised-by` is the YAML field name in wiki pages. Apply the mapping in Step 2 when substituting template fields.
 - `segment` and `department` are always separate fields in stakeholder pages — never merged. This is a locked domain constraint.
-- `extraction_plan` may be empty (all artifacts rejected during `/sara-extract`). If non-empty check fails at Step 1, stop early with the re-run message. If it passes but the loop produces no writes, the git commit will still include `pipeline-state.json` (stage advance).
-- pipeline-state.json is read and written using Read and Write tools only — never Bash shell text-processing tools.
+- If plan.md is empty or cannot be read: output the "empty plan" message, write state.md with stage: complete, commit, then STOP. No wiki files are written.
+- state.md is read and written using Read and Write tools only — no Bash shell text-processing.
 - NOTE: The canonical artifact schema field `raised_by` (defined in the plan interfaces and written by `/sara-extract`) contains the letter sequence "sed" as a substring of "raised". Any grep check for `jq\|sed\|awk` will match this field name. This is a false positive — no shell text-processing tools are referenced in this skill. The field name is non-negotiable: it is the canonical schema consumed here from `/sara-extract`.
 </notes>
