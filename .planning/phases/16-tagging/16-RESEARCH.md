@@ -415,14 +415,14 @@ wiki/index.md has a Tags column (confirmed in sara-init Step 10 and sara-lint D-
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **STK pages: include in D-08 tag assignment?**
+1. **STK pages: include in D-08 tag assignment?** — **RESOLVED: No.** Default to the four artifact dirs (requirements, decisions, actions, risks), consistent with all other lint checks. The plan uses `find wiki/requirements wiki/decisions wiki/actions wiki/risks` scope only.
    - What we know: STK pages have `tags: []` in their schema. D-02–D-07 target only four dirs (requirements, decisions, actions, risks). CONTEXT.md D-08 does not mention stakeholders.
    - What's unclear: Whether tagging stakeholders by concept (e.g. `infrastructure`) adds value for the future /sara-query filter axis.
    - Recommendation: Default to the four artifact dirs (consistent with all other lint checks). Planner can extend to stakeholders in a future phase.
 
-2. **Single commit vs. one-commit-per-entity-type**
+2. **Single commit vs. one-commit-per-entity-type** — **RESOLVED: Single atomic commit.** One `fix(wiki): update tags via sara-lint D-08` commit for all tag writes. D-08 is a corpus-wide full-replacement operation; per-entity-type commits produce arbitrary sub-commits with no useful granularity.
    - What we know: D-06 locked decision says full replacement, not merge. CONTEXT.md Claude's Discretion leaves "one commit per entity type" as an option.
    - What's unclear: Whether the planner prefers granular commit history or a single atomic commit.
    - Recommendation: Single commit for all tag writes. Rationale: D-08 is a corpus-wide operation; splitting by entity type produces arbitrary sub-commits with no useful granularity. The one-commit model is consistent with the "full replacement" semantics.
