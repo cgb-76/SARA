@@ -468,7 +468,12 @@ If commit SUCCEEDS (exit code 0):
   ```bash
   git add ".sara/pipeline/{N}/state.md"
   git commit -m "feat(sara): stage {N} → approved"
+  echo "EXIT:$?"
   ```
+
+  If commit FAILS (exit code != 0):
+    Output: `"Stage-advance commit failed for {N}. state.md on disk shows stage: approved but the commit did not succeed. Run: git add .sara/pipeline/{N}/state.md && git commit -m 'feat(sara): stage {N} → approved' to retry."`
+    STOP.
 
 Output summary table:
 
