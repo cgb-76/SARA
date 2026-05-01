@@ -426,9 +426,20 @@ Where `{N}` is the count of artifact pages read and the tag list is the normalis
 
 **If "Skip":** output `"Tag curation skipped."` STOP Step 6.
 
-**If "Edit":** Ask the user to provide the modified vocabulary as a comma-separated list. Re-normalise all entries to lowercase kebab-case (same normalisation rule above). Confirm the normalised list with the user, then proceed as "Approve".
+**If "Edit":** Present using AskUserQuestion:
+- header: `"D-08: Edit tag vocabulary"`
+- question: `"Enter your modified vocabulary as a comma-separated list (e.g. authentication, data-governance, infrastructure):"`
+- options: `[]` (free-text response — no fixed options)
 
-**If "Approve" (or after Edit confirmed):** store the approved list as `{approved_vocabulary}`. Continue to Phase 2.
+Re-normalise all entries to lowercase kebab-case (same normalisation rule above). Then present using AskUserQuestion:
+- header: `"D-08: Confirm edited vocabulary"`
+- question: `"Normalised vocabulary:\n\n  {tag1}, {tag2}, ...\n\nProceed with this vocabulary?"`
+- options: `["Confirm", "Cancel"]`
+
+If "Cancel": output `"Tag curation skipped."` STOP Step 6.
+If "Confirm": store as `{approved_vocabulary}` and proceed to Phase 2.
+
+**If "Approve":** store the approved list as `{approved_vocabulary}`. Continue to Phase 2.
 
 ---
 
