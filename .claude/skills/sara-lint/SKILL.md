@@ -349,18 +349,12 @@ For each finding in {all_findings} in order:
   - could-have — could/may language
   - wont-have — explicitly deferred or out of scope
 
-- `segments`: read {config_segments} (already loaded in Step 2). 
+- `segments`: read {config_segments} (already loaded in Step 2). For the page currently being fixed, infer segments from its content:
   - Set `segments` to an array of segment name strings (zero or more):
-      1. STK attribution: if `source_quote` ends with `— [[STK-NNN|…]]`, parse the STK-NNN ID
-        from the attribution, read `wiki/stakeholders/{STK-NNN}.md`, extract the `segment:` field
-        value, and add it as the first entry in the array. If no STK-NNN is found in
-        `source_quote`, also check `discussion_notes` — if it identifies the speaker for this
-        passage and contains a `[[STK-NNN|…]]` reference, extract the STK-NNN ID from there.
-      2. Keyword matching: scan the source passage for case-insensitive substrings matching any
-        name in `config.segments`; add each matching segment name (deduplicated).
-      3. Semantic matching: if the requirement likely covers all segments, add all segment names.
-      4. Empty fallback: if neither attribution nor keyword matching nor semantic matching resolves any segment name,
-        set `segments` = `[]`.
+      1. STK attribution: check the `source_quote` frontmatter field of the page. If it ends with `— [[STK-NNN|…]]`, parse the STK-NNN ID, read `wiki/stakeholders/{STK-NNN}.md`, extract the `segment:` field value, and add it as the first entry in the array.
+      2. Keyword matching: scan the `source_quote` frontmatter field and the page body content for case-insensitive substrings matching any name in `config.segments`; add each matching segment name (deduplicated).
+      3. Semantic matching: if the artifact title, source_quote, and body content indicate it is a cross-cutting concern that applies equally to all user segments (e.g., a system-wide policy, universal obligation, or infrastructure requirement with no segment-specific language), add all segment names from `config.segments`.
+      4. Empty fallback: if neither attribution nor keyword matching nor semantic matching resolves any segment name, set `segments` = `[]`.
       Deduplication: each segment name appears at most once in the array.
 
 - `likelihood` / `impact`: scan `## Risk IF/THEN` and `## Mitigation` body sections for the words high, medium, low. If found, use the matching level. If not found, propose `""`.

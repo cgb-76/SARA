@@ -153,7 +153,8 @@ For each decision found:
        passage and contains a `[[STK-NNN|…]]` reference, extract the STK-NNN ID from there.
     2. Keyword matching: scan the source passage for case-insensitive substrings matching any
        name in `config.segments`; add each matching segment name (deduplicated).
-    3. Empty fallback: if neither attribution nor keyword matching resolves any segment name,
+    3. Semantic matching: if the decision is cross-cutting or system-wide and applies equally to all segments, add all segment names from config.segments.
+    4. Empty fallback: if neither attribution nor keyword matching nor semantic matching resolves any segment name,
        set `segments` = `[]`.
     Deduplication: each segment name appears at most once in the array.
 - Set `action` = `"create"`, `type` = `"decision"`, `id_to_assign` = `"DEC-NNN"`, `related` = `[]`, `change_summary` = `""`
@@ -201,7 +202,8 @@ For each action found:
        passage and contains a `[[STK-NNN|…]]` reference, extract the STK-NNN ID from there.
     2. Keyword matching: scan the source passage for case-insensitive substrings matching any
        name in `config.segments`; add each matching segment name (deduplicated).
-    3. Empty fallback: if neither attribution nor keyword matching resolves any segment name,
+    3. Semantic matching: if the action is cross-cutting or system-wide and applies equally to all segments, add all segment names from config.segments.
+    4. Empty fallback: if neither attribution nor keyword matching nor semantic matching resolves any segment name,
        set `segments` = `[]`.
     Deduplication: each segment name appears at most once in the array.
 - Set `action` = `"create"`, `type` = `"action"`, `id_to_assign` = `"ACT-NNN"`, `related` = `[]`, `change_summary` = `""`
@@ -256,7 +258,8 @@ For each risk found:
        passage and contains a `[[STK-NNN|…]]` reference, extract the STK-NNN ID from there.
     2. Keyword matching: scan the source passage for case-insensitive substrings matching any
        name in `config.segments`; add each matching segment name (deduplicated).
-    3. Empty fallback: if neither attribution nor keyword matching resolves any segment name,
+    3. Semantic matching: if the risk is cross-cutting or system-wide and applies equally to all segments, add all segment names from config.segments.
+    4. Empty fallback: if neither attribution nor keyword matching nor semantic matching resolves any segment name,
        set `segments` = `[]`.
     Deduplication: each segment name appears at most once in the array.
 - Set `action` = `"create"`, `type` = `"risk"`, `id_to_assign` = `"RSK-NNN"`, `related` = `[]`, `change_summary` = `""`
