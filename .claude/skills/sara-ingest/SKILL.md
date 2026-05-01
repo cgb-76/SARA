@@ -178,13 +178,10 @@ No pipeline items registered. Run /sara-ingest <type> <filename> to add one.
 Extract fields from all state.md files efficiently using a single grep (no per-file Read tool
 calls):
 ```bash
-grep -rh "^\(id\|type\|stage\|source_path\):" .sara/pipeline/*/state.md 2>/dev/null
+grep -H "^\(id\|type\|stage\|source_path\):" .sara/pipeline/*/state.md 2>/dev/null
 ```
 
-Parse the grep output: for each state.md file, the grep returns lines in the order they appear
-in the frontmatter. Group lines by file (they appear sequentially). Extract `id:`, `type:`,
-`stage:`, `source_path:` values from each group by stripping the key prefix and trimming
-whitespace.
+Parse the grep output: each line is prefixed with the filename and a colon (e.g. `.sara/pipeline/MTG-001/state.md:id: MTG-001`). Group lines by the filename prefix (the part before the first `:`). Within each group, extract `id:`, `type:`, `stage:`, `source_path:` values by stripping the filename prefix and key prefix, then trimming whitespace. This grouping is deterministic regardless of filesystem ordering.
 
 Output a markdown table with a header row and separator row:
 ```
@@ -216,9 +213,10 @@ STOP.
 - **state.md is written with the Write tool:** No Bash shell text-processing tools are used
   for markdown writes. Read + Write tools only.
 
-- **STATUS mode uses bulk grep:** STATUS mode runs `grep -rh` across all state.md files to
-  extract frontmatter fields without reading each file individually with the Read tool. This
-  avoids context exhaustion for large pipelines.
+- **STATUS mode uses bulk grep:** STATUS mode runs `grep -H` across all state.md files to
+  extract frontmatter fields without reading each file individually with the Read tool. The `-H`
+  flag prefixes every output line with the source filename, enabling deterministic grouping by
+  filename regardless of filesystem ordering. This avoids context exhaustion for large pipelines.
 
 - **Counter derivation uses filesystem glob:** No counter file exists. The next ID is derived
   at runtime from the existing item directories. This ensures the counter is always correct
